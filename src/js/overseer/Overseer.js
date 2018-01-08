@@ -1,5 +1,5 @@
-import { GLView, GLShader, GLProgram, Matrix3f, GLUniforms } from '@glkit'
-import { View, SquareGrid, Geometry2D } from '@overseer/engine'
+import { GLView } from '@glkit'
+import { View, SquareGrid } from '@overseer/engine'
 
 export class Overseer {
   /**
@@ -42,20 +42,24 @@ export class Overseer {
     }
   }
 
+  /**
+  * @param {number} delta
+  */
   update (delta) {
+    const view = this._view
+
     this.updateSize()
-    const gl = this._view.context
 
     this._camera.centerX = 60 * delta / 1000
     this._camera.centerY = 60 * delta / 1000
 
-    gl.viewport(0, 0, this._view.width, this._view.height)
+    view.$viewport(0, 0, view.width, view.height)
 
-    gl.enable(gl.DEPTH_TEST)
-    gl.depthFunc(gl.LEQUAL)
+    view.$enable(view.$DEPTH_TEST)
+    view.$depthFunc(view.$LEQUAL)
 
-    gl.clearColor(1.0, 1.0, 1.0, 1.0)
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+    view.$clearColor(1.0, 1.0, 1.0, 1.0)
+    view.$clear(view.$COLOR_BUFFER_BIT | view.$DEPTH_BUFFER_BIT)
 
     this._grid.render(this._camera)
 
@@ -65,7 +69,7 @@ export class Overseer {
   /**
   * Create the overseer container element.
   *
-  * @param {DOMElement} rootElement - The element that contains the container.
+  * @param {DOMElement} parentElement - The element that contains the container.
   */
   _initializeContainer (parentElement) {
     this._element = parentElement.ownerDocument.createElement('div')

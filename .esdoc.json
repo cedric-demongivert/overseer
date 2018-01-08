@@ -1,0 +1,25 @@
+{
+  "source": "./src",
+  "destination": "./doc",
+  "plugins": [
+    {
+      "name": "esdoc-standard-plugin",
+      "option": {
+        "lint": {"enable": false},
+        "coverage": {"enable": false},
+        "accessor": {"access": ["public", "protected", "private"], "autoPrivate": true},
+        "undocumentIdentifier": {"enable": true},
+        "unexportedIdentifier": {"enable": true},
+        "typeInference": {"enable": false}
+      }
+    },
+    {
+      "name": "esdoc-external-ecmascript-plugin",
+      "option": { "enable": true }
+    },
+    {
+      "name": "esdoc-ecmascript-proposal-plugin",
+      "option": { "all": true }
+    }
+  ]
+}

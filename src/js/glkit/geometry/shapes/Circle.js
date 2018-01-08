@@ -6,9 +6,9 @@ export class Circle extends Shape {
   /**
   * Create a new circle.
   *
-  * @param {number} [x=0]
-  * @param {number} [y=0]
-  * @param {number} [radius=0]
+  * @param {number} [x=0] -
+  * @param {number} [y=0] -
+  * @param {number} [radius=0] -
   */
   constructor (x = 0, y = 0, radius = 0) {
     super()
