@@ -1,1 +1,0 @@
-export { SquareGrid } from './SquareGrid'

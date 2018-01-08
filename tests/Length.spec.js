@@ -358,14 +358,14 @@ describe('Length', function () {
     })
   })
 
-  describe('#copy', function () {
-    it('copy the current length instance', function () {
+  describe('#clone', function () {
+    it('clone the current length instance', function () {
       const length = new Length('2.5km')
-      const copy = length.copy()
+      const clone = length.clone()
 
-      expect(length).not.toBe(copy)
-      expect(length.value).toBe(copy.value)
-      expect(length.unit).toBe(copy.unit)
+      expect(length).not.toBe(clone)
+      expect(length.value).toBe(clone.value)
+      expect(length.unit).toBe(clone.unit)
     })
   })
 

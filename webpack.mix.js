@@ -6,7 +6,9 @@ console.log(path.resolve(__dirname, './src/shaders'))
 mix.webpackConfig({
   resolve: {
     alias: {
-      '@shaders': path.resolve(__dirname, './src/shaders')
+      '@shaders': path.resolve(__dirname, './src/shaders'),
+      '@glkit': path.resolve(__dirname, './src/js/glkit'),
+      '@overseer': path.resolve(__dirname, './src/js/overseer')
     },
     extensions: ['.js', '.json', '.jsx', '.css', '.sass', '.frag', '.vert']
   },
