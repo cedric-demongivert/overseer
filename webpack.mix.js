@@ -1,8 +1,6 @@
 var mix = require('laravel-mix')
 var path = require('path')
 
-console.log(path.resolve(__dirname, './src/shaders'))
-
 mix.webpackConfig({
   resolve: {
     alias: {
@@ -25,5 +23,5 @@ mix.webpackConfig({
 .sass('src/scss/app.scss', 'dist')
 .copy('assets/index.html', 'dist')
 .setPublicPath('dist')
-.sourceMaps(false)
+.sourceMaps(true)
 .disableNotifications()
