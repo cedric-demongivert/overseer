@@ -1,4 +1,5 @@
 import { GLView } from '@glkit'
+import { GLKitRenderingSystem } from './engine'
 
 export class OverseerScreen {
   /**
@@ -11,45 +12,66 @@ export class OverseerScreen {
     this._view = new GLView()
     this._element.appendChild(this._view.element)
     this._map = null
+    this._system = new GLKitRenderingSystem(this._view)
+    this.updateScreenSize = this.updateScreenSize.bind(this)
+    window.addEventListener('resize', this.updateScreenSize)
+    this.updateScreenSize()
 
     this._manager = null
   }
 
+  get width () {
+    return this._element.offsetWidth
+  }
+
+  get height () {
+    return this._element.offsetHeight
+  }
+
+  get map () {
+    return this._map
+  }
+
+  set map (map) {
+    if (this._map !== map) {
+      if (this._map != null) {
+        this._map.deleteSystem(this._system)
+        this._map = null
+      }
+
+      this._map = map
+
+      if (this._map) {
+        this._map.addSystem(this._system)
+      }
+    }
+  }
+
   /**
-  * Update the view size.
+  * Update the inner view width and height in accordance with its current
+  * parent width and height.
   */
-  updateSize () {
+  updateScreenSize () {
     if (
       this._view.width !== this._element.offsetWidth ||
       this._view.height !== this._element.offsetHeight
     ) {
       this._view.width = this._element.offsetWidth
       this._view.height = this._element.offsetHeight
-      this._camera.width = this._view.width
-      this._camera.height = this._view.height
     }
   }
 
   /**
-  * @param {number} delta
+  * Render the current screen map.
+  *
+  * @return {OverseerScreen} The current screen instance for chaining purpose.
   */
-  update (delta) {
-    /*const view = this._view
+  render () {
+    if (this._map) {
+      this._system.render()
+    }
 
-    this.updateSize()
-
-    this._camera.unit = new Length('1m').divide(60).multiply(Math.exp(delta / 10000))
-    //this._camera.centerX = 60 * delta / 1000
-    //this._camera.centerY = 60 * delta / 1000
-
-    view.$viewport(0, 0, view.width, view.height)
-
-    view.$clearColor(1.0, 1.0, 1.0, 1.0)
-    view.$clear(view.$COLOR_BUFFER_BIT | view.$DEPTH_BUFFER_BIT)
-
-    this._grid.render(this._camera)
-
-    this._currentFrame = window.requestAnimationFrame(this.update)*/
+    return this
   }
 
   /**

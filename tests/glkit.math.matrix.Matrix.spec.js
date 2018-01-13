@@ -2,7 +2,7 @@
 
 import { Matrix } from '@glkit/math'
 
-describe('engine.geometry.Matrix', function () {
+describe('glkit.math.matrix.Matrix', function () {
   it('is an interface', function () {
     const instance = new Matrix()
 

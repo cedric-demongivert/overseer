@@ -3,7 +3,7 @@
 import { Vector2f } from '@glkit/math'
 import { GLType } from '@glkit/gl/GLType'
 
-describe('engine.geometry.Vector2f', function () {
+describe('glkit.math.vector.Vector2f', function () {
   describe('#from', function () {
     it('create a vector from an array', function () {
       expect(Vector2f.from([1, 2]).toArray()).toEqual([1, 2])

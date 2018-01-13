@@ -3,7 +3,7 @@
 import { Matrix3f, Vector2f, Vector3f } from '@glkit/Math'
 import { GLType } from '@glkit/gl/GLType'
 
-describe('engine.geometry.Matrix3f', function () {
+describe('glkit.math.matrix.Matrix3f', function () {
   describe('#static identity', function () {
     it('return an identity matrix', function () {
       expect(Matrix3f.identity.data).toEqual([

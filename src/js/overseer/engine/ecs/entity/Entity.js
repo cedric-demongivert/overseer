@@ -44,4 +44,59 @@ export class Entity {
   get manager () {
     return this._manager
   }
+
+  /**
+  * Check if this entity has a component of a particular type.
+  *
+  * @param {any} type - A component type.
+  *
+  * @return {boolean} True if this entity has any component of the given type.
+  */
+  has (type) {
+    return this._manager.hasComponent(this._identifier, type)
+  }
+
+  /**
+  * Return a component of a particular type.
+  *
+  * @param {any} type - A component type.
+  *
+  * @return {Component} The component of the given type, if exists.
+  */
+  get (type) {
+    return this._manager.getComponent(this._identifier, type)
+  }
+
+  /**
+  * Create a component of a particular type for this entity.
+  *
+  * @param {function} type - Type of the component to create.
+  * @param {function} [container] - A component container.
+  *
+  * @return {Component} The created component.
+  */
+  create (...params) {
+    return this._manager.createComponent(this._identifier, ...params)
+  }
+
+  /**
+  * Delete a component of a particular type attached to this entity.
+  *
+  * @param {function} type - Type of the component to delete.
+  *
+  * @return {Entity} The current entity instance for chaining purpose.
+  */
+  delete (type) {
+    this._manager.deleteComponent(this._identifier, type)
+    return this
+  }
+
+  /**
+  * Iterate over all components of this entity.
+  *
+  * @return {Iterator<Component>} An iterator over all components of this entity.
+  */
+  * components () {
+    yield * this._manager.componentsOf(this._identifier)
+  }
 }

@@ -4,20 +4,34 @@ import {
   OverseerScreen,
   Manager,
   UUIDv4Entity as Entity,
-  RenderingArea
-} from './overseer'
+  RenderingTarget
+} from '@overseer'
+
+import {
+  ColorRGBA
+} from '@glkit'
 
 const overseer = new OverseerScreen(document.getElementById('app'))
 
 const map = new Manager()
-const renderingArea = new Entity(map)
+const entity = new Entity(map)
 
-renderingArea.create(RenderingArea, {
+entity.create(RenderingTarget)
+const renderingTarget = entity.get(RenderingTarget)
+
+renderingTarget.set({
   startX: 0,
   startY: 0,
-  width: 100,
-  height: 100,
-  background: 0x000000
+  width: overseer.width,
+  height: overseer.height,
+  background: new ColorRGBA().setHex(0xf0f0f0ff)
+})
+
+window.addEventListener('resize', function updateTargetSize () {
+  renderingTarget.set({
+    width: overseer.width,
+    height: overseer.height
+  })
 })
 
 overseer.map = map

@@ -1,4 +1,5 @@
 import { Component } from '@overseer/engine/ecs'
+import { ColorRGBA } from '@glkit'
 
 /**
 * An rendering target on the screen.
@@ -15,7 +16,7 @@ export class RenderingTarget {
       endX: 0,
       endY: 0,
       camera: null,
-      background: 0x000000
+      background: new ColorRGBA(0, 0, 0, 0)
     }
   }
 

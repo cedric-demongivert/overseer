@@ -2,7 +2,7 @@
 
 import { Vector } from '@glkit/math'
 
-describe('engine.geometry.Vector', function () {
+describe('glkit.math.vector.Vector', function () {
   it('is an interface', function () {
     const instance = new Vector()
 
