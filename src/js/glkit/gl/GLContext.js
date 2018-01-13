@@ -111,10 +111,7 @@ GLContext.get = Symbol('GLContext#get')
 * @return {GLContext} The wrapped context.
 */
 function wrapContext (toWrap) {
-  function Wrapped () { }
-  Wrapped.prototype = toWrap
-
-  class GLContext extends Wrapped {
+  class GLContext {
     /**
     * @return {boolean} Always true.
     */
@@ -130,14 +127,17 @@ function wrapContext (toWrap) {
     }
   }
 
-  for (const key in window.WebGLRenderingContext.prototype) {
-    if (typeof toWrap[key] === 'function') {
+  const WebGLRenderingContext = window.WebGLRenderingContext
+
+  for (const key in WebGLRenderingContext.prototype) {
+    if (key in WebGLRenderingContext) {
+      GLContext.prototype[key] = WebGLRenderingContext[key]
+    } else {
       GLContext.prototype[key] = (...x) => toWrap[key](...x)
     }
   }
 
   const wrapper = new GLContext()
-  wrapper.Class = GLContext
   $contexts.set(toWrap, wrapper)
 
   return wrapper

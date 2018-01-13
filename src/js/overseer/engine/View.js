@@ -129,7 +129,7 @@ export class View {
   * @param {Length} unit - The new unit by pixel of the view.
   */
   set unit (unit) {
-    this._unit = unit.copy()
+    this._unit = unit.clone()
     this.enqueueUpdate()
   }
 

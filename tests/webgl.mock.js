@@ -354,15 +354,21 @@ export function createWebGLMock (jest) {
 
   function mock () {
     if (!mocked()) {
-      beforeMock = window.WebGLRenderingContext
+      beforeMock = {
+        w: window.WebGLRenderingContext,
+        g: global.WebGLRenderingContext
+      }
       window.WebGLRenderingContext = WebGLRenderingContext
+      global.WebGLRenderingContext = WebGLRenderingContext
     }
   }
 
   function unmock () {
     if (mocked()) {
       delete window.WebGLRenderingContext
-      window.WebGLRenderingContext = beforeMock
+      delete global.WebGLRenderingContext
+      window.WebGLRenderingContext = beforeMock.w
+      global.WebGLRenderingContext = beforeMock.g
     }
   }
 

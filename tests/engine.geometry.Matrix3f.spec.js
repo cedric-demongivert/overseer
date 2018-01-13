@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
-import { Matrix3f, Vector2f, Vector3f } from '../src/js/engine/geometry'
-import { GLType } from '../src/js/engine/gl'
+import { Matrix3f, Vector2f, Vector3f } from '@glkit/Math'
+import { GLType } from '@glkit/gl/GLType'
 
 describe('engine.geometry.Matrix3f', function () {
   describe('#static identity', function () {

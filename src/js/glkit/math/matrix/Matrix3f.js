@@ -1,6 +1,6 @@
+import { Vector3f, Vector2f } from '@glkit/math'
 import { Matrix } from './Matrix'
-import { Vector3f, Vector2f } from '../'
-import { GLType } from '../../gl'
+import { GLType } from '@glkit/gl/GLType'
 
 const _it_ = Symbol.iterator
 

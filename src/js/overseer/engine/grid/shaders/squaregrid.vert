@@ -1,5 +1,7 @@
 uniform sampler2D grid;
 uniform float unit;
+uniform float strength;
+uniform vec3 color;
 
 varying vec2 fragUv;
 

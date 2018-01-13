@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
-import { Vector3f } from '../src/js/engine/geometry'
-import { GLType } from '../src/js/engine/gl'
+import { Vector3f } from '@glkit/math'
+import { GLType } from '@glkit/gl/GLType'
 
 describe('engine.geometry.Vector3f', function () {
   describe('#from', function () {

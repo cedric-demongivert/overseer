@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import { Length } from '../src/js/Length'
+import { Length } from '@overseer/engine/Length'
 
 describe('Length', function () {
   it('is instanciable with a value and a unit', function () {

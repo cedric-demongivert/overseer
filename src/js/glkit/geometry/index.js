@@ -1,5 +1,0 @@
-export { Vector } from './vector'
-export { Vector2f } from './vector'
-export { Vector3f } from './vector'
-export { Matrix } from './matrix'
-export { Matrix3f } from './matrix'

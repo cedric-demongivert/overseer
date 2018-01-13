@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import { Vector } from '../src/js/engine/geometry'
+import { Vector } from '@glkit/math'
 
 describe('engine.geometry.Vector', function () {
   it('is an interface', function () {

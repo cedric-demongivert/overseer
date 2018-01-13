@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import { Matrix } from '../src/js/engine/geometry'
+import { Matrix } from '@glkit/math'
 
 describe('engine.geometry.Matrix', function () {
   it('is an interface', function () {

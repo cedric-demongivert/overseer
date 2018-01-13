@@ -1,4 +1,5 @@
 import { GLContext } from './GLContext'
+import uuid from 'uuid/v4'
 
 /**
 * A common class for all engine objects assigned to a GLContext.
@@ -11,6 +12,7 @@ export class GLObject {
   */
   constructor (context) {
     this._context = GLContext.context(context)
+    this._uuid = uuid()
   }
 
   /**

@@ -29,10 +29,16 @@ export const GLType = {
   * @return {GLType} The type of the value.
   */
   _typeofArray (array) {
-    if (array[0] != null && array[0][GLType.type]) {
-      return array[0][GLType.type]
-    } else if (typeof array[0] === 'number') {
-      return GLType.FLOAT
+    if (typeof array[0] === 'number') {
+      switch (array.length) {
+        case 1: return GLType.FLOAT
+        case 2: return GLType.FLOAT_VEC2
+        case 3: return GLType.FLOAT_VEC3
+        case 4: return GLType.FLOAT_VEC4
+        case 9: return GLType.FLOAT_MAT3
+        case 16: return GLType.FLOAT_MAT4
+        default:
+      }
     }
 
     throw new Error([

@@ -1,5 +1,5 @@
 import { Vector } from './Vector'
-import { GLType } from '../../gl'
+import { GLType } from '@glkit/gl/GLType'
 
 const _it_ = Symbol.iterator
 

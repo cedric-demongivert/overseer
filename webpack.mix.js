@@ -1,15 +1,6 @@
 var mix = require('laravel-mix')
-var path = require('path')
 
 mix.webpackConfig({
-  resolve: {
-    alias: {
-      '@shaders': path.resolve(__dirname, './src/shaders'),
-      '@glkit': path.resolve(__dirname, './src/js/glkit'),
-      '@overseer': path.resolve(__dirname, './src/js/overseer')
-    },
-    extensions: ['.js', '.json', '.jsx', '.css', '.sass', '.frag', '.vert']
-  },
   module: {
     rules: [
       {
