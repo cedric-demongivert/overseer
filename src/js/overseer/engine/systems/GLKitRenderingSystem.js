@@ -17,6 +17,9 @@ export class GLKitRenderingSystem extends System {
     this._gl = GLContext.context(context)
   }
 
+  /**
+  * Render an ecs by using glkit.
+  */
   render () {
     const gl = this._gl
 
@@ -27,7 +30,11 @@ export class GLKitRenderingSystem extends System {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
       if (target.camera) {
-
+        for (const system of this.manager.systems()) {
+          if (system !== this && system.render) {
+            system.render(gl, target.camera)
+          }
+        }
       }
     }
   }

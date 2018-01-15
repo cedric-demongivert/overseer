@@ -140,21 +140,12 @@ export class Component {
   }
 
   /**
-  * Change component state.
+  * Notify a component update.
   *
-  * @param {object|function (state) : state} next - Properties to add to the state, or an updator function.
-  *
-  * @return {Component} the current component instance for chaining purpose.
+  * @return {Component} The current component instance for chaining purpose.
   */
-  update (next) {
-    if (typeof next === 'object') {
-      Object.assign(this._state, next)
-    } else {
-      next(this._state)
-    }
-
+  markUpdate () {
     this._version += 1
-
     return this
   }
 

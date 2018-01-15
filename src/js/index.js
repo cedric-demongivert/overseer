@@ -28,11 +28,13 @@ Object.assign(viewport, {
 })
 
 window.addEventListener('resize', function updateTargetSize () {
-  viewport.set({
+  Object.assign(viewport, {
     width: overseer.width,
     height: overseer.height
   })
 })
 
 overseer.map = map
+
+map.update(0)
 overseer.render()

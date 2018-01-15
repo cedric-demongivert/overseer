@@ -1,8 +1,8 @@
 import { Component, UUIDv4Component } from '@overseer/engine/ecs'
-import { ColorRGBA } from '@glkit'
+import { ColorRGBA, Vector2f } from '@glkit'
 
 /**
-* An rendering target on the screen.
+* An area of the screen to render.
 */
 @Component.Type('overseer:engine:viewport')
 export class Viewport extends UUIDv4Component {
@@ -11,23 +11,39 @@ export class Viewport extends UUIDv4Component {
   */
   initialize () {
     return {
-      startX: 0,
-      startY: 0,
-      endX: 0,
-      endY: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      top: 0,
       camera: null,
       background: new ColorRGBA(0, 0, 0, 0)
     }
   }
 
+  /**
+  * Return the color used for clearing the viewport.
+  *
+  * @return {Color} The color used for clearing the viewport.
+  */
   get background () {
     return this.state.background
   }
 
+  /**
+  * Change the color used for clearing the viewport.
+  *
+  * @param {Color} background - The new color to use for clearing the viewport.
+  */
   set background (background) {
-    this.update({ background })
+    this.state.background = background
+    this.markUpdate()
   }
 
+  /**
+  * Return the current camera component used with this viewport.
+  *
+  * @return {Component} The current camera component attached to this viewport.
+  */
   get camera () {
     if (this.state.camera) {
       return this.manager.getComponent(this.state.camera)
@@ -36,118 +52,227 @@ export class Viewport extends UUIDv4Component {
     }
   }
 
+  /**
+  * Change the camera attached to this viewport.
+  *
+  * @param {Component|Identifier} camera - The new camera to attach to this viewport.
+  */
   set camera (camera) {
-    this.update({ camera: Component.identifier(camera) })
+    this.state.camera = Component.identifier(camera)
+    this.markUpdate()
   }
 
+  /**
+  * Return the x component of the center of this viewport.
+  *
+  * @return {number} The x component of the center of this viewport.
+  */
   get centerX () {
-    return (this.state.startX + this.state.endX) / 2
+    return (this.state.left + this.state.right) / 2
   }
 
+  /**
+  * Change the x component of the center of this viewport.
+  *
+  * @param {number} value - The new x component of the center of this viewport.
+  */
   set centerX (value) {
     const hwidth = this.width / 2
 
-    this.update({
-      startX: value - hwidth,
-      endX: value + hwidth
-    })
+    this.state.left = value - hwidth
+    this.state.right = value + hwidth
+
+    this.markUpdate()
   }
 
+  /**
+  * Return the y component of the center of this viewport.
+  *
+  * @return {number} The y component of the center of this viewport.
+  */
   get centerY () {
-    return (this.state.startY + this.state.endY) / 2
+    return (this.state.bottom + this.state.top) / 2
   }
 
+  /**
+  * Change the y component of the center of this viewport.
+  *
+  * @param {number} value - The new y component of the center of this viewport.
+  */
   set centerY (value) {
     const hheight = this.height / 2
 
-    this.update({
-      startY: value - hheight,
-      endY: value + hheight
-    })
+    this.state.bottom = value - hheight
+    this.state.top = value + hheight
+
+    this.markUpdate()
   }
 
+  /**
+  * Return the current center of the viewport.
+  *
+  * @return {Vector2f} The current center of the viewport.
+  */
+  get center () {
+    return new Vector2f(this.centerX, this.centerY)
+  }
+
+  /**
+  * Change the center of this viewport.
+  *
+  * @param {Iteratable<number>} value - The new center of the viewport.
+  */
+  set center (value) {
+    const [x, y] = value
+    const hwidth = this.width / 2
+    const hheight = this.height / 2
+
+    this.state.bottom = y - hheight
+    this.state.top = y + hheight
+
+    this.state.left = x - hwidth
+    this.state.right = x + hwidth
+
+    this.markUpdate()
+  }
+
+  /**
+  * Return the width of the viewport.
+  *
+  * @return {number} The width of the viewport.
+  */
   get width () {
-    return this.state.endX - this.state.startX
+    return this.state.right - this.state.left
   }
 
+  /**
+  * Change the width of the viewport.
+  *
+  * @param {number} value - The new width of the viewport.
+  */
   set width (value) {
     const centerX = this.centerX
     const hwidth = value
 
-    this.update({
-      startX: centerX - hwidth,
-      endX: centerX + hwidth
-    })
+    this.state.left = centerX - hwidth
+    this.state.right = centerX + hwidth
+
+    this.markUpdate()
   }
 
+  /**
+  * Return the height of the viewport.
+  *
+  * @return {number} The height of the viewport.
+  */
   get height () {
-    return this.state.endY - this.state.startY
+    return this.state.top - this.state.bottom
   }
 
+  /**
+  * Change the height of the viewport.
+  *
+  * @param {number} value - The new height of the viewport.
+  */
   set height (value) {
     const centerY = this.centerY
     const hheight = value
 
+    this.state.bottom = centerY - hheight,
+    this.state.top = centerY + hheight
 
-    this.update({
-      startY: centerY - hheight,
-      endY: centerY + hheight
-    })
+    this.markUpdate()
   }
 
-  get startX () {
-    return this.state.startX
+  /**
+  * Return the left location of the viewport.
+  *
+  * @return {number} The left location of the viewport.
+  */
+  get left () {
+    return this.state.left
   }
 
-  set startX (value) {
-    const changes = {}
-    if (value > this.state.endX) {
-      changes.endX = value
+  /**
+  * Change the left location of the viewport.
+  *
+  * @param {number} value - The new left location of the viewport.
+  */
+  set left (value) {
+    if (value > this.state.right) {
+      this.state.right = value
     }
 
-    changes.startX = value
-    this.update(changes)
+    this.state.left = value
+    this.markUpdate()
   }
 
-  get endX () {
-    return this.state.endX
+  /**
+  * Return the right location of the viewport.
+  *
+  * @return {number} The right location of the viewport.
+  */
+  get right () {
+    return this.state.right
   }
 
-  set endX (value) {
-    const changes = {}
-    if (value < this.state.startX) {
-      changes.startX = value
+  /**
+  * Change the right location of the viewport.
+  *
+  * @param {number} value - The new right location of the viewport.
+  */
+  set right (value) {
+    if (value < this.state.left) {
+      this.state.left = value
     }
 
-    changes.endX = value
-    this.update(changes)
+    this.state.right = value
+    this.markUpdate()
   }
 
-  get startY () {
-    return this.state.startY
+  /**
+  * Return the bottom location of the viewport.
+  *
+  * @return {number} The bottom location of the viewport.
+  */
+  get bottom () {
+    return this.state.bottom
   }
 
-  set startY (value) {
-    const changes = {}
-    if (value > this.state.endY) {
-      changes.endY = value
+  /**
+  * Change the bottom location of the viewport.
+  *
+  * @param {number} value - The new bottom location of the viewport.
+  */
+  set bottom (value) {
+    if (value > this.state.top) {
+      this.state.top = value
     }
 
-    changes.startY = value
-    this.update(changes)
+    this.state.bottom = value
+    this.markUpdate()
   }
 
-  get endY () {
-    return this.state.endY
+  /**
+  * Return the top location of the viewport.
+  *
+  * @return {number} The top location of the viewport.
+  */
+  get top () {
+    return this.state.top
   }
 
-  set endY (value) {
-    const changes = {}
-    if (value < this.state.startY) {
-      changes.startY = value
+  /**
+  * Change the top location of the viewport.
+  *
+  * @param {number} value - The new top location of the viewport.
+  */
+  set top (value) {
+    if (value < this.state.bottom) {
+      this.state.bottom = value
     }
 
-    changes.endY = value
-    this.update(changes)
+    this.state.top = value
+    this.markUpdate()
   }
 }

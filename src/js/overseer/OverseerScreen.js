@@ -1,5 +1,8 @@
 import { GLView } from '@glkit'
-import { GLKitRenderingSystem } from './engine'
+import {
+  GLKitRenderingSystem,
+  GLKitTexture2DSystem
+} from './engine'
 
 export class OverseerScreen {
   /**
@@ -12,7 +15,12 @@ export class OverseerScreen {
     this._view = new GLView()
     this._element.appendChild(this._view.element)
     this._map = null
-    this._system = new GLKitRenderingSystem(this._view)
+    this._renderer = new GLKitRenderingSystem(this._view)
+    this._systems = [
+      new GLKitTexture2DSystem(this._view),
+      this._renderer
+    ]
+
     this.updateScreenSize = this.updateScreenSize.bind(this)
     window.addEventListener('resize', this.updateScreenSize)
     this.updateScreenSize()
@@ -35,14 +43,14 @@ export class OverseerScreen {
   set map (map) {
     if (this._map !== map) {
       if (this._map != null) {
-        this._map.deleteSystem(this._system)
+        for (const system of this._systems) this._map.deleteSystem(system)
         this._map = null
       }
 
       this._map = map
 
       if (this._map) {
-        this._map.addSystem(this._system)
+        for (const system of this._systems) this._map.addSystem(system)
       }
     }
   }
@@ -68,7 +76,7 @@ export class OverseerScreen {
   */
   render () {
     if (this._map) {
-      this._system.render()
+      this._renderer.render()
     }
 
     return this

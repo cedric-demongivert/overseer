@@ -8,62 +8,109 @@ import { Matrix3f } from '@glkit'
 @Component.Type('overseer:engine:transform')
 export class Transform extends UUIDv4Component {
   /**
+  * Compute the unit scale matrix between two Transform component.
+  *
+  * @param {Transform} base - The object to scale.
+  * @param {Transform} target - The target object.
+  *
+  * @return {Matrix3f} The scale matrix between the two objects.
+  */
+  static unitScale (base, target) {
+    const targetUnit = target.unit
+    const baseUnit = base.unit
+    const coef = targetUnit.value / baseUnit.in(targetUnit.unit).value
+    return Matrix3f.scale2D(coef, coef)
+  }
+
+  /**
   * @see Component#initialize
   */
   initialize () {
-    this._computeLocaleToWorld = this._computeLocaleToWorld.bind(this)
+    this._computeLocalToWorld = this._computeLocalToWorld.bind(this)
+    this._computeWorldToLocal = this._computeWorldToLocal.bind(this)
 
     return {
       parent: null,
       transformation: Matrix3f.identity,
-      unit: new Length('1m')
+      unit: new Length('1m'),
+      children: new Set()
     }
   }
 
   /**
-  * @return {Matrix3f} The world to locale transformation matrix.
+  * @return {Matrix3f} The world to local transformation matrix.
   */
-  get worldToLocale () {
-    return this.localeToWorld.invert()
+  get worldToLocal () {
+    return this._computeWorldToLocal()
   }
 
   /**
-  * @return {Matrix3f} The locale to world transformation matrix.
+  * @return {Matrix3f} The local to world transformation matrix.
   */
-  get localeToWorld () {
-    return this._computeLocaleToWorld()
+  get localToWorld () {
+    return this._computeLocalToWorld()
   }
 
   /**
-  * @return {Matrix3f} The locale to world transformation matrix.
+  * @return {Matrix3f} The local to world transformation matrix.
   */
-  _computeLocaleToWorld () {
+  _computeLocalToWorld () {
     let result = this.state.transformation
 
     if (this._parent) {
-      result = result.mul(MapObject.unitScale(this, this.parent))
-                     .mul(this.parent.localeToWorld)
+      result = result.mul(Transform.unitScale(this, this.parent))
+                     .mul(this.parent.localToWorld)
     }
 
-    delete this.localeToWorld
-    this.localeToWorld = result
+    Object.defineProperty(
+      this, 'localToWorld', { value: result, configurable: true }
+    )
 
     return result
   }
 
   /**
-  * Enqueue a computation of the locale to world matrix.
+  * @return {Matrix3f} The local to world transformation matrix.
   */
-  _updateLocaleToWorld () {
-    if (!Object.getOwnPropertyDescriptor(this, 'localeToWorld').get) {
-      Object.assign(
-        this, 'localeToWorld', { get: this._computeLocaleToWorld }
+  _computeWorldToLocal () {
+    const result = this.state.localToWorld.invert()
+
+    Object.defineProperty(
+      this, 'worldToLocal', { value: result, configurable: true }
+    )
+
+    return result
+  }
+
+  /**
+  * Enqueue a computation of the local to world matrix.
+  */
+  _updateLocalToWorld () {
+    const descriptor = Object.getOwnPropertyDescriptor(this, 'localToWorld')
+
+    if (descriptor && !descriptor.get) {
+      Object.defineProperty(
+        this, 'localToWorld', {
+          get: this._computeLocalToWorld,
+          configurable: true
+        }
       )
+
+      Object.defineProperty(
+        this, 'worldToLocal', {
+          get: this._computeWorldToLocal,
+          configurable: true
+        }
+      )
+
+      for (const child of this.children()) {
+        child._updateLocalToWorld()
+      }
     }
   }
 
   /**
-  * Return the transformation matrix of this object.
+  * Return the local transformation matrix.
   *
   * @return {Matrix3f} The transformation matrix.
   */
@@ -72,13 +119,14 @@ export class Transform extends UUIDv4Component {
   }
 
   /**
-  * Change the transformation matrix of this object.
+  * Change the local transformation matrix.
   *
-  * @param {Matrix3f} transformation - The new transformation matrix to set.
+  * @param {Matrix3f} transformation - The new local transformation matrix to set.
   */
   set transformation (transformation) {
-    this.update({ transformation })
-    this._updateLocaleToWorld()
+    this.state.transformation = transformation
+    this._updateLocalToWorld()
+    this.markUpdate()
   }
 
   /**
@@ -93,18 +141,18 @@ export class Transform extends UUIDv4Component {
   /**
   * Set the size of this object.
   *
-  * @param {Vector2f} newSize - The new size of this object.
+  * @param {Iterable<number>} newSize - The new size of this object.
   */
   set size (newSize) {
     const oldSize = this.state.transformation.extract2DScale()
+    const [newWidth, newHeight] = newSize
 
-    this.update({
-      transformation: this.state.transformation.mul(
-        Matrix3f.scale2D(newSize.x / oldSize.x, newSize.y / oldSize.y)
-      )
-    })
+    this.state.transformation = this.state.transformation.mul(
+      Matrix3f.scale2D(newWidth / oldSize.x, newHeight / oldSize.y)
+    )
 
-    this._updateLocaleToWorld()
+    this._updateLocalToWorld()
+    this.markUpdate()
   }
 
   /**
@@ -119,18 +167,20 @@ export class Transform extends UUIDv4Component {
   /**
   * Set the position of this object.
   *
-  * @param {Vector2f} newPosition - The new position of this object.
+  * @param {Iterable<number>} newPosition - The new position of this object.
   */
   set position (newPosition) {
     const oldPosition = this.state.transformation.extract2DTranslation()
+    if (!(newPosition instanceof Vector2f)) {
+      newPosition = new Vector2f(newPosition)
+    }
 
-    this.update({
-      transformation: this.state.transformation.mul(
-        Matrix3f.translation2D(newPosition.sub(oldPosition))
-      )
-    })
+    this.state.transformation = this.state.transformation.mul(
+      Matrix3f.translation2D(newPosition.sub(oldPosition))
+    )
 
-    this._updateLocaleToWorld()
+    this._updateLocalToWorld()
+    this.markUpdate()
   }
 
   /**
@@ -150,13 +200,12 @@ export class Transform extends UUIDv4Component {
   set rotation (newRotation) {
     const oldRotation = this.state.transformation.extract2DRotation()
 
-    this.update({
-      transformation: this.state.transformation.mul(
-        Matrix3f.rotation2D(newRotation - oldRotation)
-      )
-    })
+    this.state.transformation = this.state.transformation.mul(
+      Matrix3f.rotation2D(newRotation - oldRotation)
+    )
 
-    this._updateLocaleToWorld()
+    this._updateLocalToWorld()
+    this.markUpdate()
   }
 
   /**
@@ -179,9 +228,18 @@ export class Transform extends UUIDv4Component {
   */
   set parent (newParent) {
     const identifier = Component.identifier(newParent)
+
     if (identifier !== this.state.parent) {
-      this.update({ parent: identifier })
-      this._updateLocaleToWorld()
+      if (this.state.parent) {
+        const oldParent = this.state.parent
+        this.state.parent = null
+        this.manager.getComponent(oldParent).deleteChild(this)
+      }
+
+      this.state.parent = identifier
+      this.parent.addChild(this)
+      this._updateLocalToWorld()
+      this.markUpdate()
     }
   }
 
@@ -200,8 +258,9 @@ export class Transform extends UUIDv4Component {
   * @param {Length} unit - The new unit length for this object.
   */
   set unit (unit) {
-    this.update({ unit: new Length(unit) })
-    this._updateLocaleToWorld()
+    this.state.unit = new Length(unit)
+    this._updateLocalToWorld()
+    this.markUpdate()
   }
 
   /**
@@ -209,15 +268,15 @@ export class Transform extends UUIDv4Component {
   *
   * @param {...any} params - The translation vector to use.
   *
-  * @return {MapObject} This object for chaining purpose.
+  * @return {Transform} This component instance for chaining purpose.
   */
   translate (...params) {
-    this.update({
-      transformation: this.state.transformation.mul(
-        Matrix3f.translate2D(...params)
-      )
-    })
-    this._updateLocaleToWorld()
+    this.state.transformation = this.state.transformation.mul(
+      Matrix3f.translate2D(...params)
+    )
+
+    this._updateLocalToWorld()
+    this.markUpdate()
 
     return this
   }
@@ -227,15 +286,15 @@ export class Transform extends UUIDv4Component {
   *
   * @param {number} theta - The rotation angle to use in radians.
   *
-  * @return {MapObject} This object for chaining purpose.
+  * @return {Transform} This object for chaining purpose.
   */
   rotate (theta) {
-    this.update({
-      transformation: this.state.transformation.mul(
-        Matrix3f.rotate2D(theta)
-      )
-    })
-    this._updateLocaleToWorld()
+    this.state.transformation = this.state.transformation.mul(
+      Matrix3f.rotate2D(theta)
+    )
+
+    this._updateLocalToWorld()
+    this.markUpdate()
 
     return this
   }
@@ -245,16 +304,44 @@ export class Transform extends UUIDv4Component {
   *
   * @param {...any} params - The scale vector to use.
   *
-  * @return {MapObject} This object for chaining purpose.
+  * @return {Transform} This object for chaining purpose.
   */
   scale (...params) {
-    this.update({
-      transformation: this.state.transformation.mul(
-        Matrix3f.scale2D(...params)
-      )
-    })
-    this._updateLocaleToWorld()
+    this.state.transformation = this.state.transformation.mul(
+      Matrix3f.scale2D(...params)
+    )
+
+    this._updateLocalToWorld()
+    this.markUpdate()
 
     return this
+  }
+
+  /**
+  * Add a child transform to this component.
+  *
+  * @param {Transform|Identifier} child - The new child to add.
+  */
+  addChild (child) {
+    const identifier = Component.identifier(child)
+    if (!this.state.children.has(identifier)) {
+      this.state.children.add(identifier)
+      this.manager.getComponent(identifier).parent = this
+      this.markUpdate()
+    }
+  }
+
+  /**
+  * Remove a child transform of this component.
+  *
+  * @param {Transform|Identifier} child - The child to delete.
+  */
+  deleteChild (child) {
+    const identifier = Component.identifier(child)
+    if (this.state.children.has(identifier)) {
+      this.state.children.delete(identifier)
+      this.manager.getComponent(identifier).parent = null
+      this.markUpdate()
+    }
   }
 }

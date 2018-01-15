@@ -1,6 +1,6 @@
 import uuid from 'uuid/v4'
 import { Entity } from './entity'
-import { Component, UUIDv4Component } from './component'
+import { Component } from './component'
 
 import {
   DuplicatedEntityError,
