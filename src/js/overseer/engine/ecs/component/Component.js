@@ -2,9 +2,18 @@ import { Entity } from '../entity'
 
 const $componentType = Symbol('componentType')
 
+function Type (type) {
+  return function (BaseClass) {
+    BaseClass.prototype[$componentType] = type
+    BaseClass[$componentType] = type
+    return BaseClass
+  }
+}
+
 /**
 * An engine component.
 */
+@Type('component')
 export class Component {
   /**
   * Return a component type.
@@ -14,9 +23,7 @@ export class Component {
   * @return {any} A component type.
   */
   static typeof (component) {
-    if (component instanceof Component) {
-      return component.type
-    } else if (typeof component === 'function' || typeof component === 'object') {
+    if (component && component[$componentType]) {
       return component[$componentType]
     } else {
       return component
@@ -42,15 +49,11 @@ export class Component {
   * @param {any} identifier - The current component identifier.
   * @param {function} clazz - The current component implementation.
   */
-  constructor (manager, entity, identifier, clazz) {
+  constructor (manager, entity, identifier) {
     this._manager = manager
     this._entity = Entity.identifier(entity)
     this._identifier = identifier
-    this._clazz = clazz
-    this._data = Reflect.construct(clazz, [manager, entity])
-    this._data.manager = manager
-    this._data.entity = entity
-    this._data.identifier = identifier
+    this._state = this.initialize()
     this._version = 0
 
     this._manager.addComponent(this)
@@ -78,7 +81,7 @@ export class Component {
   * @return {any} The type of this component.
   */
   get type () {
-    return Component.typeof(this._clazz)
+    return Component.typeof(this)
   }
 
   /**
@@ -87,7 +90,7 @@ export class Component {
   * @return {function} The internal class of this component.
   */
   get clazz () {
-    return this._clazz
+    return Reflect.getPrototypeOf(this).constructor
   }
 
   /**
@@ -109,23 +112,45 @@ export class Component {
   }
 
   /**
-  * Change component data.
+  * Return the current state of this component.
   *
-  * @param {[...any]} params
+  * @return {object} The current state of this component.
+  */
+  get state () {
+    return this._state
+  }
+
+  /**
+  * Replace the current state of this component.
+  *
+  * @param {object} newState - The new state of this component.
+  */
+  set state (newState) {
+    this._state = Object.assign({}, newState)
+    this._version += 1
+  }
+
+  /**
+  * Initialize the state of this component.
+  *
+  * @return {object} Base state of this component.
+  */
+  initialize () {
+    return {}
+  }
+
+  /**
+  * Change component state.
+  *
+  * @param {object|function (state) : state} next - Properties to add to the state, or an updator function.
   *
   * @return {Component} the current component instance for chaining purpose.
   */
-  set (...params) {
-    if (params.length === 1) {
-      const [data] = params
-      for (const key in data) {
-        if (key in this._data) this._data[key] = data[key]
-        else this._data.state[key] = data[key]
-      }
+  update (next) {
+    if (typeof next === 'object') {
+      Object.assign(this._state, next)
     } else {
-      const [name, value] = params
-      if (name in this._data) this._data[name] = value
-      else this._data.state[name] = value
+      next(this._state)
     }
 
     this._version += 1
@@ -134,40 +159,19 @@ export class Component {
   }
 
   /**
-  * Return some component data.
-  *
-  * @param {string} name - Entry key.
-  *
-  * @return {any} the value of the entry with the given key.
-  */
-  get (name) {
-    if (name in this._data) {
-      return this._data[name]
-    } else {
-      return this._data.state[name]
-    }
-  }
-
-  /**
   * Return a serialized version of this component.
   *
   * @return {object} A serialized version of this component.
   */
-  get data () {
+  serialize () {
     return {
-      type: Component.typeof(this._clazz),
+      type: Component.typeof(this),
       version: this._version,
       identifier: this._identifier,
       entity: this._entity,
-      state: this._data.state
+      state: this._state
     }
   }
 }
 
-Component.Type = function (type) {
-  return function (BaseClass) {
-    BaseClass.prototype[$componentType] = type
-    BaseClass[$componentType] = type
-    return BaseClass
-  }
-}
+Component.Type = Type

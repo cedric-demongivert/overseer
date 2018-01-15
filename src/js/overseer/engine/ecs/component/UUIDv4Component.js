@@ -4,6 +4,7 @@ import { Component } from './Component'
 /**
 * An universal unique id v4 based component.
 */
+@Component.Type('component')
 export class UUIDv4Component extends Component {
   /**
   * Return a new UUIDv4 component identifier for a manager.
@@ -23,14 +24,12 @@ export class UUIDv4Component extends Component {
   *
   * @param {Manager} manager - The manager that will hold the new created component.
   * @param {any} entity - The parent entity identifier for this component.
-  * @param {function} clazz - The current component implementation.
   */
-  constructor (manager, entity, clazz) {
+  constructor (manager, entity) {
     super(
       manager,
       entity,
-      UUIDv4Component.next(manager),
-      clazz
+      UUIDv4Component.next(manager)
     )
   }
 }

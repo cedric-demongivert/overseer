@@ -5,21 +5,7 @@ import {
 } from '@overseer/engine/ecs'
 
 @Component.Type('my-type')
-class MyType {
-  constructor () {
-    this.state = {
-      value: 5
-    }
-  }
-
-  get value () {
-    return this.state.value
-  }
-
-  set value (x) {
-    this.state.value = x * 10
-  }
-}
+class MyType extends Component { }
 
 @Component.Type('my-type-2')
 class MyType2 extends MyType { }
@@ -77,9 +63,7 @@ describe('overseer.engine.ecs.Manager', function () {
       firstManager.addEntity('myEntity')
       secondManager.addEntity('myEntity')
 
-      const component = new Component(
-        firstManager, 'myEntity', 'myComponent', MyType
-      )
+      const component = new MyType(firstManager, 'myEntity', 'myComponent')
 
       expect(_ => secondManager.addComponent(component)).toThrow(
         InvalidComponentManagerError
@@ -91,9 +75,7 @@ describe('overseer.engine.ecs.Manager', function () {
     it('delete a component of the manager if exists', function () {
       const manager = new Manager()
       manager.addEntity('myEntity')
-      const component = new Component(
-        manager, 'myEntity', 'myComponent', MyType
-      )
+      const component = new MyType(manager, 'myEntity', 'myComponent')
 
       expect(manager.hasComponent('myComponent')).toBeTruthy()
       expect([...manager.components()]).toEqual([component])
@@ -117,13 +99,9 @@ describe('overseer.engine.ecs.Manager', function () {
     it('delete an entity of the manager and all of its components', function () {
       const manager = new Manager()
       manager.addEntity('myEntity')
-      Reflect.construct(Component, [manager, 'myEntity', 'myComponent', MyType])
-      Reflect.construct(Component, [
-        manager, 'myEntity', 'myComponent2', MyType2
-      ])
-      Reflect.construct(Component, [
-        manager, 'myEntity', 'myComponent3', MyType3
-      ])
+      Reflect.construct(MyType, [manager, 'myEntity', 'myComponent'])
+      Reflect.construct(MyType2, [manager, 'myEntity', 'myComponent2'])
+      Reflect.construct(MyType3, [manager, 'myEntity', 'myComponent3'])
 
       expect([...manager.entities()]).toEqual(['myEntity'])
       expect([...manager.components()]).toHaveLength(3)
