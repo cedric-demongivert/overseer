@@ -1,9 +1,8 @@
 /* eslint-env jest */
 
 import {
-  Manager, Entity, Component, UUIDv4Component
+  Manager, Entity, UUIDv4Component
 } from '@overseer/engine/ecs'
-
 
 describe('overseer.engine.ecs.entity.UUIDv4Component', function () {
   describe('#constructor', function () {

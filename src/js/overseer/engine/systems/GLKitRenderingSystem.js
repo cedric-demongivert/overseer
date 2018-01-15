@@ -1,5 +1,5 @@
 import { System } from '@overseer/engine/ecs'
-import { RenderingTarget } from '@overseer/engine/components'
+import { Viewport } from '@overseer/engine/components'
 import { GLContext } from '@glkit'
 
 /**
@@ -20,15 +20,13 @@ export class GLKitRenderingSystem extends System {
   render () {
     const gl = this._gl
 
-    for (const target of this.manager.components(RenderingTarget)) {
-      gl.viewport(0, 0, target.get('width'), target.get('height'))
+    for (const target of this.manager.components(Viewport)) {
+      gl.viewport(0, 0, target.width, target.height)
 
-      gl.clearColor(...target.get('background'))
+      gl.clearColor(...target.background)
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-      const camera = target.get('camera')
-
-      if (camera) {
+      if (target.camera) {
 
       }
     }

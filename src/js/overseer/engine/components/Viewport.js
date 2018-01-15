@@ -1,16 +1,16 @@
-import { Component } from '@overseer/engine/ecs'
+import { Component, UUIDv4Component } from '@overseer/engine/ecs'
 import { ColorRGBA } from '@glkit'
 
 /**
 * An rendering target on the screen.
 */
-@Component.Type('overseer:engine:rendering-target')
-export class RenderingTarget {
+@Component.Type('overseer:engine:viewport')
+export class Viewport extends UUIDv4Component {
   /**
-  * Create a new empty rendering target.
+  * @see Component#initialize
   */
-  constructor () {
-    this.state = {
+  initialize () {
+    return {
       startX: 0,
       startY: 0,
       endX: 0,
@@ -25,7 +25,7 @@ export class RenderingTarget {
   }
 
   set background (background) {
-    this.state.background = background
+    this.update({ background })
   }
 
   get camera () {
@@ -37,7 +37,7 @@ export class RenderingTarget {
   }
 
   set camera (camera) {
-    this.state.camera = Component.identifier(camera)
+    this.update({ camera: Component.identifier(camera) })
   }
 
   get centerX () {
@@ -47,8 +47,10 @@ export class RenderingTarget {
   set centerX (value) {
     const hwidth = this.width / 2
 
-    this.state.startX = value - hwidth
-    this.state.endX = value + hwidth
+    this.update({
+      startX: value - hwidth,
+      endX: value + hwidth
+    })
   }
 
   get centerY () {
@@ -58,8 +60,10 @@ export class RenderingTarget {
   set centerY (value) {
     const hheight = this.height / 2
 
-    this.state.startY = value - hheight
-    this.state.endY = value + hheight
+    this.update({
+      startY: value - hheight,
+      endY: value + hheight
+    })
   }
 
   get width () {
@@ -70,8 +74,10 @@ export class RenderingTarget {
     const centerX = this.centerX
     const hwidth = value
 
-    this.state.startX = centerX - hwidth
-    this.state.endX = centerX + hwidth
+    this.update({
+      startX: centerX - hwidth,
+      endX: centerX + hwidth
+    })
   }
 
   get height () {
@@ -82,8 +88,11 @@ export class RenderingTarget {
     const centerY = this.centerY
     const hheight = value
 
-    this.state.startY = centerY - hheight
-    this.state.endY = centerY + hheight
+
+    this.update({
+      startY: centerY - hheight,
+      endY: centerY + hheight
+    })
   }
 
   get startX () {
@@ -91,11 +100,13 @@ export class RenderingTarget {
   }
 
   set startX (value) {
+    const changes = {}
     if (value > this.state.endX) {
-      this.state.endX = value
+      changes.endX = value
     }
 
-    this.state.startX = value
+    changes.startX = value
+    this.update(changes)
   }
 
   get endX () {
@@ -103,11 +114,13 @@ export class RenderingTarget {
   }
 
   set endX (value) {
+    const changes = {}
     if (value < this.state.startX) {
-      this.state.startX = value
+      changes.startX = value
     }
 
-    this.state.endX = value
+    changes.endX = value
+    this.update(changes)
   }
 
   get startY () {
@@ -115,11 +128,13 @@ export class RenderingTarget {
   }
 
   set startY (value) {
+    const changes = {}
     if (value > this.state.endY) {
-      this.state.endY = value
+      changes.endY = value
     }
 
-    this.state.startY = value
+    changes.startY = value
+    this.update(changes)
   }
 
   get endY () {
@@ -127,10 +142,12 @@ export class RenderingTarget {
   }
 
   set endY (value) {
+    const changes = {}
     if (value < this.state.startY) {
-      this.state.startY = value
+      changes.startY = value
     }
 
-    this.state.endY = value
+    changes.endY = value
+    this.update(changes)
   }
 }

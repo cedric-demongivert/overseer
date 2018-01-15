@@ -71,12 +71,11 @@ export class Entity {
   * Create a component of a particular type for this entity.
   *
   * @param {function} type - Type of the component to create.
-  * @param {function} [container] - A component container.
   *
   * @return {Component} The created component.
   */
-  create (...params) {
-    return this._manager.createComponent(this._identifier, ...params)
+  create (type) {
+    return this._manager.createComponent(this._identifier, type)
   }
 
   /**

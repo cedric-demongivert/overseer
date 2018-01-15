@@ -1,4 +1,4 @@
-import { Component } from '@overseer/engine/ecs'
+import { Component, UUIDv4Component } from '@overseer/engine/ecs'
 import { Length } from '@overseer/engine/Length'
 import { Matrix3f } from '@glkit'
 
@@ -6,18 +6,18 @@ import { Matrix3f } from '@glkit'
 * Assign a transformation matrix to the current entity.
 */
 @Component.Type('overseer:engine:transform')
-export class Transform {
+export class Transform extends UUIDv4Component {
   /**
-  * Create a new unitary transform for an entity.
+  * @see Component#initialize
   */
-  constructor () {
-    this.state = {
+  initialize () {
+    this._computeLocaleToWorld = this._computeLocaleToWorld.bind(this)
+
+    return {
       parent: null,
       transformation: Matrix3f.identity,
       unit: new Length('1m')
     }
-
-    this._computeLocaleToWorld = this._computeLocaleToWorld.bind(this)
   }
 
   /**
@@ -38,11 +38,11 @@ export class Transform {
   * @return {Matrix3f} The locale to world transformation matrix.
   */
   _computeLocaleToWorld () {
-    let result = this._transformation
+    let result = this.state.transformation
 
     if (this._parent) {
-      result = result.mul(MapObject.unitScale(this, this._parent))
-                     .mul(this._parent.localeToWorld)
+      result = result.mul(MapObject.unitScale(this, this.parent))
+                     .mul(this.parent.localeToWorld)
     }
 
     delete this.localeToWorld
@@ -74,10 +74,10 @@ export class Transform {
   /**
   * Change the transformation matrix of this object.
   *
-  * @param {Matrix3f} newTransformation - The new transformation matrix to set.
+  * @param {Matrix3f} transformation - The new transformation matrix to set.
   */
-  set transformation (newTransformation) {
-    this.state.transformation = newTransformation
+  set transformation (transformation) {
+    this.update({ transformation })
     this._updateLocaleToWorld()
   }
 
@@ -98,9 +98,12 @@ export class Transform {
   set size (newSize) {
     const oldSize = this.state.transformation.extract2DScale()
 
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.scale2D(newSize.x / oldSize.x, newSize.y / oldSize.y)
-    )
+    this.update({
+      transformation: this.state.transformation.mul(
+        Matrix3f.scale2D(newSize.x / oldSize.x, newSize.y / oldSize.y)
+      )
+    })
+
     this._updateLocaleToWorld()
   }
 
@@ -121,9 +124,12 @@ export class Transform {
   set position (newPosition) {
     const oldPosition = this.state.transformation.extract2DTranslation()
 
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.translation2D(newPosition.sub(oldPosition))
-    )
+    this.update({
+      transformation: this.state.transformation.mul(
+        Matrix3f.translation2D(newPosition.sub(oldPosition))
+      )
+    })
+
     this._updateLocaleToWorld()
   }
 
@@ -144,9 +150,12 @@ export class Transform {
   set rotation (newRotation) {
     const oldRotation = this.state.transformation.extract2DRotation()
 
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.rotation2D(newRotation - oldRotation)
-    )
+    this.update({
+      transformation: this.state.transformation.mul(
+        Matrix3f.rotation2D(newRotation - oldRotation)
+      )
+    })
+
     this._updateLocaleToWorld()
   }
 
@@ -171,7 +180,7 @@ export class Transform {
   set parent (newParent) {
     const identifier = Component.identifier(newParent)
     if (identifier !== this.state.parent) {
-      this.state.parent = identifier
+      this.update({ parent: identifier })
       this._updateLocaleToWorld()
     }
   }
@@ -188,10 +197,10 @@ export class Transform {
   /**
   * Change the unit length for this object.
   *
-  * @param {Length} newUnit - The new unit length for this object.
+  * @param {Length} unit - The new unit length for this object.
   */
-  set unit (newUnit) {
-    this.state.unit = new Length(newUnit)
+  set unit (unit) {
+    this.update({ unit: new Length(unit) })
     this._updateLocaleToWorld()
   }
 
@@ -203,9 +212,11 @@ export class Transform {
   * @return {MapObject} This object for chaining purpose.
   */
   translate (...params) {
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.translate2D(...params)
-    )
+    this.update({
+      transformation: this.state.transformation.mul(
+        Matrix3f.translate2D(...params)
+      )
+    })
     this._updateLocaleToWorld()
 
     return this
@@ -219,9 +230,11 @@ export class Transform {
   * @return {MapObject} This object for chaining purpose.
   */
   rotate (theta) {
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.rotate2D(theta)
-    )
+    this.update({
+      transformation: this.state.transformation.mul(
+        Matrix3f.rotate2D(theta)
+      )
+    })
     this._updateLocaleToWorld()
 
     return this
@@ -235,9 +248,11 @@ export class Transform {
   * @return {MapObject} This object for chaining purpose.
   */
   scale (...params) {
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.scale2D(...params)
-    )
+    this.update({
+      transformation: this.state.transformation.mul(
+        Matrix3f.scale2D(...params)
+      )
+    })
     this._updateLocaleToWorld()
 
     return this

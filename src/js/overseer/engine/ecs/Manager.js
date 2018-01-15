@@ -451,13 +451,11 @@ export class Manager {
   *
   * @param {Entity|any} entity - An entity or an entity identifier.
   * @param {function} type - The type of component to create.
-  * @param {function} [container = UUIDv4Component] - A component container.
   *
   * @return {Component} The created component.
   */
-  createComponent (entity, type, container = UUIDv4Component) {
-    const result = Reflect.construct(container, [this, entity, type])
-    return result
+  createComponent (entity, type) {
+    return Reflect.construct(type, [this, entity])
   }
 
   /**

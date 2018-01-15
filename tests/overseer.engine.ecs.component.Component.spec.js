@@ -32,7 +32,7 @@ describe('overseer.engine.ecs.component.Component', function () {
     it('throw a DuplicatedComponentError if the component to add already exists in the current manager', function () {
       const manager = new Manager()
       const entity = new Entity(manager, 'myEntity')
-      const base = new Component(manager, entity, 'myComponent')
+      Reflect.construct(Component, [manager, entity, 'myComponent'])
 
       expect(
         _ => new Component(manager, entity, 'myComponent')

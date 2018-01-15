@@ -4,7 +4,7 @@ import {
   OverseerScreen,
   Manager,
   UUIDv4Entity as Entity,
-  RenderingTarget
+  Viewport
 } from '@overseer'
 
 import {
@@ -16,10 +16,10 @@ const overseer = new OverseerScreen(document.getElementById('app'))
 const map = new Manager()
 const entity = new Entity(map)
 
-entity.create(RenderingTarget)
-const renderingTarget = entity.get(RenderingTarget)
+entity.create(Viewport)
+const viewport = entity.get(Viewport)
 
-renderingTarget.set({
+Object.assign(viewport, {
   startX: 0,
   startY: 0,
   width: overseer.width,
@@ -28,7 +28,7 @@ renderingTarget.set({
 })
 
 window.addEventListener('resize', function updateTargetSize () {
-  renderingTarget.set({
+  viewport.set({
     width: overseer.width,
     height: overseer.height
   })
