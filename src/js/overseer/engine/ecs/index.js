@@ -1,5 +1,5 @@
 export { Manager } from './Manager'
 export { System } from './System'
-export * from './entity'
-export * from './component'
-export * from './errors'
+export { Component } from './Component'
+export { Entity } from './Entity'
+export { Identifier } from './Identifier'

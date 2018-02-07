@@ -1,14 +1,14 @@
-import { Component, UUIDv4Component } from '@overseer/engine/ecs'
+import { Component } from '@overseer/engine/ecs'
 
 /**
 * Allow to create a parent - child dependency between two entities.
 */
-@Component.Type('overseer:ecs:child-entity')
-export class ChildEntity extends UUIDv4Component {
+@Component({ type: 'overseer:ecs:child-entity' })
+export class ChildEntity {
   /**
   * @see Component#initialize
   */
   initialize () {
-    return { parent: null }
+    this.state = { parent: null }
   }
 }

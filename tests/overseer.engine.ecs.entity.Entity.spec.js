@@ -1,23 +1,26 @@
 /* eslint-env jest */
 
-import { Manager, Entity, DuplicatedEntityError } from '@overseer/engine/ecs'
+import { Manager, Entity, Identifier } from '@overseer/engine/ecs'
 
 describe('overseer.engine.ecs.entity.Entity', function () {
   describe('#constructor', function () {
     it('allow to create an entity into a manager', function () {
       const manager = new Manager()
-      const entity = new Entity(manager, 'myEntity')
+      const identifier = Identifier.create()
+      const entity = new Entity(manager, identifier)
 
-      expect([...manager.entities()]).toEqual(['myEntity'])
-      expect(entity.identifier).toBe('myEntity')
-      expect(entity.manager).toBe(manager)
+/*
+      expect([...manager.entities()]).toEqual([identifier])
+      expect(entity.identifier).toBe(identifier)
+      expect(entity.manager).toBe(manager)*/
     })
 
-    it('throw a DuplicatedEntityError if the entity to add already exists in the current manager', function () {
-      const manager = new Manager()
-      manager.addEntity('myEntity')
+    it('throws if the entity to add already exists in the current manager', function () {
+      /*const manager = new Manager()
+      const identifier = Identifier.create()
+      manager.addEntity(identifier)
 
-      expect(_ => new Entity(manager, 'myEntity')).toThrow(DuplicatedEntityError)
+      expect(_ => new Entity(manager, identifier)).toThrow()*/
     })
   })
 })

@@ -15,7 +15,10 @@ export class GLKitTexture2DSystem extends System {
     super()
     this._gl = GLContext.context(context)
     this._textures = new Map()
-    this._gl.$textures = this._textures
+
+    this._gl.getTexture = (component) => {
+      return this._textures.get(Component.identifier(component))
+    }
   }
 
   /**
@@ -57,7 +60,7 @@ export class GLKitTexture2DSystem extends System {
     for (const [identifier, glTexture] of this._textures.entries()) {
       const component = this.manager.getComponent(identifier)
 
-      if (component.version !== glTexture.version) {
+      if (component.version !== glTexture.$version) {
         this._updateTexture(glTexture, component)
       }
     }
@@ -98,5 +101,6 @@ export class GLKitTexture2DSystem extends System {
     }
 
     this._textures.clear()
+    delete this._gl.getTexture
   }
 }

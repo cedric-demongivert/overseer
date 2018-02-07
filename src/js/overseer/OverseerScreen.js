@@ -15,17 +15,24 @@ export class OverseerScreen {
     this._view = new GLView()
     this._element.appendChild(this._view.element)
     this._map = null
+
     this._renderer = new GLKitRenderingSystem(this._view)
-    this._systems = [
-      new GLKitTexture2DSystem(this._view),
-      this._renderer
-    ]
+    this._systems = this._initializeSystems()
 
     this.updateScreenSize = this.updateScreenSize.bind(this)
     window.addEventListener('resize', this.updateScreenSize)
     this.updateScreenSize()
 
     this._manager = null
+  }
+
+  _initializeSystems () {
+    let texture2DSystem = new GLKitTexture2DSystem(this._view)
+
+    return [
+      texture2DSystem,
+      this._renderer
+    ]
   }
 
   get width () {
@@ -66,6 +73,12 @@ export class OverseerScreen {
     ) {
       this._view.width = this._element.offsetWidth
       this._view.height = this._element.offsetHeight
+      this._renderer.viewport = {
+        left: 0,
+        bottom: 0,
+        width: this.width,
+        height: this.height
+      }
     }
   }
 

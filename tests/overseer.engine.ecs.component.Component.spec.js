@@ -1,89 +1,43 @@
 /* eslint-env jest */
 
 import {
-  Manager, Entity, Component,
-  DuplicatedComponentError, InvalidComponentEntityError
+  Manager, Entity, Component
 } from '@overseer/engine/ecs'
 
-describe('overseer.engine.ecs.component.Component', function () {
-  describe('#constructor', function () {
-    it('allow to create a component into a manager', function () {
-      const manager = new Manager()
-      const entity = new Entity(manager, 'myEntity')
-      const component = new Component(manager, entity, 'myComponent')
+describe('@overseer.engine.ecs.component.Component', function () {
+  @Component({ type: 'component' })
+  class MyComponent { }
 
-      expect([...manager.entities()]).toEqual(['myEntity'])
-      expect(component.identifier).toBe('myComponent')
-      expect(component.manager).toBe(manager)
-      expect(component.entity).toBe('myEntity')
-      expect(component.type).toBe(Component.typeof(Component))
-      expect(component.clazz).toBe(Component)
-      expect(component.serialize()).toEqual({
-        identifier: 'myComponent',
-        entity: 'myEntity',
-        type: 'component',
-        version: 0,
-        state: { }
-      })
-      expect([...manager.components()]).toEqual([component])
-      expect([...manager.components(Component)]).toEqual([component])
-    })
+  it('is a mixin that add component utilities to any class', function () {
+    class Test {}
+    expect(Component.is(Test)).toBeFalsy()
+    expect(Component.typeof(Test)).toBeUndefined()
+    expect(Component.constructorIdentifier(Test)).toBeUndefined()
 
-    it('throw a DuplicatedComponentError if the component to add already exists in the current manager', function () {
-      const manager = new Manager()
-      const entity = new Entity(manager, 'myEntity')
-      Reflect.construct(Component, [manager, entity, 'myComponent'])
+    const TestComponent = Component({
+      type: 'component', constructorIdentifier: 'id'
+    })(Test)
+    expect(Component.is(TestComponent)).toBeTruthy()
+    expect(Component.typeof(TestComponent)).toBe('component')
+    expect(Component.constructorIdentifier(TestComponent)).toBe('id')
 
-      expect(
-        _ => new Component(manager, entity, 'myComponent')
-      ).toThrow(DuplicatedComponentError)
-    })
+    const manager = new Manager()
+    const entity = new Entity(manager)
+    const instance = new TestComponent(manager, entity)
 
-    it('throw a InvalidComponentEntityError if the component is instanciated for an entity that does not exists in the manager', function () {
-      const manager = new Manager()
-
-      expect(
-        _ => new Component(manager, 'myEntity', 'myComponent')
-      ).toThrow(InvalidComponentEntityError)
-    })
-
-    // @Todo test already existing that type of component for a given entity
+    expect(instance).toBeInstanceOf(Test)
+    expect(Component.is(instance)).toBeTruthy()
   })
 
-  describe('#update', function () {
-    it('set a field of its type', function () {
-      const manager = new Manager()
-      const entity = new Entity(manager, 'myEntity')
-      const base = new Component(manager, entity, 'myComponent')
+  it('revoke the access of the component when the component is destroyed', function () {
+    const manager = new Manager()
+    const entity = new Entity(manager)
+    const instance = new MyComponent(manager, entity)
 
-      expect(base.state.value).toBe(undefined)
+    expect(_ => instance.version).not.toThrow()
 
-      base.update({ value: 5 })
-      expect(base.state.value).toBe(5)
+    manager.deleteComponent(instance)
 
-      base.update(x => {
-        x.value *= 5
-      })
-      expect(base.state.value).toBe(25)
-    })
-
-    it('update the version of the component', function () {
-      const manager = new Manager()
-      const entity = new Entity(manager, 'myEntity')
-      const base = new Component(manager, entity, 'myComponent')
-
-      let prevVersion = base.version
-
-      base.update({ value: 5 })
-
-      expect(prevVersion).not.toBe(base.version)
-
-      prevVersion = base.version
-      base.update(x => {
-        x.value *= 5
-      })
-
-      expect(prevVersion).not.toBe(base.version)
-    })
+    expect(_ => instance.version).toThrow()
   })
 })

@@ -10,7 +10,8 @@
           "@shaders": "./src/shaders",
           "@glkit": "./src/js/glkit",
           "@errors": "./src/js/errors",
-          "@overseer": "./src/js/overseer"
+          "@overseer": "./src/js/overseer",
+          "@utils": "./src/js/utils"
         },
         "extensions": [".js", ".json", ".jsx", ".css", ".sass", ".frag", ".vert"]
       }

@@ -1,16 +1,16 @@
 {
-  "source": "./src",
+  "source": "./src/js/errors",
   "destination": "./doc",
   "plugins": [
     {
       "name": "esdoc-standard-plugin",
       "option": {
-        "lint": {"enable": false},
-        "coverage": {"enable": false},
+        "lint": {"enable": true},
+        "coverage": {"enable": true},
         "accessor": {"access": ["public", "protected", "private"], "autoPrivate": true},
         "undocumentIdentifier": {"enable": true},
         "unexportedIdentifier": {"enable": true},
-        "typeInference": {"enable": false}
+        "typeInference": {"enable": true}
       }
     },
     {

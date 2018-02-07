@@ -1,16 +1,16 @@
-import { Component, UUIDv4Component } from '@overseer/engine/ecs'
+import { Component } from '@overseer/engine/ecs'
 import { ColorRGBA, Vector2f } from '@glkit'
 
 /**
 * An area of the screen to render.
 */
-@Component.Type('overseer:engine:viewport')
-export class Viewport extends UUIDv4Component {
+@Component({ type: 'overseer:engine:viewport' })
+export class Viewport {
   /**
   * @see Component#initialize
   */
   initialize () {
-    return {
+    this.state = {
       left: 0,
       right: 0,
       bottom: 0,
@@ -36,7 +36,7 @@ export class Viewport extends UUIDv4Component {
   */
   set background (background) {
     this.state.background = background
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -59,7 +59,7 @@ export class Viewport extends UUIDv4Component {
   */
   set camera (camera) {
     this.state.camera = Component.identifier(camera)
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -82,7 +82,7 @@ export class Viewport extends UUIDv4Component {
     this.state.left = value - hwidth
     this.state.right = value + hwidth
 
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -105,7 +105,7 @@ export class Viewport extends UUIDv4Component {
     this.state.bottom = value - hheight
     this.state.top = value + hheight
 
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -133,7 +133,7 @@ export class Viewport extends UUIDv4Component {
     this.state.left = x - hwidth
     this.state.right = x + hwidth
 
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -157,7 +157,7 @@ export class Viewport extends UUIDv4Component {
     this.state.left = centerX - hwidth
     this.state.right = centerX + hwidth
 
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -181,7 +181,7 @@ export class Viewport extends UUIDv4Component {
     this.state.bottom = centerY - hheight,
     this.state.top = centerY + hheight
 
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -204,7 +204,7 @@ export class Viewport extends UUIDv4Component {
     }
 
     this.state.left = value
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -227,7 +227,7 @@ export class Viewport extends UUIDv4Component {
     }
 
     this.state.right = value
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -250,7 +250,7 @@ export class Viewport extends UUIDv4Component {
     }
 
     this.state.bottom = value
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -273,6 +273,6 @@ export class Viewport extends UUIDv4Component {
     }
 
     this.state.top = value
-    this.markUpdate()
+    this.touch()
   }
 }

@@ -1,13 +1,8 @@
-import uuid from 'uuid/v4'
-import { Entity } from './entity'
-import { Component } from './component'
+import { InvalidParameterError } from '@errors'
 
-import {
-  DuplicatedEntityError,
-  DuplicatedComponentError,
-  InvalidComponentManagerError,
-  InvalidComponentEntityError
-} from './errors'
+import { Identifier } from './Identifier'
+import { Entity } from './Entity'
+import { Component } from './Component'
 
 const EMPTY_MAP = new Map()
 
@@ -19,7 +14,7 @@ export class Manager {
   * Create a new Entity-Component-System (ECS) manager.
   */
   constructor () {
-    this._identifier = uuid()
+    this._identifier = Identifier.create()
     this._entities = new Set()
     this._systems = new Set()
     this._components = new Map()
@@ -87,7 +82,7 @@ export class Manager {
   *
   * @param {Entity|any} entity - The entity, or the identifier of the entity to add.
   *
-  * @throws {DuplicatedEntityError} If the entity to add already exists in this manager.
+  * @throws {InvalidParameterError} If the entity to add already exists in this manager.
   *
   * @return {Manager} The current manager instance for chaining purpose.
   */
@@ -95,7 +90,13 @@ export class Manager {
     const identifier = Entity.identifier(entity)
 
     if (this._entities.has(identifier)) {
-      throw new DuplicatedEntityError(this, identifier)
+      throw new InvalidParameterError(
+        'entity', entity,
+        [
+          `Unnable to add an entity identified as ${identifier} because `,
+          `the identifier ${identifier} was already taken by another entity.`
+        ].join('')
+      )
     } else {
       this._managerWillAddEntity(identifier)
       this._entities.add(identifier)
@@ -226,8 +227,8 @@ export class Manager {
   *
   * @param {Component} component - Component to add.
   *
-  * @throws {DuplicatedComponentError} When the component as an id that is already taken by another manager component.
-  * @throws {InvalidComponentManagerError} When the component was instanciated for another manager.
+  * @throws {InvalidParameterError} When the component as an id that is already taken by another manager component.
+  * @throws {InvalidParameterError} When the component was instanciated for another manager.
   *
   * @return {Manager} The current manager instance for chaining purpose.
   *
@@ -235,16 +236,33 @@ export class Manager {
   */
   addComponent (component) {
     if (component.manager !== this) {
-      throw new InvalidComponentManagerError(this, component)
+      throw new InvalidParameterError(
+        'component', component,
+        'Unnable to add a component that belongs to another manager.'
+      )
     }
 
     if (this._components.get(component.identifier) !== component) {
       if (this._components.has(component.identifier)) {
-        throw new DuplicatedComponentError(this, component)
+        throw new InvalidParameterError(
+          'component', component,
+          [
+            `Unnable to add a component identified by ${component.identifier} `,
+            `because the identifier ${component.identifier} was already taken `,
+            'by another component.'
+          ].join('')
+        )
       }
 
       if (!this._entities.has(component.entity)) {
-        throw new InvalidComponentEntityError(this, component)
+        throw new InvalidParameterError(
+          'component', component,
+          [
+            'Unnable to add a component that belongs to the entity ',
+            `${component.entity} because the entity ${component.entity} `,
+            'does not exists in this manager.'
+          ].join('')
+        )
       }
 
       if (!this._componentIndex.has(component.type)) {
@@ -318,13 +336,16 @@ export class Manager {
   _deleteComponent (component) {
     if (this._components.has(Component.identifier(component))) {
       const removed = this._components.get(Component.identifier(component))
+      const identifier = removed.identifier
+
       this._managerWillDeleteComponent(removed)
-      this._components.delete(removed.identifier)
       this._componentIndex.get(removed.type).delete(removed.entity)
 
       if (this._componentIndex.get(removed.type).size <= 0) {
         this._componentIndex.delete(removed.type)
       }
+
+      this._components.delete(removed.identifier)
 
       this._managerDidDeleteComponent(removed)
     }

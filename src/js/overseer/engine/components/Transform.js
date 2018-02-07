@@ -1,12 +1,12 @@
-import { Component, UUIDv4Component } from '@overseer/engine/ecs'
+import { Component } from '@overseer/engine/ecs'
 import { Length } from '@overseer/engine/Length'
 import { Matrix3f } from '@glkit'
 
 /**
 * Assign a transformation matrix to the current entity.
 */
-@Component.Type('overseer:engine:transform')
-export class Transform extends UUIDv4Component {
+@Component({ type: 'overseer:engine:transform' })
+export class Transform {
   /**
   * Compute the unit scale matrix between two Transform component.
   *
@@ -29,7 +29,7 @@ export class Transform extends UUIDv4Component {
     this._computeLocalToWorld = this._computeLocalToWorld.bind(this)
     this._computeWorldToLocal = this._computeWorldToLocal.bind(this)
 
-    return {
+    this.state = {
       parent: null,
       transformation: Matrix3f.identity,
       unit: new Length('1m'),
@@ -126,7 +126,7 @@ export class Transform extends UUIDv4Component {
   set transformation (transformation) {
     this.state.transformation = transformation
     this._updateLocalToWorld()
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -152,7 +152,7 @@ export class Transform extends UUIDv4Component {
     )
 
     this._updateLocalToWorld()
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -180,7 +180,7 @@ export class Transform extends UUIDv4Component {
     )
 
     this._updateLocalToWorld()
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -205,7 +205,7 @@ export class Transform extends UUIDv4Component {
     )
 
     this._updateLocalToWorld()
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -239,7 +239,7 @@ export class Transform extends UUIDv4Component {
       this.state.parent = identifier
       this.parent.addChild(this)
       this._updateLocalToWorld()
-      this.markUpdate()
+      this.touch()
     }
   }
 
@@ -260,7 +260,7 @@ export class Transform extends UUIDv4Component {
   set unit (unit) {
     this.state.unit = new Length(unit)
     this._updateLocalToWorld()
-    this.markUpdate()
+    this.touch()
   }
 
   /**
@@ -276,7 +276,7 @@ export class Transform extends UUIDv4Component {
     )
 
     this._updateLocalToWorld()
-    this.markUpdate()
+    this.touch()
 
     return this
   }
@@ -294,7 +294,7 @@ export class Transform extends UUIDv4Component {
     )
 
     this._updateLocalToWorld()
-    this.markUpdate()
+    this.touch()
 
     return this
   }
@@ -312,7 +312,7 @@ export class Transform extends UUIDv4Component {
     )
 
     this._updateLocalToWorld()
-    this.markUpdate()
+    this.touch()
 
     return this
   }
@@ -327,7 +327,7 @@ export class Transform extends UUIDv4Component {
     if (!this.state.children.has(identifier)) {
       this.state.children.add(identifier)
       this.manager.getComponent(identifier).parent = this
-      this.markUpdate()
+      this.touch()
     }
   }
 
@@ -341,7 +341,7 @@ export class Transform extends UUIDv4Component {
     if (this.state.children.has(identifier)) {
       this.state.children.delete(identifier)
       this.manager.getComponent(identifier).parent = null
-      this.markUpdate()
+      this.touch()
     }
   }
 }

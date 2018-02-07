@@ -1,3 +1,5 @@
+import { NotImplementedError } from '@errors'
+
 export class Vector {
   /**
   * Get the dimension of this vector.
@@ -5,7 +7,7 @@ export class Vector {
   * @return {number} The dimension of this vector.
   */
   get dimension () {
-    throw new Error('Vector[get dimension] : number is not implemented.')
+    throw new NotImplementedError(Vector, 'get dimension')
   }
 
   /**
@@ -16,7 +18,7 @@ export class Vector {
   * @return {number} The value of the component.
   */
   get (index) {
-    throw new Error('Vector.get(index : number) : number is not implemented')
+    throw new NotImplementedError(Vector, 'get')
   }
 
   /**
@@ -28,7 +30,7 @@ export class Vector {
   * @return {Vector} An updated instance of this vector.
   */
   set (index, value) {
-    throw new Error('Vector.set(index : number, value : number) : Vector is not implemented')
+    throw new NotImplementedError(Vector, 'set')
   }
 
   /**
@@ -51,7 +53,7 @@ export class Vector {
   * @return {Vector} A new updated instance of this vector.
   */
   add (...params) {
-    throw new Error('Vector.add(...params) : Vector is not implemented')
+    throw new NotImplementedError(Vector, 'add')
   }
 
   /**
@@ -65,7 +67,7 @@ export class Vector {
   * @return {Vector} A new updated instance of this vector.
   */
   sub (...params) {
-    throw new Error('Vector.sub(...params) : Vector is not implemented')
+    throw new NotImplementedError(Vector, 'sub')
   }
 
   /**
@@ -76,7 +78,7 @@ export class Vector {
   * @return {Vector} This instance for chaining purpose.
   */
   mul (value) {
-    throw new Error('Vector.mul(value : number|Matrix) : Vector is not implemented')
+    throw new NotImplementedError(Vector, 'mul')
   }
 
   /**
@@ -87,7 +89,7 @@ export class Vector {
   * @return {Vector} This instance for chaining purpose.
   */
   div (scalar) {
-    throw new Error('Vector.div(value : number) : Vector is not implemented')
+    throw new NotImplementedError(Vector, 'div')
   }
 
   /**
@@ -101,7 +103,7 @@ export class Vector {
   * @return {number} The result of the dot product.
   */
   dot (...params) {
-    throw new Error('Vector.dot(...params) : number is not implemented')
+    throw new NotImplementedError(Vector, 'dot')
   }
 
   /**
@@ -119,7 +121,7 @@ export class Vector {
   * @return {number} The squared length of this vector.
   */
   get squaredLength () {
-    throw new Error('Vector[get squaredLength] : number is not implemented')
+    throw new NotImplementedError(Vector, 'get squaredLength')
   }
 
   /**
@@ -208,7 +210,7 @@ export class Vector {
   * @return {boolean} True if this vector is equal to the other vector.
   */
   equal (...params) {
-    throw new Error('Vector.equal(...params) : boolean is not implemented')
+    throw new NotImplementedError(Vector, 'equal')
   }
 
   /**
@@ -219,7 +221,7 @@ export class Vector {
   * @return {Vector} An updated instance of this vector.
   */
   map (mapper) {
-    throw new Error('Vector.map(mapper : function (value : number, index : number, array : Array<number>) : number) : Vector is not implemented')
+    throw new NotImplementedError(Vector, 'map')
   }
 
   /**
@@ -231,6 +233,6 @@ export class Vector {
   * @return {any} The result of the reduction.
   */
   reduce (...params) {
-    throw new Error('Vector.reduce(reducer : function (a : any, b : any) : any, base : any) : any is not implemented')
+    throw new NotImplementedError(Vector, 'reduce')
   }
 }

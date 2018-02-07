@@ -1,5 +1,8 @@
+import { InvalidParameterError } from '@errors'
+import { Identifier } from './Identifier'
+
 /**
-* An Entity-Component-System (ECS) entity.
+* An entity.
 *
 * Contains useful helpers in order to retrieve, query and delete entities.
 */
@@ -7,24 +10,38 @@ export class Entity {
   /**
   * Return an entity identifier.
   *
-  * @param {Entity|any} entity - An entity or an entity identifier.
+  * @param {Entity|Identifier} value - An entity or an entity identifier.
   *
-  * @return {any} An entity identifier.
+  * @return {Identifier} An entity identifier.
   */
-  static identifier (entity) {
-    return (entity instanceof Entity) ? entity.identifier : entity
+  static identifier (value) {
+    if (value instanceof Entity) {
+      return value._identifier
+    } else if (Identifier.is(value)) {
+      return value
+    } else {
+      throw new InvalidParameterError(
+        'value', value,
+        [
+          `Unnable to fetch the identifier of '${value}', because `,
+          `'${value}' is nor a valid identifier nor an entity.`
+        ].join('')
+      )
+    }
   }
 
   /**
   * Create an entity and register it into a manager.
   *
   * @param {Manager} manager - The entity related manager.
-  * @param {any} identifier - The entity identifier.
+  * @param {Identifier} [identifier=Identifier.create()] - The entity identifier.
   */
   constructor (manager, identifier) {
-    this._identifier = identifier
+    this._identifier = identifier || Identifier.create()
     this._manager = manager
-    this._manager.addEntity(this)
+    if (!this._manager.hasEntity(this)) {
+      this._manager.addEntity(this)
+    }
   }
 
   /**
@@ -97,5 +114,17 @@ export class Entity {
   */
   * components () {
     yield * this._manager.componentsOf(this._identifier)
+  }
+
+  /**
+  * @see Object#toString
+  */
+  toString () {
+    return [
+      'Entity {',
+      `  identifier: ${this._identifier},`,
+      `  manager: ${this._manager},`,
+      '}'
+    ].join('\n')
   }
 }

@@ -1,3 +1,5 @@
+import { NotImplementedError } from '@errors'
+
 function fillup (str, length) {
   if (str.length >= length) {
     return str
@@ -20,7 +22,7 @@ export class Matrix {
   * @return {number} The width of the matrix.
   */
   get width () {
-    throw new Error('Matrix#width is not implemented.')
+    throw new NotImplementedError(Matrix, 'get width')
   }
 
   /**
@@ -29,7 +31,7 @@ export class Matrix {
   * @return {number} The height of the matrix.
   */
   get height () {
-    throw new Error('Matrix#height is not implemented.')
+    throw new NotImplementedError(Matrix, 'get height')
   }
 
   /**
@@ -41,7 +43,7 @@ export class Matrix {
   * @return {number} The value of the cell (column, row)
   */
   get (column, row) {
-    throw new Error('Matrix#get(column : number, row : number) : number is not implemented.')
+    throw new NotImplementedError(Matrix, 'get')
   }
 
   /**
@@ -54,7 +56,7 @@ export class Matrix {
   * @return {Matrix} An updated instance of this matrix.
   */
   set (column, row, value) {
-    throw new Error('Matrix#set(column : number, row : number, value : number) : Matrix is not implemented.')
+    throw new NotImplementedError(Matrix, 'set')
   }
 
   /**
@@ -65,7 +67,7 @@ export class Matrix {
   * @return {Matrix} An updated instance of this matrix.
   */
   add (other) {
-    throw new Error('Matrix#add(other : Matrix) : Matrix is not implemented.')
+    throw new NotImplementedError(Matrix, 'add')
   }
 
   /**
@@ -76,7 +78,7 @@ export class Matrix {
   * @return {Matrix} An updated instance of this matrix.
   */
   sub (other) {
-    throw new Error('Matrix#subtract(other : Matrix) : Matrix is not implemented.')
+    throw new NotImplementedError(Matrix, 'other')
   }
 
   /**
@@ -87,7 +89,7 @@ export class Matrix {
   * @return {Matrix} An updated instance of this matrix.
   */
   div (scalar) {
-    throw new Error('Matrix#div(scalar : number) : Matrix is not implemented.')
+    throw new NotImplementedError(Matrix, 'div')
   }
 
   /**
@@ -98,7 +100,7 @@ export class Matrix {
   * @return {Matrix|Vector} An updated instance of this matrix.
   */
   mul (other) {
-    throw new Error('Matrix#mul(other : Matrix|Vector|number) : Matrix|Vector is not implemented.')
+    throw new NotImplementedError(Matrix, 'mul')
   }
 
   /**
@@ -107,7 +109,7 @@ export class Matrix {
   * @return {number} The determinant of the matrix.
   */
   get determinant () {
-    throw new Error('Matrix#get determinant() : number is not implemented.')
+    throw new NotImplementedError(Matrix, 'get determinant')
   }
 
   /**
@@ -118,7 +120,7 @@ export class Matrix {
   * @return {Matrix} An updated instance of this matrix.
   */
   transpose () {
-    throw new Error('Matrix#transpose() : Matrix is not implemented.')
+    throw new NotImplementedError(Matrix, 'transpose')
   }
 
   /**
@@ -129,7 +131,7 @@ export class Matrix {
   * @return {Matrix} An updated instance of this matrix.
   */
   invert () {
-    throw new Error('Matrix#invert() : Matrix is not implemented.')
+    throw new NotImplementedError(Matrix, 'invert')
   }
 
   /**
@@ -141,7 +143,7 @@ export class Matrix {
   * @return {Matrix|Vector} An updated instance of this matrix or the vector that represent the row.
   */
   row (row, ...values) {
-    throw new Error('Matrix#row(row : number, ...values) : Matrix|Vector is not implemented.')
+    throw new NotImplementedError(Matrix, 'row')
   }
 
   /**
@@ -153,7 +155,7 @@ export class Matrix {
   * @return {Matrix|Vector} An updated instance of this matrix or the vector that represent the column.
   */
   column (column, ...values) {
-    throw new Error('Matrix#column(column : number, ...values) : Matrix|Vector is not implemented.')
+    throw new NotImplementedError(Matrix, 'column')
   }
 
   /**

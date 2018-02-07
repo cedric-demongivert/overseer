@@ -1,5 +1,0 @@
-export { ManagerError } from './ManagerError'
-export { DuplicatedEntityError } from './DuplicatedEntityError'
-export { DuplicatedComponentError } from './DuplicatedComponentError'
-export { InvalidComponentManagerError } from './InvalidComponentManagerError'
-export { InvalidComponentEntityError } from './InvalidComponentEntityError'

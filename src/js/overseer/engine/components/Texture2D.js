@@ -1,13 +1,13 @@
-import { Component, UUIDv4Component } from '@overseer/engine/ecs'
+import { Component } from '@overseer/engine/ecs'
 import { GLEnum } from '@glkit/gl/GLEnum'
 
-@Component.Type('overseer:engine:texture-2d')
-export class Texture2D extends UUIDv4Component {
+@Component({ type: 'overseer:engine:texture-2d' })
+export class Texture2D {
   /**
   * @see Component#initialize
   */
   initialize () {
-    return {
+    this.state = {
       width: 0,
       height: 0,
       magnificationFilter: GLEnum.LINEAR,
@@ -26,7 +26,7 @@ export class Texture2D extends UUIDv4Component {
 
   set width (value) {
     this.state.width = value
-    this.markUpdate()
+    this.touch()
   }
 
   get height () {
@@ -35,7 +35,7 @@ export class Texture2D extends UUIDv4Component {
 
   set height (value) {
     this.state.height = value
-    this.markUpdate()
+    this.touch()
   }
 
   get magnificationFilter () {
@@ -44,7 +44,7 @@ export class Texture2D extends UUIDv4Component {
 
   set magnificationFilter (value) {
     this.state.magnificationFilter = value
-    this.markUpdate()
+    this.touch()
   }
 
   get mignificationFilter () {
@@ -53,7 +53,7 @@ export class Texture2D extends UUIDv4Component {
 
   set mignificationFilter (value) {
     this.state.mignificationFilter = value
-    this.markUpdate()
+    this.touch()
   }
 
   get wrapS () {
@@ -62,7 +62,7 @@ export class Texture2D extends UUIDv4Component {
 
   set wrapS (value) {
     this.state.wrapS = value
-    this.markUpdate()
+    this.touch()
   }
 
   get wrapT () {
@@ -71,7 +71,7 @@ export class Texture2D extends UUIDv4Component {
 
   set wrapT (value) {
     this.state.wrapT = value
-    this.markUpdate()
+    this.touch()
   }
 
   get wrapX () {
@@ -80,7 +80,7 @@ export class Texture2D extends UUIDv4Component {
 
   set wrapX (value) {
     this.state.wrapS = value
-    this.markUpdate()
+    this.touch()
   }
 
   get wrapY () {
@@ -89,7 +89,7 @@ export class Texture2D extends UUIDv4Component {
 
   set wrapY (value) {
     this.state.wrapT = value
-    this.markUpdate()
+    this.touch()
   }
 
   get content () {
@@ -98,7 +98,7 @@ export class Texture2D extends UUIDv4Component {
 
   set content (value) {
     this.state.content = value
-    this.markUpdate()
+    this.touch()
   }
 
   get format () {
@@ -107,7 +107,7 @@ export class Texture2D extends UUIDv4Component {
 
   set format (value) {
     this.state.format = value
-    this.markUpdate()
+    this.touch()
   }
 
   get type () {
@@ -116,7 +116,7 @@ export class Texture2D extends UUIDv4Component {
 
   set type (value) {
     this.state.type = value
-    this.markUpdate()
+    this.touch()
   }
 }
 
