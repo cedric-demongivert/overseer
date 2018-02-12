@@ -4,6 +4,8 @@ import { Identifier } from './Identifier'
 import { Entity } from './Entity'
 import { Component } from './Component'
 
+import { Systems } from './Systems'
+
 const EMPTY_MAP = new Map()
 
 /**
@@ -16,7 +18,7 @@ export class Manager {
   constructor () {
     this._identifier = Identifier.create()
     this._entities = new Set()
-    this._systems = new Set()
+    this._systems = new Systems(this)
     this._components = new Map()
     this._componentIndex = new Map()
   }
@@ -38,13 +40,7 @@ export class Manager {
   * @return {Manager} The current manager instance for chaining purpose.
   */
   addSystem (system) {
-    if (!this._systems.has(system)) {
-      this._systems.add(system)
-      system.attach(this)
-
-      system.initialize()
-    }
-
+    this._systems.add(system)
     return this
   }
 
@@ -67,12 +63,7 @@ export class Manager {
   * @return {Manager} The current manager instance for chaining purpose.
   */
   deleteSystem (system) {
-    if (this._systems.has(system)) {
-      system.destroy()
-
-      this._systems.delete(system)
-      system.detach()
-    }
+    this._systems.delete(system)
 
     return this
   }
@@ -435,11 +426,7 @@ export class Manager {
   */
   update (delta) {
     this._managerWillUpdate(delta)
-
-    for (const system of this._systems) {
-      system.update(delta)
-    }
-
+    this._systems.update(delta)
     this._managerDidUpdate(delta)
 
     return this

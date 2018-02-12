@@ -1,10 +1,12 @@
 import { System, Component } from '@overseer/engine/ecs'
 import { Texture2D } from '@overseer/engine/components'
-import { GLContext, GLTexture2D } from '@glkit'
+import { GLKitTexture2DBank } from '@overseer/engine/services'
+import { GLContext } from '@glkit'
 
 /**
 * A system that manage 2d textures for a context.
 */
+@System.provide(* function (system) { yield system.Service })
 export class GLKitTexture2DSystem extends System {
   /**
   * Create a new GLKitTexture2DSystem for a particular glkit context.
@@ -14,11 +16,22 @@ export class GLKitTexture2DSystem extends System {
   constructor (context) {
     super()
     this._gl = GLContext.context(context)
-    this._textures = new Map()
+    this.Service = GLKitTexture2DBank.of(this._gl)
+    this._service = new this.Service()
+  }
 
-    this._gl.getTexture = (component) => {
-      return this._textures.get(Component.identifier(component))
-    }
+  /**
+  * @return {GLContext} The context related to this system.
+  */
+  get context () {
+    return this._gl
+  }
+
+  /**
+  * @return {this.Service} The holded service instance.
+  */
+  getService () {
+    return this._service
   }
 
   /**
@@ -26,9 +39,7 @@ export class GLKitTexture2DSystem extends System {
   */
   initialize () {
     for (const texture of this.manager.components(Texture2D)) {
-      const glTexture = new GLTexture2D(this._gl)
-      this._updateTexture(glTexture, texture)
-      this._textures.set(texture.identifier, glTexture)
+      this._service.add(texture)
     }
   }
 
@@ -37,19 +48,16 @@ export class GLKitTexture2DSystem extends System {
   */
   managerDidAddComponent (component) {
     if (component.type === Component.typeof(Texture2D)) {
-      const glTexture = new GLTexture2D(this._gl)
-      this._updateTexture(glTexture, component)
-      this._textures.set(component.identifier, glTexture)
+      this._service.add(component)
     }
   }
 
   /**
-  * @see System#managerDidDeleteComponent
+  * @see System#managerWillDeleteComponent
   */
-  managerDidDeleteComponent (component) {
+  managerWillDeleteComponent (component) {
     if (component.type === Component.typeof(Texture2D)) {
-      this._textures.get(component.identifier).destroy()
-      this._textures.delete(component.identifier)
+      this._service.delete(component)
     }
   }
 
@@ -57,50 +65,15 @@ export class GLKitTexture2DSystem extends System {
   * @see System#update
   */
   update () {
-    for (const [identifier, glTexture] of this._textures.entries()) {
-      const component = this.manager.getComponent(identifier)
-
-      if (component.version !== glTexture.$version) {
-        this._updateTexture(glTexture, component)
-      }
+    for (const texture of this.manager.components(Texture2D)) {
+      this._service.update(texture)
     }
-  }
-
-  /**
-  * Update a glkit texture from a texture component raw data.
-  *
-  * @param {GLTexture2D} glTexture - A glkit texture to update.
-  * @param {Texture2D} texture - A component texture to commit.
-  */
-  _updateTexture (glTexture, texture) {
-    glTexture.magnificationFilter = texture.magnificationFilter
-    glTexture.mignificationFilter = texture.mignificationFilter
-    glTexture.wrapS = texture.wrapS
-    glTexture.wrapT = texture.wrapT
-
-    if (texture.content == null || texture.content instanceof ArrayBuffer) {
-      glTexture.data(
-        0, texture.format, texture.width, texture.height, 0,
-        texture.format, texture.type, texture.content
-      )
-    } else {
-      glTexture.data(
-        0, texture.format, texture.format, texture.type, texture.content
-      )
-    }
-
-    glTexture.$version = texture.version
   }
 
   /**
   * @see System#destroy
   */
   destroy () {
-    for (const texture of this._textures.values()) {
-      texture.destroy()
-    }
-
-    this._textures.clear()
-    delete this._gl.getTexture
+    this._service.clear()
   }
 }

@@ -1,7 +1,47 @@
+const _services = Symbol('System#_services')
+
 /**
 * An engine system.
 */
 export class System {
+  /**
+  * Allow to define which services a system can provide.
+  *
+  * @param {Iterable<Class>|function (system : System) : Iterable<Class>} services - Services that the current system can provide.
+  *
+  * @return {function (clazz : Class) : Class} A decorator.
+  */
+  static provide (services) {
+    return function (Class) {
+      Object.defineProperty(Class, _services, {
+        value: (typeof services[Symbol.iterator] === 'function') ? [...services]
+                                                                 : services,
+        configurable: true,
+        enumerable: false,
+        writable: false
+      })
+
+      return Class
+    }
+  }
+
+  /**
+  * Return an iterator over all services provided by a System.
+  *
+  * @param {System} system - A system to check.
+  *
+  * @return {Iterator<Class>} An iterator over all services provided by the given system.
+  */
+  static * services (system) {
+    const services = system.constructor[_services]
+
+    if (typeof services === 'function') {
+      yield * services(system)
+    } else {
+      yield services
+    }
+  }
+
   /**
   * Create a new empty system.
   */
@@ -137,5 +177,16 @@ export class System {
     }
 
     return this
+  }
+
+  /**
+  * Return a service provided by this system.
+  *
+  * @param {Class} service - The service to return.
+  *
+  * @return {any} The service instance.
+  */
+  getService (service) {
+    return undefined
   }
 }
