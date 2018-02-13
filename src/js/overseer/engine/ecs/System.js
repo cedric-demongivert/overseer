@@ -35,7 +35,9 @@ export class System {
   static * services (system) {
     const services = system.constructor[_services]
 
-    if (typeof services === 'function') {
+    if (services == null) {
+
+    } else if (typeof services === 'function') {
       yield * services(system)
     } else {
       yield services
@@ -56,6 +58,10 @@ export class System {
   */
   get manager () {
     return this._manager
+  }
+
+  service (service) {
+    return this._manager.service(service)
   }
 
   /**

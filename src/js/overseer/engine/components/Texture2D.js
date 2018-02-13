@@ -14,8 +14,8 @@ export class Texture2D {
       mignificationFilter: GLEnum.NEAREST_MIPMAP_LINEAR,
       wrapS: GLEnum.REPEAT,
       wrapT: GLEnum.REPEAT,
-      format: GLEnum.RGBA,
-      type: GLEnum.UNSIGNED_BYTE,
+      colorFormat: GLEnum.RGBA,
+      colorType: GLEnum.UNSIGNED_BYTE,
       content: null
     }
   }
@@ -101,21 +101,21 @@ export class Texture2D {
     this.touch()
   }
 
-  get format () {
-    return this.state.format
+  get colorType () {
+    return this.state.colorType
   }
 
-  set format (value) {
-    this.state.format = value
+  set colorType (value) {
+    this.state.colorType = value
     this.touch()
   }
 
-  get type () {
-    return this.state.type
+  get colorFormat () {
+    return this.state.colorFormat
   }
 
-  set type (value) {
-    this.state.type = value
+  set colorFormat (value) {
+    this.state.colorFormat = value
     this.touch()
   }
 }

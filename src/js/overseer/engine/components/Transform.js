@@ -1,6 +1,6 @@
-import { Component } from '@overseer/engine/ecs'
+import { Component, Relation } from '@overseer/engine/ecs'
 import { Length } from '@overseer/engine/Length'
-import { Matrix3f } from '@glkit'
+import { Matrix3f, Vector2f } from '@glkit'
 
 /**
 * Assign a transformation matrix to the current entity.
@@ -73,7 +73,7 @@ export class Transform {
   * @return {Matrix3f} The local to world transformation matrix.
   */
   _computeWorldToLocal () {
-    const result = this.state.localToWorld.invert()
+    const result = this.localToWorld.invert()
 
     Object.defineProperty(
       this, 'worldToLocal', { value: result, configurable: true }
@@ -176,7 +176,7 @@ export class Transform {
     }
 
     this.state.transformation = this.state.transformation.mul(
-      Matrix3f.translation2D(newPosition.sub(oldPosition))
+      Matrix3f.translate2D(newPosition.sub(oldPosition))
     )
 
     this._updateLocalToWorld()
@@ -201,7 +201,7 @@ export class Transform {
     const oldRotation = this.state.transformation.extract2DRotation()
 
     this.state.transformation = this.state.transformation.mul(
-      Matrix3f.rotation2D(newRotation - oldRotation)
+      Matrix3f.rotate2D(newRotation - oldRotation)
     )
 
     this._updateLocalToWorld()
@@ -213,12 +213,9 @@ export class Transform {
   *
   * @return {Component} The parent transformation if exists.
   */
+  @Relation.one(Transform)
   get parent () {
-    if (this.state.parent != null) {
-      return this.manager.getComponent(this.state.parent)
-    } else {
-      return null
-    }
+    return this.state.parent
   }
 
   /**
@@ -226,9 +223,8 @@ export class Transform {
   *
   * @param {Component} newParent - The new parent transformation.
   */
+  @Relation.one(Transform)
   set parent (newParent) {
-    const identifier = Component.identifier(newParent)
-
     if (identifier !== this.state.parent) {
       if (this.state.parent) {
         const oldParent = this.state.parent

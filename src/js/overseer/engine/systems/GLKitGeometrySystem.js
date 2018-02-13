@@ -3,10 +3,14 @@ import { Geometry } from '@overseer/engine/components'
 import { GLKitGeometryBank } from '@overseer/engine/services'
 import { GLContext } from '@glkit'
 
+function * services (system) {
+  yield system.Service
+}
+
 /**
 * A system that manage geometries for a context.
 */
-@System.provide(* function (system) { yield system.Service })
+@System.provide(services)
 export class GLKitGeometrySystem extends System {
   /**
   * Create a new GLKitGeometrySystem for a particular glkit context.

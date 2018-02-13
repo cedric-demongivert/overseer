@@ -1,7 +1,10 @@
 import { GLView } from '@glkit'
 import {
   GLKitRenderingSystem,
-  GLKitTexture2DSystem
+  GLKitTexture2DSystem,
+  GLKitGeometrySystem,
+  GLKitProgramSystem,
+  GLKitMeshRenderingSystem
 } from './engine'
 
 export class OverseerScreen {
@@ -27,10 +30,11 @@ export class OverseerScreen {
   }
 
   _initializeSystems () {
-    let texture2DSystem = new GLKitTexture2DSystem(this._view)
-
     return [
-      texture2DSystem,
+      new GLKitTexture2DSystem(this._view),
+      new GLKitGeometrySystem(this._view),
+      new GLKitProgramSystem(this._view),
+      new GLKitMeshRenderingSystem(),
       this._renderer
     ]
   }

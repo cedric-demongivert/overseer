@@ -13,6 +13,7 @@ mix.webpackConfig({
 .js('src/js/index.js', 'dist')
 .sass('src/scss/app.scss', 'dist')
 .copy('assets/index.html', 'dist')
+.copy('assets/images', 'dist/images')
 .setPublicPath('dist')
 .sourceMaps(true)
 .disableNotifications()

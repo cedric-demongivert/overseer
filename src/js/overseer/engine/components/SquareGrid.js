@@ -1,4 +1,5 @@
 import { Component } from '@overseer/engine/ecs'
+import { Camera2D } from './Camera2D'
 
 @Component({ type: 'overseer:engine:grid:square' })
 export class SquareGrid {
@@ -36,12 +37,9 @@ export class SquareGrid {
   *
   * @return {Camera2D} A camera.
   */
+  @Relation.one(Camera2D)
   get camera () {
-    if (this.state.camera != null) {
-      return this.manager.getComponent(this.state.camera)
-    } else {
-      return null
-    }
+    return this.state.camera
   }
 
   /**
@@ -49,11 +47,10 @@ export class SquareGrid {
   *
   * @param {Camera2D} camera - The new camera to assign.
   */
+  @Relation.one(Camera2D)
   set camera (camera) {
-    const identifier = (camera) ? Component.identifier(camera) : null
-
-    if (identifier !== this.state.camera) {
-      this.state.camera = identifier
+    if (camera !== this.state.camera) {
+      this.state.camera = camera
       this.touch()
     }
   }

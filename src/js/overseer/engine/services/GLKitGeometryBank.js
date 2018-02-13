@@ -60,7 +60,7 @@ export class GLKitGeometryBank {
   * @return {GLKitGeometryBank} The given bank instance for chaining purpose.
   */
   add (component) {
-    if (!this._textures.has(component.identifier)) {
+    if (!this._buffers.has(component.identifier)) {
       const glArrayBuffer = new GLBuffer.Array(this._gl)
       const glElementBuffer = new GLBuffer.ElementArray(this._gl)
       this._update(glArrayBuffer, glElementBuffer, component)

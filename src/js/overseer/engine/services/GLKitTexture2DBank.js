@@ -109,11 +109,12 @@ export class GLKitTexture2DBank {
     if (texture.content == null || texture.content instanceof ArrayBuffer) {
       glTexture.data(
         0, texture.format, texture.width, texture.height, 0,
-        texture.format, texture.type, texture.content
+        texture.colorFormat, texture.colorType, texture.content
       )
     } else {
       glTexture.data(
-        0, texture.format, texture.format, texture.type, texture.content
+        0, texture.colorFormat, texture.colorFormat, texture.colorType,
+        texture.content
       )
     }
   }
@@ -137,7 +138,7 @@ export class GLKitTexture2DBank {
   * @return {GLTexture2D} A contextualised texture of this bank.
   */
   get (component) {
-    return this._textures.get(component.identifier)
+    return this._textures.get(component.identifier).value
   }
 
   /**

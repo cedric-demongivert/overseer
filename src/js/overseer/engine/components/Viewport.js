@@ -1,5 +1,6 @@
-import { Component } from '@overseer/engine/ecs'
+import { Component, Relation } from '@overseer/engine/ecs'
 import { ColorRGBA, Vector2f } from '@glkit'
+import { Camera2D } from './Camera2D'
 
 /**
 * An area of the screen to render.
@@ -44,12 +45,9 @@ export class Viewport {
   *
   * @return {Component} The current camera component attached to this viewport.
   */
+  @Relation.one(Camera2D)
   get camera () {
-    if (this.state.camera) {
-      return this.manager.getComponent(this.state.camera)
-    } else {
-      return null
-    }
+    return this.state.camera
   }
 
   /**
@@ -57,8 +55,9 @@ export class Viewport {
   *
   * @param {Component|Identifier} camera - The new camera to attach to this viewport.
   */
+  @Relation.one(Camera2D)
   set camera (camera) {
-    this.state.camera = Component.identifier(camera)
+    this.state.camera = camera
     this.touch()
   }
 

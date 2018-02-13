@@ -208,13 +208,13 @@ export class Systems {
   * @return {Iterator<System>} An iterator over all systems of this collection.
   */
   * systems () {
-    yield this._systems
+    yield * this._systems.keys()
   }
 
   /**
   * @see https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Symbol/iterator
   */
   * [Symbol.iterator] () {
-    yield * this._systems
+    yield * this._systems.keys()
   }
 }

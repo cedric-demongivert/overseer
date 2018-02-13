@@ -3,7 +3,7 @@ import { GLEnum } from '@glkit/gl/GLEnum'
 import { Component } from '@overseer/engine/ecs'
 
 /**
-* Allow to create a parent - child dependency between two entities.
+* Define a geometry.
 */
 @Component({ type: 'overseer:engine:geometry' })
 export class Geometry {
@@ -19,6 +19,14 @@ export class Geometry {
   */
   get usage () {
     throw new NotImplementedError(Geometry, 'get usage')
+  }
+
+  get format () {
+    return this.buffers.vertices.format
+  }
+
+  get faces () {
+    return this.buffers.faces.size
   }
 }
 

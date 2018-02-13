@@ -11,7 +11,6 @@ export class OrthographicCamera2D extends Camera2D {
   initialize () {
     this._computeViewToWorld = this._computeViewToWorld.bind(this)
     this._computeWorldToView = this._computeWorldToView.bind(this)
-    this._updateWorldToView()
 
     this.state = {
       left: 0,
@@ -20,6 +19,20 @@ export class OrthographicCamera2D extends Camera2D {
       bottom: 1,
       unit: new Length('3cm')
     }
+  }
+
+  /**
+  * @see Camera2D#get worldToView
+  */
+  get worldToView () {
+    return this._computeWorldToView()
+  }
+
+  /**
+  * @see Camera2D#get viewToWorld
+  */
+  get viewToWorld () {
+    return this._computeViewToWorld()
   }
 
   /**
@@ -305,19 +318,5 @@ export class OrthographicCamera2D extends Camera2D {
 
     this.touch()
     this._updateWorldToView()
-  }
-
-  /**
-  * @see Camera2D#get worldToView
-  */
-  get worldToView () {
-    throw new NotImplementedError(Camera, 'get worldToView')
-  }
-
-  /**
-  * @see Camera2D#get viewToWorld
-  */
-  get viewToWorld () {
-    throw new NotImplementedError(Camera, 'get viewToWorld')
   }
 }

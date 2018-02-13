@@ -175,6 +175,13 @@ export class Manager {
   }
 
   /**
+  * Return a service exposed by a system.
+  */
+  service (service) {
+    return this._systems.service(service)
+  }
+
+  /**
   * Check if a component exists in this manager.
   *
   * @param {...any} params - A component instance, a component identifier or a couple of entity / component type.

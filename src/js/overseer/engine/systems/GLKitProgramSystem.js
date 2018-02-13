@@ -1,6 +1,6 @@
 import { System, Component } from '@overseer/engine/ecs'
-import { Texture2D } from '@overseer/engine/components'
-import { GLKitTexture2DBank } from '@overseer/engine/services'
+import { Program } from '@overseer/engine/components'
+import { GLKitProgramBank } from '@overseer/engine/services'
 import { GLContext } from '@glkit'
 
 function * services (system) {
@@ -8,19 +8,19 @@ function * services (system) {
 }
 
 /**
-* A system that manage 2d textures for a context.
+* A system that manage programs for a context.
 */
 @System.provide(services)
-export class GLKitTexture2DSystem extends System {
+export class GLKitProgramSystem extends System {
   /**
-  * Create a new GLKitTexture2DSystem for a particular glkit context.
+  * Create a new GLKitProgramSystem for a particular glkit context.
   *
   * @param {GLContextualised} context - Any GLContextualised object.
   */
   constructor (context) {
     super()
     this._gl = GLContext.context(context)
-    this.Service = GLKitTexture2DBank.of(this._gl)
+    this.Service = GLKitProgramBank.of(this._gl)
     this._service = new this.Service()
   }
 
@@ -42,8 +42,8 @@ export class GLKitTexture2DSystem extends System {
   * @see System#initialize
   */
   initialize () {
-    for (const texture of this.manager.components(Texture2D)) {
-      this._service.add(texture)
+    for (const program of this.manager.components(Program)) {
+      this._service.add(program)
     }
   }
 
@@ -51,7 +51,7 @@ export class GLKitTexture2DSystem extends System {
   * @see System#managerDidAddComponent
   */
   managerDidAddComponent (component) {
-    if (component.type === Component.typeof(Texture2D)) {
+    if (component.type === Component.typeof(Program)) {
       this._service.add(component)
     }
   }
@@ -60,7 +60,7 @@ export class GLKitTexture2DSystem extends System {
   * @see System#managerWillDeleteComponent
   */
   managerWillDeleteComponent (component) {
-    if (component.type === Component.typeof(Texture2D)) {
+    if (component.type === Component.typeof(Program)) {
       this._service.delete(component)
     }
   }
@@ -69,8 +69,8 @@ export class GLKitTexture2DSystem extends System {
   * @see System#update
   */
   update () {
-    for (const texture of this.manager.components(Texture2D)) {
-      this._service.update(texture)
+    for (const program of this.manager.components(Program)) {
+      this._service.update(program)
     }
   }
 
