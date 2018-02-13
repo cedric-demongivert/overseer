@@ -10,15 +10,13 @@ export class Transform {
   /**
   * Compute the unit scale matrix between two Transform component.
   *
-  * @param {Transform} base - The object to scale.
-  * @param {Transform} target - The target object.
+  * @param {Length} base - The object to scale.
+  * @param {Length} target - The target object.
   *
   * @return {Matrix3f} The scale matrix between the two objects.
   */
   static unitScale (base, target) {
-    const targetUnit = target.unit
-    const baseUnit = base.unit
-    const coef = targetUnit.value / baseUnit.in(targetUnit.unit).value
+    const coef = base.in(target.unit) / target.value
     return Matrix3f.scale2D(coef, coef)
   }
 
@@ -35,6 +33,17 @@ export class Transform {
       unit: new Length('1m'),
       children: new Set()
     }
+  }
+
+  /**
+  * Return the unit of the root transform.
+  *
+  * @return {Length} The unit of the root transform.
+  */
+  get rootUnit () {
+    let root = this
+    while (root.parent) { root = root.parent }
+    return root.unit
   }
 
   /**
@@ -58,7 +67,7 @@ export class Transform {
     let result = this.state.transformation
 
     if (this._parent) {
-      result = result.mul(Transform.unitScale(this, this.parent))
+      result = result.mul(Transform.unitScale(this.unit, this.parent.unit))
                      .mul(this.parent.localToWorld)
     }
 
@@ -245,7 +254,7 @@ export class Transform {
   * @return {Length} The unit used length for this object.
   */
   get unit () {
-    return this.state.unit.copy()
+    return this.state.unit.clone()
   }
 
   /**
@@ -325,6 +334,10 @@ export class Transform {
       this.manager.getComponent(identifier).parent = this
       this.touch()
     }
+  }
+
+  * children () {
+    yield * this.state.children
   }
 
   /**

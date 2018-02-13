@@ -36,8 +36,15 @@ export class GLKitMeshRenderingSystem extends System {
       const transform = this.manager.getComponent(mesh.entity, Transform)
       const localToWorld = (transform) ? transform.localToWorld : Matrix3f.identity
       const worldToLocal = (transform) ? transform.worldToLocal : Matrix3f.identity
-      const worldToView = camera.worldToView
-      const viewToWorld = camera.viewToWorld
+      let worldToView = camera.worldToView
+      let viewToWorld = camera.viewToWorld
+
+      if (transform) {
+        const rootUnit = transform.rootUnit
+        const worldToViewScale = Transform.unitScale(rootUnit, camera.unit)
+        worldToView = worldToView.mul(worldToViewScale)
+        viewToWorld = viewToWorld.mul(worldToViewScale.invert())
+      }
 
       glProgram.use()
 

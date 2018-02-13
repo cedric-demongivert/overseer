@@ -18,7 +18,8 @@ Object.assign(view.create(OrthographicCamera2D), {
   left: 0,
   bottom: 0,
   right: overseer.width / 40,
-  top: overseer.height / 40
+  top: overseer.height / 40,
+  unit: '1cm'
 })
 
 view.get(OrthographicCamera2D).centerX = 0
@@ -92,7 +93,10 @@ overseer.map = map
 let lastTime = null
 
 function tick (time) {
-  map.update((lastTime != null) ? lastTime - time : time)
+  const delta = ((lastTime != null) ? lastTime - time : time) / 1000
+  map.update(delta)
+
+  mesh.get(Transform).rotate((delta / 10) * Math.PI)
   overseer.render()
   lastTime = time
 
