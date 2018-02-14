@@ -51,7 +51,7 @@ export class GLKitProgramSystem extends System {
   * @see System#managerDidAddComponent
   */
   managerDidAddComponent (component) {
-    if (component.type === Component.typeof(Program)) {
+    if (Component.isOfType(component, Program)) {
       this._service.add(component)
     }
   }
@@ -60,7 +60,7 @@ export class GLKitProgramSystem extends System {
   * @see System#managerWillDeleteComponent
   */
   managerWillDeleteComponent (component) {
-    if (component.type === Component.typeof(Program)) {
+    if (Component.isOfType(component, Program)) {
       this._service.delete(component)
     }
   }

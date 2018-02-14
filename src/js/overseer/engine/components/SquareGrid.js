@@ -1,7 +1,9 @@
-import { Component } from '@overseer/engine/ecs'
+import { Component, Relation } from '@overseer/engine/ecs'
+import { Length } from '@overseer/engine/Length'
 import { Camera2D } from './Camera2D'
+import { Texture2D } from './Texture2D'
 
-@Component({ type: 'overseer:engine:grid:square' })
+@Component({ type: 'overseer:engine:grid:square-grid' })
 export class SquareGrid {
   /**
   * @see Component#initialize
@@ -9,7 +11,9 @@ export class SquareGrid {
   initialize () {
     this.state = {
       camera: null,
-      length: new Length('3cm')
+      unit: new Length('3cm'),
+      mediumCellTexture: null,
+      largeCellTexture: null
     }
   }
 
@@ -18,8 +22,8 @@ export class SquareGrid {
   *
   * @return {Length} The length of a grid tile.
   */
-  get length () {
-    return this.state.length
+  get unit () {
+    return this.state.unit
   }
 
   /**
@@ -27,9 +31,55 @@ export class SquareGrid {
   *
   * @param {Length} value - The new length of a grid tile.
   */
-  set length (value) {
-    this.state.length = new Length(value)
+  set unit (value) {
+    this.state.unit = new Length(value)
     this.touch()
+  }
+
+  /**
+  * Return the texture used for rendering a medium grid cell.
+  *
+  * @return {Texture2D} The texture used for rendering a medium grid cell.
+  */
+  @Relation.one(Texture2D)
+  get mediumCellTexture () {
+    return this.state.mediumCellTexture
+  }
+
+  /**
+  * Change the texture used for rendering a medium grid cell.
+  *
+  * @param {Texture2D} texture - The new texture to use for rendering a medium grid cell.
+  */
+  @Relation.one(Texture2D)
+  set mediumCellTexture (texture) {
+    if (texture !== this.state.mediumCellTexture) {
+      this.state.mediumCellTexture = texture
+      this.touch()
+    }
+  }
+
+  /**
+  * Return the texture used for rendering a large grid cell.
+  *
+  * @return {Texture2D} The texture used for rendering a large grid cell.
+  */
+  @Relation.one(Texture2D)
+  get largeCellTexture () {
+    return this.state.largeCellTexture
+  }
+
+  /**
+  * Change the texture used for rendering a large grid cell.
+  *
+  * @param {Texture2D} texture - The new texture to use for rendering a large grid cell.
+  */
+  @Relation.one(Texture2D)
+  set largeCellTexture (texture) {
+    if (texture !== this.state.largeCellTexture) {
+      this.state.largeCellTexture = texture
+      this.touch()
+    }
   }
 
   /**

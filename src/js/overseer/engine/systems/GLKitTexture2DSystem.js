@@ -51,7 +51,7 @@ export class GLKitTexture2DSystem extends System {
   * @see System#managerDidAddComponent
   */
   managerDidAddComponent (component) {
-    if (component.type === Component.typeof(Texture2D)) {
+    if (Component.isOfType(component, Texture2D)) {
       this._service.add(component)
     }
   }
@@ -60,7 +60,7 @@ export class GLKitTexture2DSystem extends System {
   * @see System#managerWillDeleteComponent
   */
   managerWillDeleteComponent (component) {
-    if (component.type === Component.typeof(Texture2D)) {
+    if (Component.isOfType(component, Texture2D)) {
       this._service.delete(component)
     }
   }

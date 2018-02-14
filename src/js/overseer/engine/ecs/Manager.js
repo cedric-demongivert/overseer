@@ -277,6 +277,7 @@ export class Manager {
       this._managerWillAddComponent(component)
       this._components.set(component.identifier, component)
       this._componentIndex.get(component.type).set(component.entity, component)
+      component.initialize()
       this._managerDidAddComponent(component)
     }
 

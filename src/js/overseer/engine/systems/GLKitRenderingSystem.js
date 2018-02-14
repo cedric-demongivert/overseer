@@ -55,6 +55,9 @@ export class GLKitRenderingSystem extends System {
     const gl = this._gl
     gl.viewport(this._left, this._bottom, this._width, this._height)
     gl.enable(gl.SCISSOR_TEST)
+    gl.enable(gl.BLEND)
+    gl.blendEquation(gl.FUNC_ADD)
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
     for (const target of this.manager.components(Viewport)) {
       gl.scissor(target.left, target.bottom, target.width, target.height)

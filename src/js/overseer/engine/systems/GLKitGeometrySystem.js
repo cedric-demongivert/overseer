@@ -51,7 +51,7 @@ export class GLKitGeometrySystem extends System {
   * @see System#managerDidAddComponent
   */
   managerDidAddComponent (component) {
-    if (component.type === Component.typeof(Geometry)) {
+    if (Component.isOfType(component, Geometry)) {
       this._service.add(component)
     }
   }
@@ -60,7 +60,7 @@ export class GLKitGeometrySystem extends System {
   * @see System#managerWillDeleteComponent
   */
   managerWillDeleteComponent (component) {
-    if (component.type === Component.typeof(Geometry)) {
+    if (Component.isOfType(component, Geometry)) {
       this._service.delete(component)
     }
   }

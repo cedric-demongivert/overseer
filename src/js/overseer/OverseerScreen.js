@@ -4,7 +4,8 @@ import {
   GLKitTexture2DSystem,
   GLKitGeometrySystem,
   GLKitProgramSystem,
-  GLKitMeshRenderingSystem
+  GLKitMeshRenderingSystem,
+  GLKitSquareGridSystem
 } from './engine'
 
 export class OverseerScreen {
@@ -34,6 +35,7 @@ export class OverseerScreen {
       new GLKitTexture2DSystem(this._view),
       new GLKitGeometrySystem(this._view),
       new GLKitProgramSystem(this._view),
+      new GLKitSquareGridSystem(),
       new GLKitMeshRenderingSystem(),
       this._renderer
     ]

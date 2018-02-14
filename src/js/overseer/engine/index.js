@@ -3,6 +3,7 @@ export * from './systems'
 export * from './services'
 export * from './components'
 export * from './geometries'
+export * from './assets'
 
 export { Length } from './Length'
 export { OverseerMeshFormat } from './OverseerMeshFormat'

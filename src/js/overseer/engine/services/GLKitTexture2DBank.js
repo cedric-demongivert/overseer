@@ -101,12 +101,14 @@ export class GLKitTexture2DBank {
   * @param {Texture2D} texture - A component texture to commit.
   */
   _update (glTexture, texture) {
+    if (texture.content == null) return
+
     glTexture.magnificationFilter = texture.magnificationFilter
     glTexture.mignificationFilter = texture.mignificationFilter
     glTexture.wrapS = texture.wrapS
     glTexture.wrapT = texture.wrapT
 
-    if (texture.content == null || texture.content instanceof ArrayBuffer) {
+    if (texture.content instanceof ArrayBuffer) {
       glTexture.data(
         0, texture.format, texture.width, texture.height, 0,
         texture.colorFormat, texture.colorType, texture.content

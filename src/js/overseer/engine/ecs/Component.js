@@ -233,7 +233,6 @@ export function Component ({ type, constructorIdentifier }) {
         this[_manager].addComponent(proxy)
         this[_added] = true
 
-        proxy.initialize()
         return proxy
       }
     }
@@ -364,4 +363,16 @@ Component.identifier = function (value) {
       ].join('')
     )
   }
+}
+
+/**
+* Check if a component has a particular type.
+*
+* @param {Component} component - Component to check.
+* @param {Class|string} type - Type to compare.
+*
+* @return {boolean} True if component is a component of the given type.
+*/
+Component.isOfType = function (component, type) {
+  return component.type === Component.typeof(type)
 }

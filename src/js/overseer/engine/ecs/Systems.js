@@ -48,7 +48,7 @@ export class Systems {
       if (this._services.has(service)) {
         throw new InvalidParameterError('system', system, [
           'Unnable to register the given system into the manager ',
-          `${this._manager} because the service ${service} provided by the `,
+          `${this._manager} because the service ${service.name} provided by the `,
           'given system is already registered by another service of the ',
           'manager.'
         ].join(''))

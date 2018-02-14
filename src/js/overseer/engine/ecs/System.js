@@ -40,7 +40,7 @@ export class System {
     } else if (typeof services === 'function') {
       yield * services(system)
     } else {
-      yield services
+      yield * services
     }
   }
 
