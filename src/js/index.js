@@ -70,7 +70,7 @@ Object.assign(mesh.create(Texture2D), {
 mesh.create(OverseerGeometry.Quad)
 
 Object.assign(mesh.create(Transform), {
-  size: [12, 15],
+  size: [15, 15],
   position: [0, 0, 0],
   unit: '1cm'
 })
@@ -108,7 +108,7 @@ function tick (time) {
   const delta = ((lastTime != null) ? time - lastTime : time) / 1000
   map.update(delta)
 
-  mesh.get(Transform).rotate((delta / 10) * Math.PI)
+  //mesh.get(Transform).rotate((delta / 10) * Math.PI)
   view.get(OrthographicCamera2D).unit = view.get(OrthographicCamera2D).unit.multiply(1 + delta / 10)
   overseer.render()
   lastTime = time

@@ -1,21 +1,34 @@
 precision highp float;
 
-uniform vec2 size;
-uniform vec2 start;
+// Size of a cell in pixels.
+uniform float cellSize;
 
-uniform sampler2D mediumCellTexture;
-uniform sampler2D largeCellTexture;
+// Width of a line of the grid in pixels.
+uniform float lineWidth;
 
-varying vec2 fragUv;
-varying float gridLevel;
-varying float floorLevel;
+// Progress between two grid levels.
+uniform float progress;
+
+// Fragment cell location.
+varying vec2 cell;
+
+// varying float gridLevel;
+// varying float floorLevel;
+
+float maxv2f (vec2 v) {
+  return max(v.x, v.y);
+}
 
 void main () {
-  vec2 muv = vec2(mod(fragUv.x * 10.0, 1.0), mod(fragUv.y * 10.0, 1.0));
-  vec2 luv = vec2(mod(fragUv.x, 1.0), mod(fragUv.y, 1.0));
-  float t1 = pow(min(1.0, (gridLevel - floorLevel + 0.2)) / 1.0, 2.0);
-  float t2 = pow(max((gridLevel - floorLevel - 0.7), 0.0) / 0.3, 2.0);
+  float upCellBorder = maxv2f(abs(mod(cell, 1.0) - vec2(0.5)) * 2.0);
+  float downCellBorder = maxv2f(abs(mod(cell * 10.0, 1.0) - vec2(0.5)) * 2.0);
 
-  gl_FragColor = (1.0 - t1) * texture2D(mediumCellTexture, muv) + t1 * vec4(0.0);
-  gl_FragColor = (1.0 - t2) * texture2D(mediumCellTexture, luv) + t2 * gl_FragColor;
+  float upCoef = lineWidth / cellSize;
+  float downCoef = upCoef * 10.0;
+
+  float upt = max((upCellBorder + upCoef - 1.0) / upCoef, 0.0);
+  float downt = max((downCellBorder + downCoef - 1.0) / downCoef, 0.0);
+
+  gl_FragColor = vec4(0.0, 0.0, 0.0, progress) * upt +
+                 vec4(0.0, 0.0, 0.0, 1.0 - progress) * downt;
 }

@@ -12,8 +12,7 @@ export class SquareGrid {
     this.state = {
       camera: null,
       unit: new Length('3cm'),
-      mediumCellTexture: null,
-      largeCellTexture: null
+      lineWidth: 4.0
     }
   }
 
@@ -37,49 +36,22 @@ export class SquareGrid {
   }
 
   /**
-  * Return the texture used for rendering a medium grid cell.
+  * Return the width of a grid line in pixels.
   *
-  * @return {Texture2D} The texture used for rendering a medium grid cell.
+  * @return {number} The width of a grid line in pixels.
   */
-  @Relation.one(Texture2D)
-  get mediumCellTexture () {
-    return this.state.mediumCellTexture
+  get lineWidth () {
+    return this.state.lineWidth
   }
 
   /**
-  * Change the texture used for rendering a medium grid cell.
+  * Change the width of all grid lines in pixels.
   *
-  * @param {Texture2D} texture - The new texture to use for rendering a medium grid cell.
+  * @param {number} value - The new width of all grid lines in pixels.
   */
-  @Relation.one(Texture2D)
-  set mediumCellTexture (texture) {
-    if (texture !== this.state.mediumCellTexture) {
-      this.state.mediumCellTexture = texture
-      this.touch()
-    }
-  }
-
-  /**
-  * Return the texture used for rendering a large grid cell.
-  *
-  * @return {Texture2D} The texture used for rendering a large grid cell.
-  */
-  @Relation.one(Texture2D)
-  get largeCellTexture () {
-    return this.state.largeCellTexture
-  }
-
-  /**
-  * Change the texture used for rendering a large grid cell.
-  *
-  * @param {Texture2D} texture - The new texture to use for rendering a large grid cell.
-  */
-  @Relation.one(Texture2D)
-  set largeCellTexture (texture) {
-    if (texture !== this.state.largeCellTexture) {
-      this.state.largeCellTexture = texture
-      this.touch()
-    }
+  set lineWidth (value) {
+    this.state.lineWidth = value
+    this.touch()
   }
 
   /**
