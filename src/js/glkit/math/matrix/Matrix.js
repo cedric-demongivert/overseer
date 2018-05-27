@@ -153,11 +153,11 @@ export class Matrix {
   */
   get [GLType.type] () {
     if (this._columns === 1) {
-      return _getVectorType(this._rows)
+      return this._getVectorType(this._rows)
     } else if (this._rows === 1) {
-      return _getVectorType(this._columns)
+      return this._getVectorType(this._columns)
     } else if (this._columns === this._rows) {
-      return _getMatrixType(this._columns)
+      return this._getMatrixType(this._columns)
     } else {
       return undefined
     }

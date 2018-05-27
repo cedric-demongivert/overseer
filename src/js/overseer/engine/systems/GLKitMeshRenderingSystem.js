@@ -29,6 +29,8 @@ export class GLKitMeshRenderingSystem extends System {
     const localToWorld = Matrix3D.create(NumberType.FLOAT)
     const worldToLocal = Matrix3D.create(NumberType.FLOAT)
 
+    const worldToViewScale = Matrix3D.create(NumberType.FLOAT)
+
     for (const mesh of this.manager.components(Mesh)) {
       const program = mesh.material.program
       const glProgram = programs.getProgram(program)
@@ -49,15 +51,19 @@ export class GLKitMeshRenderingSystem extends System {
       } else {
         Matrix3D.toIdentityMatrix(worldToLocal)
       }
-      
+
       let worldToView = camera.worldToView
       let viewToWorld = camera.viewToWorld
 
       if (transform) {
         const rootUnit = transform.rootUnit
-        const worldToViewScale = Transform.unitScale(rootUnit, camera.unit)
-        worldToView = worldToView.mul(worldToViewScale)
-        viewToWorld = viewToWorld.mul(worldToViewScale.invert())
+        Transform.unitScale(rootUnit, camera.unit, worldToViewScale)
+        Matrix3D.multiplyWith3DMatrix(
+          worldToView, worldToViewScale, worldToView
+        )
+        Matrix3D.multiplyWith3DMatrix(
+          viewToWorld, Matrix3D.invert(worldToViewScale), viewToWorld
+        )
       }
 
       glProgram.use()

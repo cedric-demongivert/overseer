@@ -1,5 +1,5 @@
 import { Component, Relation } from '@overseer/engine/ecs'
-import { ColorRGBA, Vector2f } from '@glkit'
+import { ColorRGBA, Vector2D, NumberType } from '@glkit'
 import { Camera2D } from './Camera2D'
 
 /**
@@ -110,10 +110,10 @@ export class Viewport {
   /**
   * Return the current center of the viewport.
   *
-  * @return {Vector2f} The current center of the viewport.
+  * @return {Vector2D} The current center of the viewport.
   */
   get center () {
-    return new Vector2f(this.centerX, this.centerY)
+    return Vector2D.from(NumberType.FLOAT, this.centerX, this.centerY)
   }
 
   /**

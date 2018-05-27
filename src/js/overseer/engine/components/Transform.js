@@ -19,7 +19,7 @@ export class Transform {
   */
   static unitScale (base, target, result) {
     const coef = base.in(target.unit) / target.value
-    return Matrix3D.toScale2DMatrix(result, coef, coef)
+    return Matrix3D.to2DScaleMatrix(result, coef, coef)
   }
 
   /**
