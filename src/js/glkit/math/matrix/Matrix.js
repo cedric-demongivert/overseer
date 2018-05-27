@@ -5,7 +5,10 @@ import { InvalidParameterError } from '@errors'
 import { isArrayLike } from 'lodash'
 import * as NumberType from '@glkit/math/NumberType'
 
-import { toString } from './common'
+import * as common from './common'
+import * as arithmetic from './arithmetic'
+
+import { GLType } from '@glkit/gl/GLType'
 
 export class Matrix {
   /**
@@ -128,6 +131,79 @@ export class Matrix {
         'or Matrix.wrap. Take a look to the documentation for more ',
         'information.'
       ].join(''))
+    }
+  }
+
+  /**
+  * @return {TypedArray} The underlying array.
+  */
+  get [GLType.value] () {
+    return this._content
+  }
+
+  /**
+  * @return {number} The number of GLtype stored by this obbject.
+  */
+  get [GLType.size] () {
+    return 1
+  }
+
+  /**
+  * @return {GLType} The related GL type of this matrix.
+  */
+  get [GLType.type] () {
+    if (this._columns === 1) {
+      return _getVectorType(this._rows)
+    } else if (this._rows === 1) {
+      return _getVectorType(this._columns)
+    } else if (this._columns === this._rows) {
+      return _getMatrixType(this._columns)
+    } else {
+      return undefined
+    }
+  }
+
+  _getMatrixType (dimension) {
+    if (this._type === NumberType.FLOAT) {
+      switch (dimension) {
+        case 1: return GLType.FLOAT
+        case 2: return GLType.FLOAT_MAT2
+        case 3: return GLType.FLOAT_MAT3
+        case 4: return GLType.FLOAT_MAT4
+        default: return undefined
+      }
+    } else if (this._type === NumberType.INT) {
+      switch (dimension) {
+        case 1: return GLType.INT
+        case 2: return GLType.INT_MAT2
+        case 3: return GLType.INT_MAT3
+        case 4: return GLType.INT_MAT4
+        default: return undefined
+      }
+    } else {
+      return undefined
+    }
+  }
+
+  _getVectorType (dimension) {
+    if (this._type === NumberType.FLOAT) {
+      switch (dimension) {
+        case 1: return GLType.FLOAT
+        case 2: return GLType.FLOAT_VEC2
+        case 3: return GLType.FLOAT_VEC3
+        case 4: return GLType.FLOAT_VEC4
+        default: return undefined
+      }
+    } else if (this._type === NumberType.INT) {
+      switch (dimension) {
+        case 1: return GLType.INT
+        case 2: return GLType.INT_VEC2
+        case 3: return GLType.INT_VEC3
+        case 4: return GLType.INT_VEC4
+        default: return undefined
+      }
+    } else {
+      return undefined
     }
   }
 
@@ -394,6 +470,9 @@ export class Matrix {
   * @return {string} A string representation of this matrix.
   */
   toString () {
-    return toString(this)
+    return Matrix.toString(this)
   }
 }
+
+Object.assign(Matrix, arithmetic)
+Object.assign(Matrix, common)

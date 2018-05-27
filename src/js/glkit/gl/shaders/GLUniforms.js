@@ -36,13 +36,13 @@ const GLUniformsValueMapHandler = {
           (glsize <= 1) ? context.uniform1f(location, glvalue) : context.uniform1fv(location, glvalue)
           break
         case GLType.FLOAT_VEC2:
-          (glsize <= 1) ? context.uniform2f(location, ...glvalue) : context.uniform2fv(location, glvalue)
+          (glsize <= 1) ? context.uniform2f(location, glvalue) : context.uniform2fv(location, glvalue)
           break
         case GLType.FLOAT_VEC3:
-          (glsize <= 1) ? context.uniform3f(location, ...glvalue) : context.uniform3fv(location, glvalue)
+          (glsize <= 1) ? context.uniform3f(location, glvalue) : context.uniform3fv(location, glvalue)
           break
         case GLType.FLOAT_VEC4:
-          (glsize <= 1) ? context.uniform4f(location, ...glvalue) : context.uniform4fv(location, glvalue)
+          (glsize <= 1) ? context.uniform4f(location, glvalue) : context.uniform4fv(location, glvalue)
           break
         case GLType.INT:
           (glsize <= 1) ? context.uniform1i(location, glvalue) : context.uniform1iv(location, glvalue)

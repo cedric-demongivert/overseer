@@ -1,2 +1,2 @@
 export { Matrix } from './Matrix'
-export { Matrix3f } from './Matrix3f'
+export { Matrix3D } from './Matrix3D'

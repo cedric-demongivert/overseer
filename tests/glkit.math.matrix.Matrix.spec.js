@@ -4,6 +4,8 @@ import { NotImplementedError } from '@errors/NotImplementedError'
 import { Matrix } from '@glkit/math/matrix/Matrix'
 import { FLOAT, INT } from '@glkit/math/NumberType'
 
+function * range (size) { for (let i = 0; i < size; ++i) yield i }
+
 describe('glkit.math.matrix.Matrix', function () {
   describe('static #of', function () {
     it('construct a new matrix of floats with a given content', function () {
@@ -27,11 +29,55 @@ describe('glkit.math.matrix.Matrix', function () {
 
   describe('#constructor', function () {
     it('construct a new matrix of a given type, with a given number of columns and a given number of rows', function () {
-      const matrix = Matrix.create(FLOAT, 8, 12)
+      const matrix = new Matrix(FLOAT, 8, 12)
 
       expect(matrix.type).toBe(FLOAT)
       expect(matrix.columns).toBe(8)
       expect(matrix.rows).toBe(12)
+    })
+
+    it('construct a new matrix of a given type, with an initial content', function () {
+      const matrix = new Matrix(
+        FLOAT, 8, 12,
+        ...range(8 * 12)
+      )
+
+      expect(matrix.type).toBe(FLOAT)
+      expect(matrix.columns).toBe(8)
+      expect(matrix.rows).toBe(12)
+      expect(matrix.content).toEqual(new Float32Array([
+        ...range(8 * 12)
+      ]))
+    })
+
+    it('construct a new matrix that wrap a typed array', function () {
+      const content = new Float32Array([
+        ...range(8 * 12)
+      ])
+
+      const matrix = new Matrix(
+        content, 8, 12,
+      )
+
+      expect(matrix.type).toBe(FLOAT)
+      expect(matrix.columns).toBe(8)
+      expect(matrix.rows).toBe(12)
+      expect(matrix.content).toBe(content)
+    })
+
+    it('construct a clone of a matrix', function () {
+      const matrix = new Matrix(
+        FLOAT, 8, 12,
+        ...range(8 * 12)
+      )
+
+      const clone = new Matrix(matrix)
+
+      expect(clone.type).toBe(FLOAT)
+      expect(clone.columns).toBe(8)
+      expect(clone.rows).toBe(12)
+      expect(clone.content).not.toBe(matrix.content)
+      expect(clone.content).toEqual(matrix.content)
     })
   })
 

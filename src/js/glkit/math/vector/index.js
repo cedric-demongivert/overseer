@@ -1,3 +1,3 @@
 export { Vector } from './Vector'
-export { Vector2f } from './Vector2f'
-export { Vector3f } from './Vector3f'
+export { Vector2D } from './Vector2D'
+export { Vector3D } from './Vector3D'
