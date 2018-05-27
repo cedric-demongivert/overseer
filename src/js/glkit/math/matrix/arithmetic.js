@@ -95,7 +95,7 @@ export function subtract (left, right, result = left) {
 *
 * @return {Matrix} The updated result matrix.
 */
-export function multiply (left, right, result) {
+export function multiply (left, right, result = left) {
   if (typeof right === 'number') {
     return multiplyWithScalar(left, right, result)
   } else {

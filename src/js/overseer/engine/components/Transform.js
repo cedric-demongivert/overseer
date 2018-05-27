@@ -1,6 +1,6 @@
 import { Component, Relation } from '@overseer/engine/ecs'
 import { Length } from '@overseer/engine/Length'
-import { Matrix3f, Vector2f } from '@glkit'
+import { Matrix3D, Vector2D, NumberType } from '@glkit'
 
 /**
 * Assign a transformation matrix to the current entity.
@@ -13,23 +13,28 @@ export class Transform {
   * @param {Length} base - The object to scale.
   * @param {Length} target - The target object.
   *
-  * @return {Matrix3f} The scale matrix between the two objects.
+  * @param {Matrix3D} result - Result matrix.
+  *
+  * @return {Matrix3D} The scale matrix between the two objects.
   */
-  static unitScale (base, target) {
+  static unitScale (base, target, result) {
     const coef = base.in(target.unit) / target.value
-    return Matrix3f.scale2D(coef, coef)
+    return Matrix3D.toScale2DMatrix(result, coef, coef)
   }
 
   /**
   * @see Component#initialize
   */
   initialize () {
-    this._computeLocalToWorld = this._computeLocalToWorld.bind(this)
-    this._computeWorldToLocal = this._computeWorldToLocal.bind(this)
+    this._localToWorld = Matrix3D.create(NumberType.FLOAT)
+    this._worldToLocal = Matrix3D.create(NumberType.FLOAT)
+    this._unitScale = Matrix3D.create(NumberType.FLOAT)
+    this._temporary = Matrix3D.create(NumberType.FLOAT)
+    this._dirtyMatrices = true
 
     this.state = {
       parent: null,
-      transformation: Matrix3f.identity,
+      transformation: Matrix3D.create(NumberType.FLOAT),
       unit: new Length('1m'),
       children: new Set()
     }
@@ -47,73 +52,52 @@ export class Transform {
   }
 
   /**
-  * @return {Matrix3f} The world to local transformation matrix.
+  * @return {Matrix3D} The world to local transformation matrix.
   */
   get worldToLocal () {
-    return this._computeWorldToLocal()
+    if (this._dirtyMatrices) this._updateMatrices()
+    return this._worldToLocal
   }
 
   /**
-  * @return {Matrix3f} The local to world transformation matrix.
+  * @return {Matrix3D} The local to world transformation matrix.
   */
   get localToWorld () {
-    return this._computeLocalToWorld()
+    if (this._dirtyMatrices) this._updateMatrices()
+    return this._localToWorld
   }
 
-  /**
-  * @return {Matrix3f} The local to world transformation matrix.
-  */
-  _computeLocalToWorld () {
-    let result = this.state.transformation
+  _updateMatrices () {
+    const transformation = this.state.transformation
 
     if (this._parent) {
-      result = result.mul(Transform.unitScale(this.unit, this.parent.unit))
-                     .mul(this.parent.localToWorld)
+      Transform.unitScale(this.unit, this.parent.unit, this._unitScale)
+
+      Matrix3D.multiplyWith3DMatrix(
+        transformation, this._unitScale, this._localToWorld
+      )
+
+      Matrix3D.multiplyWith3DMatrix(
+        this.parent.localToWorld, this._localToWorld, this._localToWorld
+      )
+
+      Matrix3D.invert(this._localToWorld, this._worldToLocal)
+    } else {
+      Matrix3D.copy(transformation, this._localToWorld)
     }
 
-    Object.defineProperty(
-      this, 'localToWorld', { value: result, configurable: true }
-    )
-
-    return result
-  }
-
-  /**
-  * @return {Matrix3f} The local to world transformation matrix.
-  */
-  _computeWorldToLocal () {
-    const result = this.localToWorld.invert()
-
-    Object.defineProperty(
-      this, 'worldToLocal', { value: result, configurable: true }
-    )
-
-    return result
+    this._dirtyMatrices = false
   }
 
   /**
   * Enqueue a computation of the local to world matrix.
   */
-  _updateLocalToWorld () {
-    const descriptor = Object.getOwnPropertyDescriptor(this, 'localToWorld')
-
-    if (descriptor && !descriptor.get) {
-      Object.defineProperty(
-        this, 'localToWorld', {
-          get: this._computeLocalToWorld,
-          configurable: true
-        }
-      )
-
-      Object.defineProperty(
-        this, 'worldToLocal', {
-          get: this._computeWorldToLocal,
-          configurable: true
-        }
-      )
+  _enqueueMatricesUpdate () {
+    if (this._dirtyMatrices === false) {
+      this._dirtyMatrices = true
 
       for (const child of this.children()) {
-        child._updateLocalToWorld()
+        child._enqueueMatricesUpdate()
       }
     }
   }
@@ -121,7 +105,7 @@ export class Transform {
   /**
   * Return the local transformation matrix.
   *
-  * @return {Matrix3f} The transformation matrix.
+  * @return {Matrix3D} The transformation matrix.
   */
   get transformation () {
     return this.state.transformation
@@ -130,21 +114,21 @@ export class Transform {
   /**
   * Change the local transformation matrix.
   *
-  * @param {Matrix3f} transformation - The new local transformation matrix to set.
+  * @param {Matrix3D} transformation - The new local transformation matrix to set.
   */
   set transformation (transformation) {
-    this.state.transformation = transformation
-    this._updateLocalToWorld()
+    this.state.transformation.setAll(...transformation)
+    this._enqueueMatricesUpdate()
     this.touch()
   }
 
   /**
   * Return the size of this object.
   *
-  * @return {Vector2f} The size of this object.
+  * @return {Vector2D} The size of this object.
   */
   get size () {
-    return this.state.transformation.extract2DScale()
+    return Matrix3D.extract2DScale(this.state.transformation)
   }
 
   /**
@@ -153,42 +137,44 @@ export class Transform {
   * @param {Iterable<number>} newSize - The new size of this object.
   */
   set size (newSize) {
-    const oldSize = this.state.transformation.extract2DScale()
+    const transformation = this.state.transformation
+    const oldSize = Matrix3D.extract2DScale(transformation)
     const [newWidth, newHeight] = newSize
 
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.scale2D(newWidth / oldSize.x, newHeight / oldSize.y)
+    Matrix3D.apply2DScale(
+      transformation,
+      newWidth / oldSize.x, newHeight / oldSize.y
     )
 
-    this._updateLocalToWorld()
+    this._enqueueMatricesUpdate()
     this.touch()
   }
 
   /**
   * Return the position of this object.
   *
-  * @return {Vector2f} The position of this object.
+  * @return {Vector2D} The position of this object.
   */
   get position () {
-    return this.state.transformation.extract2DTranslation()
+    return Matrix3D.extract2DTranslation(this.state.transformation)
   }
 
   /**
   * Set the position of this object.
   *
-  * @param {Iterable<number>} newPosition - The new position of this object.
+  * @param {Vector2D} newPosition - The new position of this object.
   */
   set position (newPosition) {
-    const oldPosition = this.state.transformation.extract2DTranslation()
-    if (!(newPosition instanceof Vector2f)) {
-      newPosition = new Vector2f(newPosition)
-    }
+    const transformation = this.state.transformation
+    const oldPosition = Matrix3D.extract2DTranslation(transformation)
 
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.translate2D(newPosition.sub(oldPosition))
+    Matrix3D.apply2DTranslation(
+      transformation,
+      newPosition.x - oldPosition.x,
+      newPosition.y - oldPosition.y
     )
 
-    this._updateLocalToWorld()
+    this._enqueueMatricesUpdate()
     this.touch()
   }
 
@@ -198,7 +184,7 @@ export class Transform {
   * @return {number} The rotation of this object.
   */
   get rotation () {
-    return this.state.transformation.extract2DRotation()
+    return Matrix3D.extract2DRotation(this.state.transformation)
   }
 
   /**
@@ -207,13 +193,12 @@ export class Transform {
   * @param {number} newRotation - The new rotation of this object.
   */
   set rotation (newRotation) {
-    const oldRotation = this.state.transformation.extract2DRotation()
+    const transformation = this.state.transformation
+    const oldRotation = Matrix3D.extract2DRotation(transformation)
 
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.rotate2D(newRotation - oldRotation)
-    )
+    Matrix3D.apply2DRotation(transformation, newRotation - oldRotation)
 
-    this._updateLocalToWorld()
+    this._enqueueMatricesUpdate()
     this.touch()
   }
 
@@ -243,7 +228,7 @@ export class Transform {
 
       this.state.parent = identifier
       this.parent.addChild(this)
-      this._updateLocalToWorld()
+      this._enqueueMatricesUpdate()
       this.touch()
     }
   }
@@ -264,7 +249,7 @@ export class Transform {
   */
   set unit (unit) {
     this.state.unit = new Length(unit)
-    this._updateLocalToWorld()
+    this._enqueueMatricesUpdate()
     this.touch()
   }
 
@@ -276,11 +261,11 @@ export class Transform {
   * @return {Transform} This component instance for chaining purpose.
   */
   translate (...params) {
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.translate2D(...params)
+    Matrix3D.apply2DTranslation(
+      this.state.transformation, ...params
     )
 
-    this._updateLocalToWorld()
+    this._enqueueMatricesUpdate()
     this.touch()
 
     return this
@@ -294,11 +279,11 @@ export class Transform {
   * @return {Transform} This object for chaining purpose.
   */
   rotate (theta) {
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.rotate2D(theta)
+    Matrix3D.apply2DRotation(
+      this.state.transformation, theta
     )
 
-    this._updateLocalToWorld()
+    this._enqueueMatricesUpdate()
     this.touch()
 
     return this
@@ -312,11 +297,11 @@ export class Transform {
   * @return {Transform} This object for chaining purpose.
   */
   scale (...params) {
-    this.state.transformation = this.state.transformation.mul(
-      Matrix3f.scale2D(...params)
+    Matrix3D.apply2DScale(
+      this.state.transformation, ...params
     )
 
-    this._updateLocalToWorld()
+    this._enqueueMatricesUpdate()
     this.touch()
 
     return this

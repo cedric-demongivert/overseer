@@ -1,6 +1,6 @@
 import { Component } from '@overseer/engine/ecs'
 import { Length } from '@overseer/engine/Length'
-import { Matrix3f, Vector2f } from '@glkit'
+import { Matrix3D, Vector2D, NumberType } from '@glkit'
 import { Camera2D } from './Camera2D'
 
 @Component({ type: Component.typeof(Camera2D) })
@@ -9,8 +9,9 @@ export class OrthographicCamera2D extends Camera2D {
   * @see Component#initialize
   */
   initialize () {
-    this._computeViewToWorld = this._computeViewToWorld.bind(this)
-    this._computeWorldToView = this._computeWorldToView.bind(this)
+    this._viewToWorld = Matrix3D.create(NumberType.FLOAT)
+    this._worldToView = Matrix3D.create(NumberType.FLOAT)
+    this._dirtyMatrices = true
 
     this.state = {
       left: 0,
@@ -25,69 +26,43 @@ export class OrthographicCamera2D extends Camera2D {
   * @see Camera2D#get worldToView
   */
   get worldToView () {
-    return this._computeWorldToView()
+    if (this._dirtyMatrices) this._computeMatrices()
+    return this._worldToView
   }
 
   /**
   * @see Camera2D#get viewToWorld
   */
   get viewToWorld () {
-    return this._computeViewToWorld()
+    if (this._dirtyMatrices) this._computeMatrices()
+    return this._viewToWorld
   }
 
   /**
-  * Enqueue a computation of the world to view matrix.
+  * Enqueue a computation of the camera matrices.
   */
-  _updateWorldToView () {
-    const descriptor = Object.getOwnPropertyDescriptor(this, 'worldToView')
-
-    if (descriptor && !descriptor.get) {
-      Object.defineProperty(
-        this, 'worldToView', {
-          get: this._computeWorldToView,
-          configurable: true
-        }
-      )
-
-      Object.defineProperty(
-        this, 'viewToWorld', {
-          get: this._computeViewToWorld,
-          configurable: true
-        }
-      )
-    }
+  _enqueueMatrixUpdate () {
+    this._dirtyMatrices = true
   }
 
-  /**
-  * @return {Matrix3f} The world to view transformation matrix.
-  */
-  _computeWorldToView () {
+  _computeMatrices () {
     const { left, right, top, bottom } = this.state
 
-    let result = new Matrix3f([
-      2 / (right - left), 0, -((right + left) / (right - left)),
-      0, 2 / (top - bottom), -((top + bottom) / (top - bottom)),
-      0, 0, 1
-    ])
-
-    Object.defineProperty(
-      this, 'worldToView', { value: result, configurable: true }
+    this._worldToView.setAll(
+      2 / (right - left),
+      0,
+      -((right + left) / (right - left)),
+      0,
+      2 / (top - bottom),
+      -((top + bottom) / (top - bottom)),
+      0,
+      0,
+      1
     )
 
-    return result
-  }
+    Matrix3D.invert(this._worldToView, this._viewToWorld)
 
-  /**
-  * @return {Matrix3f} The view to world transformation matrix.
-  */
-  _computeViewToWorld () {
-    const result = this.worldToView.invert()
-
-    Object.defineProperty(
-      this, 'viewToWorld', { value: result, configurable: true }
-    )
-
-    return result
+    this._dirtyMatrices = false
   }
 
   /**
@@ -155,7 +130,7 @@ export class OrthographicCamera2D extends Camera2D {
     if (value > this.state.right) this.state.right = value + 1
 
     this.touch()
-    this._updateWorldToView()
+    this._enqueueMatrixUpdate()
   }
 
   /**
@@ -168,7 +143,7 @@ export class OrthographicCamera2D extends Camera2D {
     if (value < this.state.left) this.state.left = value - 1
 
     this.touch()
-    this._updateWorldToView()
+    this._enqueueMatrixUpdate()
   }
 
   /**
@@ -181,7 +156,7 @@ export class OrthographicCamera2D extends Camera2D {
     if (value > this.state.top) this.state.top = value + 1
 
     this.touch()
-    this._updateWorldToView()
+    this._enqueueMatrixUpdate()
   }
 
   /**
@@ -194,7 +169,7 @@ export class OrthographicCamera2D extends Camera2D {
     if (value < this.state.bottom) this.state.bottom = value - 1
 
     this.touch()
-    this._updateWorldToView()
+    this._enqueueMatrixUpdate()
   }
 
   /**
@@ -218,7 +193,7 @@ export class OrthographicCamera2D extends Camera2D {
     this.state.right += diff
 
     this.touch()
-    this._updateWorldToView()
+    this._enqueueMatrixUpdate()
   }
 
   /**
@@ -242,7 +217,7 @@ export class OrthographicCamera2D extends Camera2D {
     this.state.bottom += diff
 
     this.touch()
-    this._updateWorldToView()
+    this._enqueueMatrixUpdate()
   }
 
   /**
@@ -264,7 +239,7 @@ export class OrthographicCamera2D extends Camera2D {
     this.state.left += delta
     this.state.right += delta
     this.touch()
-    this._updateWorldToView()
+    this._enqueueMatrixUpdate()
   }
 
   /**
@@ -287,16 +262,17 @@ export class OrthographicCamera2D extends Camera2D {
     this.state.top += delta
     this.state.bottom += delta
     this.touch()
-    this._updateWorldToView()
+    this._enqueueMatrixUpdate()
   }
 
   /**
   * Return the camera's center location.
   *
-  * @return {Vector2f} The camera's center location.
+  * @return {Vector2D} The camera's center location.
   */
   get center () {
-    return new Vector2f(
+    return Vector2D.of(
+      NumberType.FLOAT,
       (this.state.left + this.state.right) / 2,
       (this.state.bottom + this.state.top) / 2
     )
@@ -305,7 +281,7 @@ export class OrthographicCamera2D extends Camera2D {
   /**
   * Change the camera's center location.
   *
-  * @param {Vector2f} value - The new camera's center location.
+  * @param {Vector2D} value - The new camera's center location.
   */
   set center (value) {
     const deltaX = value.x - this.centerX
@@ -317,6 +293,6 @@ export class OrthographicCamera2D extends Camera2D {
     this.state.bottom += deltaY
 
     this.touch()
-    this._updateWorldToView()
+    this._enqueueMatrixUpdate()
   }
 }

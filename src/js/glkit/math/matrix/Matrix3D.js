@@ -4,6 +4,7 @@ import * as NumberType from '@glkit/math/NumberType'
 import { Matrix } from './Matrix'
 
 import * as arithmetic from './arithmetic'
+import * as arithmetic3D from './arithmetic3D'
 import * as common from './common'
 import * as common3D from './common3D'
 
@@ -92,5 +93,6 @@ export class Matrix3D extends Matrix {
 }
 
 Object.assign(Matrix3D, arithmetic)
+Object.assign(Matrix3D, arithmetic3D)
 Object.assign(Matrix3D, common)
 Object.assign(Matrix3D, common3D)

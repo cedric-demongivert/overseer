@@ -1,4 +1,4 @@
-import { GLObject, GLProgram, GLUniforms, GLShader, Matrix3f } from '@glkit'
+import { GLObject, GLProgram, GLUniforms, GLShader } from '@glkit'
 import { Geometry2D } from '@overseer'
 
 const VIEW_KEYS = ['left', 'right', 'top', 'bottom']

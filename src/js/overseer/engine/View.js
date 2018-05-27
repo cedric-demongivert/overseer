@@ -1,4 +1,4 @@
-import { Vector2f, Matrix3f } from '@glkit'
+import { Vector2D, Matrix3D, NumberType } from '@glkit'
 import { Length } from '@overseer/engine'
 
 export class View {
@@ -17,60 +17,35 @@ export class View {
     this._right = right
     this._bottom = bottom
     this._top = top
-    this._computeWorldToView = this._computeWorldToView.bind(this)
-    this._computeViewToWorld = this._computeViewToWorld.bind(this)
+    this._worldToView = Matrix3D.create(NumberType.FLOAT)
+    this._viewToWorld = Matrix3D.create(NumberType.FLOAT)
+    this._dirtyMatrices = true
   }
 
   /**
   * Call computeWorldToView and memoize the result.
   *
-  * @return {Matrix3f} The result of computeWorldToView.
+  * @return {Matrix3D} The result of computeWorldToView.
   */
-  _computeWorldToView () {
+  _updateMatrices () {
     const right = this._right * this._unit.value
     const left = this._left * this._unit.value
     const top = this._top * this._unit.value
     const bottom = this._bottom * this._unit.value
 
-    const result = new Matrix3f([
+    this._worldToView.setAll(
       2 / (right - left), 0, -((right + left) / (right - left)),
       0, 2 / (top - bottom), -((top + bottom) / (top - bottom)),
       0, 0, 1
-    ])
-
-    Object.defineProperty(
-      this, 'worldToView', {
-        value: result,
-        configurable: true
-      }
     )
 
-    return result
-  }
-
-  /**
-  * Call computeViewToWorld and memoize the result.
-  *
-  * @return {Matrix3f} The result of computeViewToWorld
-  */
-  _computeViewToWorld () {
-    const right = this._right
-    const left = this._left
-    const top = this._top
-    const bottom = this._bottom
-
-    const result = new Matrix3f([
+    this._viewToWorld.setAll(
       (right - left) / 2, 0, (left + right) / 2,
       0, (top - bottom) / 2, (top + bottom) / 2,
       0, 0, 1
-    ])
+    )
 
-    Object.defineProperty(this, 'viewToWorld', {
-      value: result,
-      configurable: true
-    })
-
-    return result
+    this._dirtyMatrices = false
   }
 
   /**
@@ -79,39 +54,26 @@ export class View {
   * @return {View2D} The current instance for chaining purpose.
   */
   enqueueUpdate () {
-    const descriptor = Object.getOwnPropertyDescriptor(this, 'worldToView')
-    if (descriptor == null || !descriptor.get) {
-      Object.defineProperty(
-        this, 'worldToView', {
-          get: this._computeWorldToView,
-          configurable: true
-        }
-      )
-      Object.defineProperty(
-        this, 'viewToWorld', {
-          get: this._computeViewToWorld,
-          configurable: true
-        }
-      )
-    }
-
+    this._dirtyMatrices = true
     return this
   }
 
   /**
-  * @return {Matrix3f} The world to view matrix.
+  * @return {Matrix3D} The world to view matrix.
   */
   get worldToView () {
-    return this._computeWorldToView()
+    if (this._dirtyMatrices) this._updateMatrices()
+    return this._worldToView
   }
 
   /**
   * Return the view to world matrix.
   *
-  * @return {Matrix3f} The view to world matrix.
+  * @return {Matrix3D} The view to world matrix.
   */
   get viewToWorld () {
-    return this._computeViewToWorld()
+    if (this._dirtyMatrices) this._updateMatrices()
+    return this._viewToWorld
   }
 
   /**
@@ -288,21 +250,21 @@ export class View {
   }
 
   /**
-  * @return {Vector2f} The current center of the view as a vector.
+  * @return {Vector2D} The current center of the view as a vector.
   */
   get center () {
-    return Vector2f.create(
+    return Vector2D.create(
+      NumberType.FLOAT,
       (this._left + this._right) / 2,
       (this._bottom + this._top) / 2
     )
   }
 
   /**
-  * @param {Vector2f} center - The new center of the view as a vector.
+  * @param {Vector2D} center - The new center of the view as a vector.
   */
   set center (center) {
-    const newCenter = Vector2f.from(center)
-    this.centerX = newCenter.x
-    this.centerY = newCenter.y
+    this.centerX = center.x
+    this.centerY = center.y
   }
 }

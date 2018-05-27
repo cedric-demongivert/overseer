@@ -8,7 +8,7 @@ import {
 
 import { Mesh, Transform, Texture2D } from '@overseer/engine/components'
 
-import { Matrix3f } from '@glkit'
+import { Matrix3D, NumberType } from '@glkit'
 
 /**
 * A system that render meshes.
@@ -26,6 +26,9 @@ export class GLKitMeshRenderingSystem extends System {
     const buffers = this.service(GLKitGeometryBank.of(gl))
     const programs = this.service(GLKitProgramBank.of(gl))
 
+    const localToWorld = Matrix3D.create(NumberType.FLOAT)
+    const worldToLocal = Matrix3D.create(NumberType.FLOAT)
+
     for (const mesh of this.manager.components(Mesh)) {
       const program = mesh.material.program
       const glProgram = programs.getProgram(program)
@@ -34,8 +37,19 @@ export class GLKitMeshRenderingSystem extends System {
       const glElementArrayBuffer = buffers.getElementArrayBuffer(mesh.geometry)
 
       const transform = this.manager.getComponent(mesh.entity, Transform)
-      const localToWorld = (transform) ? transform.localToWorld : Matrix3f.identity
-      const worldToLocal = (transform) ? transform.worldToLocal : Matrix3f.identity
+
+      if (transform) {
+        Matrix3D.copy(transform.localToWorld, localToWorld)
+      } else {
+        Matrix3D.toIdentityMatrix(localToWorld)
+      }
+
+      if (transform) {
+        Matrix3D.copy(transform.worldToLocal, worldToLocal)
+      } else {
+        Matrix3D.toIdentityMatrix(worldToLocal)
+      }
+      
       let worldToView = camera.worldToView
       let viewToWorld = camera.viewToWorld
 

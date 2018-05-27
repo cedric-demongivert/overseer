@@ -1,6 +1,10 @@
 import { Vector2D, Vector3D } from '@glkit/math/vector'
 import { divide, transpose } from './arithmetic'
 
+// <development>
+import { InvalidParameterError } from '@errors'
+// </development>
+
 /**
 * Check if the given matrix is a valid 3D matrix.
 *
@@ -157,7 +161,7 @@ export function to2DRotationMatrix (matrix, theta) {
 * @param {number} y - Y axis rotation angle value (in radians).
 * @param {number} z - Z axis rotation angle value (in radians).
 *
-* @return {Matrix3f} A 3D eulerian rotation matrix.
+* @return {Matrix3D} A 3D eulerian rotation matrix.
 */
 export function to3DEulerianRotation (matrix, x, y, z) {
   // <development>
