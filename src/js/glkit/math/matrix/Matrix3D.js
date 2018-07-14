@@ -17,8 +17,17 @@ export class Matrix3D extends Matrix {
   *
   * @return {Matrix} The created matrix instance.
   */
-  static ['of'] (type, ...data) {
-    return Matrix3D.create(type).setAll(...data)
+  static ['of'] (
+    type,
+    a11, a12, a13,
+    a21, a22, a23,
+    a31, a32, a33
+  ) {
+    return Matrix3D.create(type).setAll(
+      a11, a12, a13,
+      a21, a22, a23,
+      a31, a32, a33
+    )
   }
 
   /**

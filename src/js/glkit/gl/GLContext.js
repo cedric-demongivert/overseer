@@ -1,144 +1,96 @@
-import { GLObject } from './GLObject'
-
-const $isGLContextInstance = Symbol('$isGLContextInstance')
-const $contexts = new WeakMap()
-
 /**
-* @typedef {WebGLRenderingContext|GLClass|{[GLContext.get]: WebGLRenderingContext}} GLContextualised
+* Store weak references over all webgl context wrapper that runs into
+* this application.
 */
+const APPLICATION_CONTEXTS = new WeakMap()
 
 /**
-* A webgl context wrapper.
+* An engine wrapper over a webgl rendering context.
 */
 export class GLContext {
   /**
-  * Create a new GLContext.
+  * Return the wrapper of a given context, or create it if the context does not have been wrapped yet.
   *
-  * @param {GLContextualised} context - The context to wrap.
+  * @param {GLContext|WebGLRenderingContext} context - An engine wrapper or a webgl rendering context to wrap.
+  *
+  * @return {GLContext} The wrapper of the given webgl rendering context or the given engine wrapper.
+  */
+  static ['of'] (context) {
+    if (context instanceof GLContext) {
+      return context
+    } else {
+      if (!APPLICATION_CONTEXTS.has(context)) {
+        APPLICATION_CONTEXTS.set(context, new GLContext(context))
+      }
+
+      return APPLICATION_CONTEXTS.get(context)
+    }
+  }
+
+  /**
+  * Create a new wrapper for a given webgl rendering context.
+  *
+  * @param {WebGLRenderingContext} context - A webgl rendering context to wrap.
   */
   constructor (context) {
-    return GLContext.context(context)
+    this._context = context
+    this._objects = new Set()
   }
 
   /**
-  * Extract the raw WebGLRenderingContext of any contextualised object.
-  *
-  * @param {GLContextualised} context - Object to use for extraction.
-  *
-  * @throws {Error} When the object is not a contextualised object.
-  *
-  * @return {WebGLRenderingContext} The raw webgl context of an object.
+  * @return {WebGLRenderingContext} The underlying webgl context.
   */
-  static raw (context) {
-    if (context instanceof GLObject) {
-      return context.context.raw
-    } else if (context instanceof GLContext) {
-      return context.raw
-    } else if (context[GLContext.get]) {
-      return context[GLContext.get].raw
-    } else if (context instanceof window.WebGLRenderingContext) {
-      return context
-    } else {
-      throw new Error([
-        'Unnable to extract a WebGLRenderingContext from a uncontextualised ',
-        'object.'
-      ].join(''))
-    }
+  get context () {
+    return this._context
   }
 
   /**
-  * Extract the GLContext of any contextualised object.
+  * Register an engine object instance into this wrapper.
   *
-  * @param {GLContextualised} context - Object to use for extraction.
+  * The object instance to register must not be already destroyed and must have
+  * been instanciated for this context.
   *
-  * @throws {Error} When the object is not a contextualised object.
+  * @param {GLObject} object - An object to register into this context.
   *
-  * @return {GLContext} The GLContext of an object.
+  * @throws {InvalidParameterError} If the given object was already destroyed.
+  * @throws {InvalidParameterError} If the given object was not instanciated for this context.
   */
-  static context (context) {
-    if (context instanceof GLObject) {
-      return context.context
-    } else if (context instanceof GLContext) {
-      return context
-    } else if (context[GLContext.get]) {
-      return context[GLContext.get]
-    } else if (context instanceof window.WebGLRenderingContext) {
-      if ($contexts.has(context)) {
-        return $contexts.get(context)
+  registerObject (object) {
+    if (!this._objects.has(object)) {
+      if (object.destroyed == false && object.context == this._context) {
+        this._objects.add(object)
       } else {
-        return wrapContext(context)
+        throw new InvalidParameterError(
+          'object', object, [
+            'Unnable to register the given object into this context ',
+            'because the given GLObject instance ',
+            object.destroyed ? 'was already destroyed.'
+                             : 'was not instanciated for this context.'
+          ].join('')
+        )
       }
-    } else {
-      throw new Error(
-        'Unnable to extract a GLContext from a uncontextualised object.'
-      )
     }
   }
 
   /**
-  * Create a new GLContext.
+  * Remove an object from this context and destroy it.
   *
-  * @param {GLContextualised} context - The context to wrap.
-  *
-  * @return {GLContext} The new wrapper.
+  * @param {GLObject} object - An object instance to unregister and destroy.
   */
-  static from (context) {
-    return GLContext.context(context)
+  unregisterObject (object) {
+    if (this._objects.has(object)) {
+      this._objects.delete(object)
+      object.destroy()
+    }
   }
 
   /**
-  * @return {boolean} Always true.
+  * Clear this context of all of its objects.
+  * This operation release all allocated resources.
   */
-  get [$isGLContextInstance] () {
-    return true
-  }
-
-  /**
-  * @see https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Symbol/hasInstance
-  */
-  static [Symbol.hasInstance] (instance) {
-    return instance && instance[$isGLContextInstance] === true
-  }
-}
-
-GLContext.get = Symbol('GLContext#get')
-
-/**
-* Wrap a WebGLRenderingContext.
-*
-* @param {WebGLRenderingContext} toWrap - WebGLRenderingContext to wrap.
-*
-* @return {GLContext} The wrapped context.
-*/
-function wrapContext (toWrap) {
-  class GLContext {
-    /**
-    * @return {boolean} Always true.
-    */
-    get [$isGLContextInstance] () {
-      return true
-    }
-
-    /**
-    * @return {WebGLRenderingContext} The wrapped context.
-    */
-    get raw () {
-      return toWrap
+  clear () {
+    for (object of this._objects) {
+      unregisterObject(object)
     }
   }
-
-  const WebGLRenderingContext = window.WebGLRenderingContext
-
-  for (const key in WebGLRenderingContext.prototype) {
-    if (key in WebGLRenderingContext) {
-      GLContext.prototype[key] = WebGLRenderingContext[key]
-    } else {
-      GLContext.prototype[key] = (...x) => toWrap[key](...x)
-    }
-  }
-
-  const wrapper = new GLContext()
-  $contexts.set(toWrap, wrapper)
-
-  return wrapper
 }
