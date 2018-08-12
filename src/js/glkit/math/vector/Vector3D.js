@@ -1,337 +1,406 @@
-import * as matrixCommon from '@glkit/math/matrix/common'
-import * as matrixArithmetic from '@glkit/math/matrix/arithmetic'
-import * as vectorCommon from './common'
-import * as vectorArithmetic from './arithmetic'
+import vector3d from './raw/vector3d'
 
-import { Vector } from './Vector'
-import { Vector2D } from './Vector2D'
-
-export class Vector3D extends Vector {
+export class Vector3d {
   /**
-  * Create a new empty 3D vector with base data.
+  * Create a new 3 double vector with initial data.
   *
-  * @param {NumberType} type - Type of the vector to create.
-  * @param {...number} data - Initial content of the vector.
+  * @param x - x component of the new vector
+  * @param y - y component of the new vector
+  * @param z - z component of the new vector
   *
-  * @return {Vector3D} The created vector instance.
-  */
-  static ['of'] (type, ...data) {
-    return Vector3D.create(type).setAll(...data)
-  }
-
-  /**
-  * Create a new empty 3D vector full of zeroes of a given type.
-  *
-  * @param {NumberType} type - Type of the vector to create.
-  *
-  * @return {Vector3D} The created vector instance.
+  * @return {Vector3d} The new vector instance.
   */
   static create (
-    type,
-    result = Object.create(Vector3D.prototype)
+    x,
+    y,
+    z
   ) {
-    return Vector.create(type, 3, result)
+    return new Vector3d().set(x, y, z)
   }
 
   /**
-  * Wrap a typed array as a 3D vector.
+  * Wrap a Float64Array as a 3 double vector.
   *
-  * @param {TypedArray} array - A typed array to wrap.
+  * @param {Float64Array} buffer - A buffer to wrap.
   *
-  * @return {Vector3D} The created vector instance.
+  * @return {Vector3d} The new vector instance.
   */
-  static wrap (
-    array,
-    result = Object.create(Vector3D.prototype)
-  ) {
-    // <development>
-    if (array.length !== 3) {
-      throw new InvalidParameterError(array, 'array', [
-        'Unnable to wrap the given array into a Vector3D instance, because ',
-        'the given array length is invalid : ', array.length, ' != 3'
-      ].join(''))
-    }
-    // </development>
-
-    return Vector.wrap(array, result)
+  static wrap (buffer) {
+    return new Vector3d(buffer)
   }
 
   /**
-  * Clone a Vector and return the result.
+  * Clone another 3 double vector and return the result.
   *
-  * @param {Vector} vector - A vector to clone.
+  * @param {Vector3d} vector - A 3 double vector to clone.
   *
-  * @return {Vector3D} The cloned vector.
+  * @return {Vector3d} The cloned vector instance.
   */
-  static clone (
-    vector,
-    result = Object.create(Vector3D.prototype)
-  ) {
-    // <development>
-    if (vector.cells !== 3) {
-      throw new InvalidParameterError(vector, 'vector', [
-        'Unnable to clone the given vector as a Vector3D instance, because ',
-        'the given vector dimension is invalid : ', vector.dimensions, ' != 2'
-      ].join(''))
-    }
-    // </development>
-
-    return Vector.clone(vector, result)
+  static clone (vector) {
+    const result = new Vector3d()
+    result.x = vector.x
+    result.y = vector.y
+    result.z = vector.z
+    
+    return result
   }
 
   /**
-  * Create a new 3D vector.
+  * Create a new 3 double vector.
   *
-  * Delegate the construction to Vector3D.clone, Vector3D.create or
-  * Vector3D.wrap, by identifying the compatibility of theses methods with the
-  * given parameters of the constructor.
-  *
-  * @param {...any} params - Parameters for the construction.
+  * @param {Float64Array} [buffer = new Float64Array(3)] - A buffer to wrap.
   */
-  constructor (...params) {
-    if (params.length === 1 && params[0] instanceof Vector) {
-      super(...params)
-    } else if (params.length === 1 && NumberType.is(params[0])) {
-      super(...params, 2)
-    } else if (params.length === 1) {
-      super(...params)
-    } else if (params.length > 1) {
-      const [type, ...data] = params
-      super(type, 2)
-      this.setAll(...data)
-    } else {
-      throw new InvalidParameterError('params', params, [
-        'The given parameters can\'t be passed to Vector3D.clone, ',
-        'Vector3D.create or Vector3D.wrap. Take a look to the documentation ',
-        'for more information.'
-      ].join(''))
-    }
+  constructor (buffer = new Float64Array(3)) {
+    this._buffer = buffer
   }
 
   /**
   * @return {number}
   */
   get x () {
-    return this._content[0]
-  }
-
-  /**
-  * @param {number} value
-  */
-  set x (value) {
-    this._content[0] = value
+      return this._content[0]
   }
 
   /**
   * @return {number}
   */
   get y () {
-    return this._content[1]
-  }
-
-  /**
-  * @param {number} value
-  */
-  set y (value) {
-    this._content[1] = value
+      return this._content[1]
   }
 
   /**
   * @return {number}
   */
   get z () {
-    return this._content[2]
+      return this._content[2]
   }
 
   /**
-  * @param {number} value
+  * Set the value of the x component of this vector.
+  *
+  * @param {number} value - New value of the x component.
+  */
+  set x (value) {
+    this._content[0] = value
+  }
+
+  /**
+  * Set the value of the y component of this vector.
+  *
+  * @param {number} value - New value of the y component.
+  */
+  set y (value) {
+    this._content[1] = value
+  }
+
+  /**
+  * Set the value of the z component of this vector.
+  *
+  * @param {number} value - New value of the z component.
   */
   set z (value) {
     this._content[2] = value
   }
 
   /**
-  * @return {Vector2D}
+  * Return the underlying buffer of this vector.
+  *
+  * @return {Float64Array} The underlying buffer of this vector.
   */
-  get xy () { return Vector2D.of(this._type, this.x, this.y) }
+  get buffer () {
+    return this._buffer
+  }
 
   /**
-  * @return {Vector2D}
+  * Return the dimension of this vector.
+  *
+  * @return {number} The dimension of this vector.
   */
-  get yx () { return Vector2D.of(this._type, this.y, this.x) }
+  get dimension () {
+    return 3
+  }
 
   /**
-  * @return {Vector2D}
+  * Return the squared length of this vector.
+  *
+  * @return {number} The squared length of this vector.
   */
-  get yz () { return Vector2D.of(this._type, this.y, this.z) }
+  get squaredLength () {
+    return vector3d.squaredLength(this._buffer, 0)
+  }
 
   /**
-  * @return {Vector2D}
+  * Return the length of this vector.
+  *
+  * @return {number} The length of this vector.
   */
-  get zy () { return Vector2D.of(this._type, this.z, this.y) }
+  get length () {
+    return vector3d.length(this._buffer, 0)
+  }
 
   /**
-  * @return {Vector2D}
+  * Set all components of this vector.
+  *
+  * @param x - x component of the new vector
+  * @param y - y component of the new vector
+  * @param z - z component of the new vector
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xz () { return Vector2D.of(this._type, this.x, this.z) }
+  set (
+    x,
+    y,
+    z
+  ) {
+    vector3d.set(this._buffer, 0, x, y, z)
+    return this
+  }
 
   /**
-  * @return {Vector2D}
+  * Add another vector to this vector.
+  *
+  * @param {Vector3d} left - Left operand vector.
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get zx () { return Vector2D.of(this._type, this.z, this.x) }
+  add (left, result = this) {
+    vector3d.add(
+      this._buffer, 0, left.buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector2D}
+  * Subtract another vector to this vector.
+  *
+  * @param {Vector3d} left - Left operand vector.
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xx () { return Vector2D.of(this._type, this.x, this.x) }
+  subtract (left, result = this) {
+    vector3d.subtract(
+      this._buffer, 0, left.buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector2D}
+  * Multiply this vector with a scalar.
+  *
+  * @param {number} scalar
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get yy () { return Vector2D.of(this._type, this.y, this.y) }
+  multiplyWithScalar (scalar, result = this) {
+    vector3d.multiplyWithScalar(
+      this._buffer, 0, scalar, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector2D}
+  * Mix this vector with another.
+  *
+  * @param {Vector3d} left - Left operand vector.
+  * @param {number} scalar - A value between 0 and 1.
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get zz () { return Vector2D.of(this._type, this.z, this.z) }
+  mix (left, scalar, result = this) {
+    vector3d.mix(
+      this._buffer, 0, left.buffer, 0, scalar, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Divide this vector by a scalar.
+  *
+  * @param {number} scalar
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xxx () { return Vector3D.of(this._type, this.x, this.x, this.x) }
+  divideWithScalar (scalar, result = this) {
+    vector3d.divideWithScalar(
+      this._buffer, 0, scalar, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Negate this vector.
+  *
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xxy () { return Vector3D.of(this._type, this.x, this.x, this.y) }
+  negate (result = this) {
+    vector3d.negate(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Normalize this vector.
+  *
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xxz () { return Vector3D.of(this._type, this.x, this.x, this.z) }
+  normalize (result = this) {
+    vector3d.normalize(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Ceil each component of this vector.
+  *
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xyx () { return Vector3D.of(this._type, this.x, this.y, this.x) }
+  ceil (result = this) {
+    vector3d.ceil(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Floor each component of this vector.
+  *
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xyy () { return Vector3D.of(this._type, this.x, this.y, this.y) }
+  floor (result = this) {
+    vector3d.floor(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Round each component of this vector.
+  *
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xyz () { return Vector3D.clone(this) }
+  round (result = this) {
+    vector3d.round(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Update each component of this vector less than the given minimum to the given minimum.
+  *
+  * @param {number} minimum - Minimum value allowed for each components of this vector.
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xzx () { return Vector3D.of(this._type, this.x, this.z, this.x) }
+  minimum (minimum, result = this) {
+    vector3d.minimum(
+      this._buffer, 0, minimum, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Update each component of this vector greather than the given maximum to the given maximum.
+  *
+  * @param {number} maximum - Maximum value allowed for each components of this vector.
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xzy () { return Vector3D.of(this._type, this.x, this.z, this.y) }
+  maximum (maximum, result = this) {
+    vector3d.maximum(
+      this._buffer, 0, maximum, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Clamp each component of this vector between a minimum and a amaximum value.
+  *
+  * @param {number} minimum - Minimum value allowed for each components of this vector.
+  * @param {number} maximum - Maximum value allowed for each components of this vector.
+  * @param {Vector3d} [result = this] - The result vector.
+  *
+  * @return {Vector3d} This vector instance for chaining purpose.
   */
-  get xzz () { return Vector3D.of(this._type, this.x, this.z, this.z) }
+  clamp (minimum, maximum, result = this) {
+    vector3d.clamp(
+      this._buffer, 0, minimum, maximum, result.buffer, 0
+    )
+
+    return this
+  }
 
   /**
-  * @return {Vector3D}
+  * Return the dot product of this vector with another one.
+  *
+  * @param {Vector3d} left - Left operand vector.
+  *
+  * @return {number} The result of the dot product.
   */
-  get yxx () { return Vector3D.of(this._type, this.y, this.x, this.x) }
+  dot (left, tolerance = Number.EPSILON) {
+    return vector3d.dot(this._buffer, 0, left.buffer, 0)
+  }
 
   /**
-  * @return {Vector3D}
+  * Iterate over each components of this vector.
+  *
+  * @return {Iterator<number>} An iterator over each components of this vector.
   */
-  get yxy () { return Vector3D.of(this._type, this.y, this.x, this.y) }
+  * [Symbol.iterator] () {
+    yield vectorBuffer[0]
+    yield vectorBuffer[1]
+    yield vectorBuffer[2]
+  }
 
   /**
-  * @return {Vector3D}
+  * Return true if this vector is equal to another.
+  *
+  * @param {Vector3d} left - Left operand vector.
+  * @param {number} [tolerance = Number.EPSILON] - Tolerance to use for the equality comparison.
+  *
+  * @return {boolean} True if this vector is equal to the given vector, false otherwise.
   */
-  get yxz () { return Vector3D.of(this._type, this.y, this.x, this.z) }
+  equals (left, tolerance = Number.EPSILON) {
+    return vector3d.equals(this._buffer, 0, left.buffer, 0, tolerance)
+  }
 
   /**
-  * @return {Vector3D}
+  * Return a string representation of this vector.
+  *
+  * @return {String} A string representation of this vector.
   */
-  get yyx () { return Vector3D.of(this._type, this.y, this.y, this.x) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get yyy () { return Vector3D.of(this._type, this.y, this.y, this.y) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get yyz () { return Vector3D.of(this._type, this.y, this.y, this.z) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get yzx () { return Vector3D.of(this._type, this.y, this.z, this.x) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get yzy () { return Vector3D.of(this._type, this.y, this.z, this.y) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get yzz () { return Vector3D.of(this._type, this.y, this.z, this.z) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get zxx () { return Vector3D.of(this._type, this.z, this.x, this.x) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get zxy () { return Vector3D.of(this._type, this.z, this.x, this.y) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get zxz () { return Vector3D.of(this._type, this.z, this.x, this.z) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get zyx () { return Vector3D.of(this._type, this.z, this.y, this.x) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get zyy () { return Vector3D.of(this._type, this.z, this.y, this.y) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get zyz () { return Vector3D.of(this._type, this.z, this.y, this.z) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get zzx () { return Vector3D.of(this._type, this.z, this.z, this.x) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get zzy () { return Vector3D.of(this._type, this.z, this.z, this.y) }
-
-  /**
-  * @return {Vector3D}
-  */
-  get zzz () { return Vector3D.of(this._type, this.z, this.z, this.z) }
+  toString () {
+    return vector3d.toString(this._buffer, 0)
+  }
 }
-
-Object.assign(Vector3D, matrixCommon)
-Object.assign(Vector3D, vectorCommon)
-Object.assign(Vector3D, matrixArithmetic)
-Object.assign(Vector3D, vectorArithmetic)

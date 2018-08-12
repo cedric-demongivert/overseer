@@ -1,6 +1,6 @@
 import { Component, Relation } from '@overseer/engine/ecs'
 import { Length } from '@overseer/engine/Length'
-import { Matrix3D, Vector2D, NumberType } from '@glkit'
+import { Matrix3f, Vector3f, Vector2f } from '@glkit'
 
 /**
 * Assign a transformation matrix to the current entity.
@@ -8,33 +8,35 @@ import { Matrix3D, Vector2D, NumberType } from '@glkit'
 @Component({ type: 'overseer:engine:transform' })
 export class Transform {
   /**
-  * Compute the unit scale matrix between two Transform component.
+  * Apply a unit scale transformation to a given Matrix3f
   *
   * @param {Length} base - The object to scale.
-  * @param {Length} target - The target object.
-  *
-  * @param {Matrix3D} result - Result matrix.
-  *
-  * @return {Matrix3D} The scale matrix between the two objects.
+  * @param {Length} target - The target object
+  * @param {Matrix3f} transformation - Transformation matrix.
+  * @param {Matrix3f} [result = transformation] - Result matrix.
   */
-  static unitScale (base, target, result) {
+  static applyUnitScale (base, target, transformation, result = transformation) {
     const coef = base.in(target.unit) / target.value
-    return Matrix3D.to2DScaleMatrix(result, coef, coef)
+    transformation.multiplyWithStaticMatrixAsRightOperand(
+      coef, 0, 0,
+      0, coef, 0,
+      0, 0, 1,
+      result
+    )
   }
 
   /**
   * @see Component#initialize
   */
   initialize () {
-    this._localToWorld = Matrix3D.create(NumberType.FLOAT)
-    this._worldToLocal = Matrix3D.create(NumberType.FLOAT)
-    this._unitScale = Matrix3D.create(NumberType.FLOAT)
-    this._temporary = Matrix3D.create(NumberType.FLOAT)
+    this._localToWorld = new Matrix3f()
+    this._worldToLocal = new Matrix3f()
+    this._temporary = new Matrix3f()
     this._dirtyMatrices = true
 
     this.state = {
       parent: null,
-      transformation: Matrix3D.create(NumberType.FLOAT),
+      transformation: new Matrix3f(),
       unit: new Length('1m'),
       children: new Set()
     }
@@ -52,7 +54,7 @@ export class Transform {
   }
 
   /**
-  * @return {Matrix3D} The world to local transformation matrix.
+  * @return {Matrix3f} The world to local transformation matrix.
   */
   get worldToLocal () {
     if (this._dirtyMatrices) this._updateMatrices()
@@ -60,7 +62,7 @@ export class Transform {
   }
 
   /**
-  * @return {Matrix3D} The local to world transformation matrix.
+  * @return {Matrix3f} The local to world transformation matrix.
   */
   get localToWorld () {
     if (this._dirtyMatrices) this._updateMatrices()
@@ -70,20 +72,12 @@ export class Transform {
   _updateMatrices () {
     const transformation = this.state.transformation
 
+    this._localToWorld.copy(transformation)
+
     if (this._parent) {
-      Transform.unitScale(this.unit, this.parent.unit, this._unitScale)
-
-      Matrix3D.multiplyWith3DMatrix(
-        transformation, this._unitScale, this._localToWorld
-      )
-
-      Matrix3D.multiplyWith3DMatrix(
-        this.parent.localToWorld, this._localToWorld, this._localToWorld
-      )
-
-      Matrix3D.invert(this._localToWorld, this._worldToLocal)
-    } else {
-      Matrix3D.copy(transformation, this._localToWorld)
+      Transform.unitScale(this.unit, this.parent.unit, this._localToWorld)
+      this.parent.localToWorld.multiplyWithMatrix(this._localToWorld, this._localToWorld)
+      this._localToWorld.invert(this._worldToLocal)
     }
 
     this._dirtyMatrices = false
@@ -105,7 +99,7 @@ export class Transform {
   /**
   * Return the local transformation matrix.
   *
-  * @return {Matrix3D} The transformation matrix.
+  * @return {Matrix3f} The transformation matrix.
   */
   get transformation () {
     return this.state.transformation
@@ -114,10 +108,10 @@ export class Transform {
   /**
   * Change the local transformation matrix.
   *
-  * @param {Matrix3D} transformation - The new local transformation matrix to set.
+  * @param {Matrix3f} transformation - The new local transformation matrix to set.
   */
   set transformation (transformation) {
-    this.state.transformation.setAll(...transformation)
+    this.state.transformation.copy(transformation)
     this._enqueueMatricesUpdate()
     this.touch()
   }
@@ -125,26 +119,25 @@ export class Transform {
   /**
   * Return the size of this object.
   *
-  * @return {Vector2D} The size of this object.
+  * @return {Vector3f} The size of this object.
   */
   get size () {
-    return Matrix3D.extract2DScale(this.state.transformation)
+    const result = new Vector3f()
+    this.state.transformation.extractScale(result)
+    return result
   }
 
   /**
   * Set the size of this object.
   *
-  * @param {Iterable<number>} newSize - The new size of this object.
+  * @param {Vector3f} newSize - The new size of this object.
   */
   set size (newSize) {
     const transformation = this.state.transformation
-    const oldSize = Matrix3D.extract2DScale(transformation)
-    const [newWidth, newHeight] = newSize
+    const oldSize = new Vector3f()
 
-    Matrix3D.apply2DScale(
-      transformation,
-      newWidth / oldSize.x, newHeight / oldSize.y
-    )
+    transformation.extract2DScale(oldSize)
+    transformation.scale(newSize.x / oldSize.x, newSize.y / oldSize.y, 1.0)
 
     this._enqueueMatricesUpdate()
     this.touch()
@@ -153,23 +146,25 @@ export class Transform {
   /**
   * Return the position of this object.
   *
-  * @return {Vector2D} The position of this object.
+  * @return {Vector2f} The position of this object.
   */
   get position () {
-    return Matrix3D.extract2DTranslation(this.state.transformation)
+    const result = new Vector2f()
+    this.state.transformation.extract2DTranslation(result)
+    return result
   }
 
   /**
   * Set the position of this object.
   *
-  * @param {Vector2D} newPosition - The new position of this object.
+  * @param {Vector2f} newPosition - The new position of this object.
   */
   set position (newPosition) {
     const transformation = this.state.transformation
-    const oldPosition = Matrix3D.extract2DTranslation(transformation)
+    const oldPosition = new Vector2f()
+    transformation.extractTranslation(oldPosition)
 
-    Matrix3D.apply2DTranslation(
-      transformation,
+    transformation.translate(
       newPosition.x - oldPosition.x,
       newPosition.y - oldPosition.y
     )
@@ -184,7 +179,7 @@ export class Transform {
   * @return {number} The rotation of this object.
   */
   get rotation () {
-    return Matrix3D.extract2DRotation(this.state.transformation)
+    return this.state.transformation.extract2DRotation()
   }
 
   /**
@@ -194,9 +189,11 @@ export class Transform {
   */
   set rotation (newRotation) {
     const transformation = this.state.transformation
-    const oldRotation = Matrix3D.extract2DRotation(transformation)
+    const oldRotation = transformation.extract2DRotation()
 
-    Matrix3D.apply2DRotation(transformation, newRotation - oldRotation)
+    transformation.rotate(
+      newRotation - oldRotation, 0, 0, transformation
+    )
 
     this._enqueueMatricesUpdate()
     this.touch()
@@ -260,10 +257,8 @@ export class Transform {
   *
   * @return {Transform} This component instance for chaining purpose.
   */
-  translate (...params) {
-    Matrix3D.apply2DTranslation(
-      this.state.transformation, ...params
-    )
+  translate (x, y) {
+    this.state.transformation.translate(x, y)
 
     this._enqueueMatricesUpdate()
     this.touch()
@@ -279,9 +274,7 @@ export class Transform {
   * @return {Transform} This object for chaining purpose.
   */
   rotate (theta) {
-    Matrix3D.apply2DRotation(
-      this.state.transformation, theta
-    )
+    this.state.transformation.rotate(theta, 0, 0)
 
     this._enqueueMatricesUpdate()
     this.touch()
@@ -296,10 +289,8 @@ export class Transform {
   *
   * @return {Transform} This object for chaining purpose.
   */
-  scale (...params) {
-    Matrix3D.apply2DScale(
-      this.state.transformation, ...params
-    )
+  scale (x, y) {
+    this.state.transformation.scale(x, y, 1)
 
     this._enqueueMatricesUpdate()
     this.touch()

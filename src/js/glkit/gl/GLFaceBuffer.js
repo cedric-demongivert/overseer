@@ -3,11 +3,7 @@ import { GLBuffer } from './GLBuffer'
 /**
 * Contextualisation of a face buffer.
 */
-export class GLElementArrayBuffer extends GLBuffer {
-  constructor () {
-    this._size = 0
-  }
-
+export class GLFaceBuffer extends GLBuffer {
   /**
   * @see GLBuffer#get bound
   */
@@ -43,8 +39,6 @@ export class GLElementArrayBuffer extends GLBuffer {
       descriptor.buffer,
       descriptor.usage.resolve(context)
     )
-
-    this._size = descriptor.size
 
     this.dirty = false
   }

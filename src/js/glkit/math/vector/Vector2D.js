@@ -1,160 +1,384 @@
-// <development>
-import { InvalidParameterError } from '@errors'
-// </development>
+import vector2d from './raw/vector2d'
 
-import * as matrixCommon from '@glkit/math/matrix/common'
-import * as matrixArithmetic from '@glkit/math/matrix/arithmetic'
-import * as vectorCommon from './common'
-import * as vectorArithmetic from './arithmetic'
-
-import { Vector } from './Vector'
-
-export class Vector2D extends Vector {
+export class Vector2d {
   /**
-  * Create a new empty 2D vector with base data.
+  * Create a new 2 double vector with initial data.
   *
-  * @param {NumberType} type - Type of the vector to create.
-  * @param {...number} data - Initial content of the vector.
+  * @param x - x component of the new vector
+  * @param y - y component of the new vector
   *
-  * @return {Vector2D} The created vector instance.
-  */
-  static ['of'] (type, ...data) {
-    return Vector2D.create(type).setAll(...data)
-  }
-
-  /**
-  * Create a new empty 2D vector full of zeroes of a given type.
-  *
-  * @param {NumberType} type - Type of the vector to create.
-  *
-  * @return {Vector2D} The created vector instance.
+  * @return {Vector2d} The new vector instance.
   */
   static create (
-    type,
-    result = Object.create(Vector2D.prototype)
+    x,
+    y
   ) {
-    return Vector.create(type, 2, result)
+    return new Vector2d().set(x, y)
   }
 
   /**
-  * Wrap a typed array as a 2D vector.
+  * Wrap a Float64Array as a 2 double vector.
   *
-  * @param {TypedArray} array - A typed array to wrap.
+  * @param {Float64Array} buffer - A buffer to wrap.
   *
-  * @return {Vector2D} The created vector instance.
+  * @return {Vector2d} The new vector instance.
   */
-  static wrap (
-    array,
-    result = Object.create(Vector2D.prototype)
-  ) {
-    // <development>
-    if (array.length !== 2) {
-      throw new InvalidParameterError(array, 'array', [
-        'Unnable to wrap the given array into a Vector2D instance, because ',
-        'the given array length is invalid : ', array.length, ' != 2'
-      ].join(''))
-    }
-    // </development>
-
-    return Vector.wrap(array, result)
+  static wrap (buffer) {
+    return new Vector2d(buffer)
   }
 
   /**
-  * Clone a Vector and return the result.
+  * Clone another 2 double vector and return the result.
   *
-  * @param {Vector} vector - A vector to clone.
+  * @param {Vector2d} vector - A 2 double vector to clone.
   *
-  * @return {Vector2D} The cloned vector.
+  * @return {Vector2d} The cloned vector instance.
   */
-  static clone (
-    vector,
-    result = Object.create(Vector2D.prototype)
-  ) {
-    // <development>
-    if (vector.cells !== 2) {
-      throw new InvalidParameterError(vector, 'vector', [
-        'Unnable to clone the given vector as a Vector2D instance, because ',
-        'the given vector dimension is invalid : ', vector.dimensions, ' != 2'
-      ].join(''))
-    }
-    // </development>
-
-    return Vector.clone(vector, result)
+  static clone (vector) {
+    const result = new Vector2d()
+    result.x = vector.x
+    result.y = vector.y
+    
+    return result
   }
 
   /**
-  * Create a new 2D vector.
+  * Create a new 2 double vector.
   *
-  * Delegate the construction to Vector2D.clone, Vector2D.create or
-  * Vector2D.wrap, by identifying the compatibility of theses methods with the
-  * given parameters of the constructor.
-  *
-  * @param {...any} params - Parameters for the construction.
+  * @param {Float64Array} [buffer = new Float64Array(2)] - A buffer to wrap.
   */
-  constructor (...params) {
-    if (params.length === 1 && params[0] instanceof Vector) {
-      super(...params, 2)
-    } else if (params.length === 1 && NumberType.is(params[0])) {
-      super(...params, 2)
-    } else if (params.length === 1) {
-      super(...params)
-    } else if (params.length > 1) {
-      const [type, ...data] = params
-      super(type, 2)
-      this.setAll(...data)
-    } else {
-      throw new InvalidParameterError('params', params, [
-        'The given parameters can\'t be passed to Vector2D.clone, ',
-        'Vector2D.create or Vector2D.wrap. Take a look to the documentation ',
-        'for more information.'
-      ].join(''))
-    }
+  constructor (buffer = new Float64Array(2)) {
+    this._buffer = buffer
   }
 
   /**
   * @return {number}
   */
   get x () {
-    return this._content[0]
-  }
-
-  /**
-  * @param {number} value
-  */
-  set x (value) {
-    this._content[0] = value
+      return this._content[0]
   }
 
   /**
   * @return {number}
   */
   get y () {
-    return this._content[1]
+      return this._content[1]
   }
 
   /**
-  * @param {number} value
+  * Set the value of the x component of this vector.
+  *
+  * @param {number} value - New value of the x component.
+  */
+  set x (value) {
+    this._content[0] = value
+  }
+
+  /**
+  * Set the value of the y component of this vector.
+  *
+  * @param {number} value - New value of the y component.
   */
   set y (value) {
     this._content[1] = value
   }
 
   /**
-  * @return {Vector2D}
+  * Return the underlying buffer of this vector.
+  *
+  * @return {Float64Array} The underlying buffer of this vector.
   */
-  get xy () {
-    return Vector2D.clone(this)
+  get buffer () {
+    return this._buffer
   }
 
   /**
-  * @return {Vector2D}
+  * Return the dimension of this vector.
+  *
+  * @return {number} The dimension of this vector.
   */
-  get yx () {
-    return Vector2D.clone(this).setAll(this._content[1], this._content[0])
+  get dimension () {
+    return 2
+  }
+
+  /**
+  * Return the squared length of this vector.
+  *
+  * @return {number} The squared length of this vector.
+  */
+  get squaredLength () {
+    return vector2d.squaredLength(this._buffer, 0)
+  }
+
+  /**
+  * Return the length of this vector.
+  *
+  * @return {number} The length of this vector.
+  */
+  get length () {
+    return vector2d.length(this._buffer, 0)
+  }
+
+  /**
+  * Set all components of this vector.
+  *
+  * @param x - x component of the new vector
+  * @param y - y component of the new vector
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  set (
+    x,
+    y
+  ) {
+    vector2d.set(this._buffer, 0, x, y)
+    return this
+  }
+
+  /**
+  * Add another vector to this vector.
+  *
+  * @param {Vector2d} left - Left operand vector.
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  add (left, result = this) {
+    vector2d.add(
+      this._buffer, 0, left.buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Subtract another vector to this vector.
+  *
+  * @param {Vector2d} left - Left operand vector.
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  subtract (left, result = this) {
+    vector2d.subtract(
+      this._buffer, 0, left.buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Multiply this vector with a scalar.
+  *
+  * @param {number} scalar
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  multiplyWithScalar (scalar, result = this) {
+    vector2d.multiplyWithScalar(
+      this._buffer, 0, scalar, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Mix this vector with another.
+  *
+  * @param {Vector2d} left - Left operand vector.
+  * @param {number} scalar - A value between 0 and 1.
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  mix (left, scalar, result = this) {
+    vector2d.mix(
+      this._buffer, 0, left.buffer, 0, scalar, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Divide this vector by a scalar.
+  *
+  * @param {number} scalar
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  divideWithScalar (scalar, result = this) {
+    vector2d.divideWithScalar(
+      this._buffer, 0, scalar, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Negate this vector.
+  *
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  negate (result = this) {
+    vector2d.negate(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Normalize this vector.
+  *
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  normalize (result = this) {
+    vector2d.normalize(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Ceil each component of this vector.
+  *
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  ceil (result = this) {
+    vector2d.ceil(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Floor each component of this vector.
+  *
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  floor (result = this) {
+    vector2d.floor(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Round each component of this vector.
+  *
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  round (result = this) {
+    vector2d.round(
+      this._buffer, 0, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Update each component of this vector less than the given minimum to the given minimum.
+  *
+  * @param {number} minimum - Minimum value allowed for each components of this vector.
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  minimum (minimum, result = this) {
+    vector2d.minimum(
+      this._buffer, 0, minimum, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Update each component of this vector greather than the given maximum to the given maximum.
+  *
+  * @param {number} maximum - Maximum value allowed for each components of this vector.
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  maximum (maximum, result = this) {
+    vector2d.maximum(
+      this._buffer, 0, maximum, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Clamp each component of this vector between a minimum and a amaximum value.
+  *
+  * @param {number} minimum - Minimum value allowed for each components of this vector.
+  * @param {number} maximum - Maximum value allowed for each components of this vector.
+  * @param {Vector2d} [result = this] - The result vector.
+  *
+  * @return {Vector2d} This vector instance for chaining purpose.
+  */
+  clamp (minimum, maximum, result = this) {
+    vector2d.clamp(
+      this._buffer, 0, minimum, maximum, result.buffer, 0
+    )
+
+    return this
+  }
+
+  /**
+  * Return the dot product of this vector with another one.
+  *
+  * @param {Vector2d} left - Left operand vector.
+  *
+  * @return {number} The result of the dot product.
+  */
+  dot (left, tolerance = Number.EPSILON) {
+    return vector2d.dot(this._buffer, 0, left.buffer, 0)
+  }
+
+  /**
+  * Iterate over each components of this vector.
+  *
+  * @return {Iterator<number>} An iterator over each components of this vector.
+  */
+  * [Symbol.iterator] () {
+    yield vectorBuffer[0]
+    yield vectorBuffer[1]
+  }
+
+  /**
+  * Return true if this vector is equal to another.
+  *
+  * @param {Vector2d} left - Left operand vector.
+  * @param {number} [tolerance = Number.EPSILON] - Tolerance to use for the equality comparison.
+  *
+  * @return {boolean} True if this vector is equal to the given vector, false otherwise.
+  */
+  equals (left, tolerance = Number.EPSILON) {
+    return vector2d.equals(this._buffer, 0, left.buffer, 0, tolerance)
+  }
+
+  /**
+  * Return a string representation of this vector.
+  *
+  * @return {String} A string representation of this vector.
+  */
+  toString () {
+    return vector2d.toString(this._buffer, 0)
   }
 }
-
-Object.assign(Vector2D, matrixCommon)
-Object.assign(Vector2D, vectorCommon)
-Object.assign(Vector2D, matrixArithmetic)
-Object.assign(Vector2D, vectorArithmetic)

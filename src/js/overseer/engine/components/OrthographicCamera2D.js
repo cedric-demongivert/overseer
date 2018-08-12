@@ -1,6 +1,6 @@
 import { Component } from '@overseer/engine/ecs'
 import { Length } from '@overseer/engine/Length'
-import { Matrix3D, Vector2D, NumberType } from '@glkit'
+import { Matrix3f, Vector2f } from '@glkit'
 import { Camera2D } from './Camera2D'
 
 @Component({ type: Component.typeof(Camera2D) })
@@ -9,8 +9,8 @@ export class OrthographicCamera2D extends Camera2D {
   * @see Component#initialize
   */
   initialize () {
-    this._viewToWorld = Matrix3D.create(NumberType.FLOAT)
-    this._worldToView = Matrix3D.create(NumberType.FLOAT)
+    this._viewToWorld = new Matrix3f()
+    this._worldToView = new Matrix3f()
     this._dirtyMatrices = true
 
     this.state = {
@@ -48,7 +48,7 @@ export class OrthographicCamera2D extends Camera2D {
   _computeMatrices () {
     const { left, right, top, bottom } = this.state
 
-    this._worldToView.setAll(
+    this._worldToView.set(
       2 / (right - left),
       0,
       -((right + left) / (right - left)),
@@ -60,8 +60,7 @@ export class OrthographicCamera2D extends Camera2D {
       1
     )
 
-    Matrix3D.invert(this._worldToView, this._viewToWorld)
-
+    this._worldToView.invert(this._viewToWorld)
     this._dirtyMatrices = false
   }
 
@@ -268,11 +267,10 @@ export class OrthographicCamera2D extends Camera2D {
   /**
   * Return the camera's center location.
   *
-  * @return {Vector2D} The camera's center location.
+  * @return {Vector2f} The camera's center location.
   */
   get center () {
-    return Vector2D.of(
-      NumberType.FLOAT,
+    return Vector2f.create(
       (this.state.left + this.state.right) / 2,
       (this.state.bottom + this.state.top) / 2
     )
@@ -281,7 +279,7 @@ export class OrthographicCamera2D extends Camera2D {
   /**
   * Change the camera's center location.
   *
-  * @param {Vector2D} value - The new camera's center location.
+  * @param {Vector2f} value - The new camera's center location.
   */
   set center (value) {
     const deltaX = value.x - this.centerX
