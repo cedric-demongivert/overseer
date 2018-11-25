@@ -31,8 +31,11 @@
     "raw-loader": "~0.5.1"
   },
   "dependencies": {
-    "@rnp/bus": "~1.2.0",
+    "@cedric-demongivert/gl-tool-buffer": "^0.0.3",
+    "@cedric-demongivert/gl-tool-core": "^0.0.2",
+    "@cedric-demongivert/gl-tool-math": "^0.0.8",
+    "@cedric-demongivert/gl-tool-shader": "^0.0.3",
     "babel-polyfill": "~6.26.0",
-    "webpack-dev-server": "^2.9.7"
+    "lodash": "^4.17.10"
   }
 }

@@ -7,11 +7,7 @@
       {
         "root": ["."],
         "alias": {
-          "@shaders": "./src/shaders",
-          "@glkit": "./src/js/glkit",
-          "@errors": "./src/js/errors",
-          "@overseer": "./src/js/overseer",
-          "@utils": "./src/js/utils"
+          "@glkit-math": "./src",
         },
         "extensions": [".js", ".json", ".jsx", ".css", ".sass", ".frag", ".vert"]
       }
@@ -20,14 +16,6 @@
       "babel-plugin-transform-builtin-extend",
       {
         "globals": ["Error"]
-      }
-    ],
-    [
-      "babel-plugin-groundskeeper-willie",
-      {
-          "removeConsole":  false,
-          "removeDebugger": true,
-          "removePragma":   true
       }
     ]
   ]
