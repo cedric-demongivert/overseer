@@ -1,3 +1,5 @@
+const lengthValue = Symbol()
+
 /**
 * A length.
 */
@@ -306,6 +308,10 @@ export class Length {
   toString () {
     return `${this.value}${this.unit}`
   }
+
+  [lengthValue] () {
+    return this
+  }
 }
 
 Length.am = 'am'
@@ -326,7 +332,7 @@ Length.Tm = 'Tm'
 Length.Pm = 'Pm'
 Length.Em = 'Em'
 Length.ua = 'ua'
-Length.lengthValue = _lengthValue
+Length.lengthValue = lengthValue
 
 const $values = new Map([
   [Length.am, 0.000000000000000001],

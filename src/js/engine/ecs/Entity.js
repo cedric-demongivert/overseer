@@ -1,4 +1,3 @@
-import { InvalidParameterError } from '@errors'
 import { Identifier } from './Identifier'
 
 /**
@@ -20,8 +19,7 @@ export class Entity {
     } else if (Identifier.is(value)) {
       return value
     } else {
-      throw new InvalidParameterError(
-        'value', value,
+      throw new Error(
         [
           `Unnable to fetch the identifier of '${value}', because `,
           `'${value}' is nor a valid identifier nor an entity.`

@@ -1,20 +1,54 @@
 import 'babel-polyfill'
 
 import {
-  OverseerScreen, Manager, Viewport, Entity, OrthographicCamera2D,
-  Texture2D, OverseerGeometry, Program, Material, Mesh, Transform,
-  CommonGeometrySystem, SquareGrid
-} from '@overseer'
-
-import { ColorRGBA } from '@glkit'
+  OverseerScreen,
+  Manager,
+  Viewport,
+  OrthographicCamera2D,
+  Entity
+} from './engine'
 
 const overseer = new OverseerScreen(document.getElementById('app'))
 
-const map = new Manager()
-map.addSystem(new CommonGeometrySystem())
+const manager = new Manager()
 
 // initialisation : vue
-const view = new Entity(map)
+const view = new Entity(manager)
+
+const viewport = view.create(Viewport)
+viewport.width = overseer.width
+viewport.height = overseer.height
+viewport.left = 0
+viewport.bottom = 0
+viewport.setBackground(0.98, 0.98, 0.98)
+
+window.addEventListener('resize', function updateTargetSize () {
+  viewport.width = overseer.width
+  viewport.height = overseer.height
+  viewport.left = 0
+  viewport.bottom = 0
+})
+
+const camera = view.create(OrthographicCamera2D)
+camera.right = overseer.width / 40
+camera.top = overseer.height / 40
+camera.left = 0
+camera.bottom = 0
+camera.unit = '1cm'
+camera.setCenter(0, 0)
+
+viewport.camera = camera
+
+window.addEventListener('resize', function updateTargetSize () {
+  camera.right = overseer.width / 40
+  camera.top = overseer.height / 40
+  camera.left = 0
+  camera.bottom = 0
+})
+
+/*
+// initialisation : vue
+const view = new Entity(manager)
 
 Object.assign(view.create(OrthographicCamera2D), {
   left: 0,
@@ -57,7 +91,7 @@ window.addEventListener('resize', function updateTargetSize () {
 })
 
 // initialisation : mesh
-const mesh = new Entity(map)
+const mesh = new Entity(manager)
 
 Object.assign(mesh.create(Texture2D), {
   wrapS: Texture2D.CLAMP_TO_EDGE,
@@ -93,25 +127,31 @@ Object.assign(mesh.create(Mesh), {
 })
 
 // initialisation : grille
-const grid = new Entity(map)
+const grid = new Entity(manager)
 
 Object.assign(grid.create(SquareGrid), {
   camera: view.get(OrthographicCamera2D)
 })
 
 // Rendering
-overseer.map = map
+overseer.manager = manager
+*/
 
-let lastTime = null
+overseer.map = manager
+
+const clock = {
+  seconds: 0,
+  delta: 0,
+  previous: null
+}
 
 function tick (time) {
-  const delta = ((lastTime != null) ? time - lastTime : time) / 1000
-  map.update(delta)
+  clock.seconds = time / 1000
+  clock.delta = clock.previous == null ? clock.seconds : clock.seconds - clock.previous
+  clock.previous = clock.seconds
 
-  //mesh.get(Transform).rotate((delta / 10) * Math.PI)
-  view.get(OrthographicCamera2D).unit = view.get(OrthographicCamera2D).unit.multiply(1 + delta / 10)
+  manager.update(clock.delta)
   overseer.render()
-  lastTime = time
 
   window.requestAnimationFrame(tick)
 }

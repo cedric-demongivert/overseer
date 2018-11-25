@@ -1,5 +1,3 @@
-import { InvalidParameterError } from '@errors'
-
 import { Identifier } from './Identifier'
 import { Entity } from './Entity'
 import { Component } from './Component'
@@ -73,7 +71,7 @@ export class Manager {
   *
   * @param {Entity|any} entity - The entity, or the identifier of the entity to add.
   *
-  * @throws {InvalidParameterError} If the entity to add already exists in this manager.
+  * @throws {Error} If the entity to add already exists in this manager.
   *
   * @return {Manager} The current manager instance for chaining purpose.
   */
@@ -81,8 +79,7 @@ export class Manager {
     const identifier = Entity.identifier(entity)
 
     if (this._entities.has(identifier)) {
-      throw new InvalidParameterError(
-        'entity', entity,
+      throw new Error(
         [
           `Unnable to add an entity identified as ${identifier} because `,
           `the identifier ${identifier} was already taken by another entity.`
@@ -225,8 +222,8 @@ export class Manager {
   *
   * @param {Component} component - Component to add.
   *
-  * @throws {InvalidParameterError} When the component as an id that is already taken by another manager component.
-  * @throws {InvalidParameterError} When the component was instanciated for another manager.
+  * @throws {Error} When the component as an id that is already taken by another manager component.
+  * @throws {Error} When the component was instanciated for another manager.
   *
   * @return {Manager} The current manager instance for chaining purpose.
   *
@@ -234,16 +231,14 @@ export class Manager {
   */
   addComponent (component) {
     if (component.manager !== this) {
-      throw new InvalidParameterError(
-        'component', component,
+      throw new Error(
         'Unnable to add a component that belongs to another manager.'
       )
     }
 
     if (this._components.get(component.identifier) !== component) {
       if (this._components.has(component.identifier)) {
-        throw new InvalidParameterError(
-          'component', component,
+        throw new Error(
           [
             `Unnable to add a component identified by ${component.identifier} `,
             `because the identifier ${component.identifier} was already taken `,
@@ -253,8 +248,7 @@ export class Manager {
       }
 
       if (!this._entities.has(component.entity)) {
-        throw new InvalidParameterError(
-          'component', component,
+        throw new Error(
           [
             'Unnable to add a component that belongs to the entity ',
             `${component.entity} because the entity ${component.entity} `,

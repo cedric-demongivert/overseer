@@ -1,4 +1,5 @@
-import { GLView } from '@cedric-demongivert/gl-tool-core
+import { GLView } from '@cedric-demongivert/gl-tool-core'
+import { GLToolRenderingSystem } from './systems'
 
 export class OverseerScreen {
   /**
@@ -12,7 +13,7 @@ export class OverseerScreen {
     this._element.appendChild(this._view.element)
     this._map = null
 
-    this._renderer = new GLKitRenderingSystem(this._view)
+    this._renderer = new GLToolRenderingSystem(this._view.context)
     this._systems = this._initializeSystems()
 
     this.updateScreenSize = this.updateScreenSize.bind(this)

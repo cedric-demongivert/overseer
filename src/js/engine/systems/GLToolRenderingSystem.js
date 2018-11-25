@@ -1,15 +1,16 @@
+import { Vector3f } from '@cedric-demongivert/gl-tool-math'
+
 import { System } from '@overseer/engine/ecs'
 import { Viewport } from '@overseer/engine/components'
-import { GLContext } from '@glkit'
 
 /**
 * A system that render the current scene with a given a GLKit context.
 */
-export class GLKitRenderingSystem extends System {
+export class GLToolRenderingSystem extends System {
   /**
   * Create a new GLKitRenderingSystem for a particular glkit context.
   *
-  * @param {GLContext|WebGLRenderingContext} context - A webgl context.
+  * @param {WebGLRenderingContext} context - A webgl context.
   * @param {object} viewport - Viewport configuration.
   */
   constructor (context, viewport = {}) {
@@ -18,7 +19,8 @@ export class GLKitRenderingSystem extends System {
     this._bottom = viewport.bottom || 0
     this._width = viewport.width || 0
     this._height = viewport.height || 0
-    this._context = GLContext.of(context)
+    this._context = context
+    this._color = new Vector3f()
   }
 
   /**
@@ -52,28 +54,51 @@ export class GLKitRenderingSystem extends System {
   * Render an ecs by using glkit.
   */
   render () {
-    const context = this._context
     const gl = this._context.context
+
+    this.initializeContext(gl)
+
+    for (const target of this.manager.components(Viewport)) {
+      this.renderViewport(gl, target)
+    }
+
+    this.resetContext(gl)
+  }
+
+  initializeContext (gl) {
     gl.viewport(this._left, this._bottom, this._width, this._height)
     gl.enable(gl.SCISSOR_TEST)
     gl.enable(gl.BLEND)
     gl.blendEquation(gl.FUNC_ADD)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+  }
 
-    for (const target of this.manager.components(Viewport)) {
-      gl.scissor(target.left, target.bottom, target.width, target.height)
-      gl.clearColor(...target.background)
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  renderViewport (gl, viewport) {
+    gl.scissor(
+      viewport.left,
+      viewport.bottom,
+      viewport.width,
+      viewport.height
+    )
 
-      if (target.camera) {
-        for (const system of this.manager.systems()) {
-          if (system !== this && system.render) {
-            system.render(context, target)
-          }
+    gl.clearColor(
+      viewport.background.r,
+      viewport.background.g,
+      viewport.background.b,
+      1
+    )
+
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+    if (viewport.camera) {
+      for (const system of this.manager.systems()) {
+        if (system !== this && system.render) {
+          system.render(gl, viewport)
         }
       }
     }
+  }
 
+  resetContext (gl) {
     gl.disable(gl.SCISSOR_TEST)
   }
 }

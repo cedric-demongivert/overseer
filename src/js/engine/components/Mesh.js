@@ -1,68 +1,97 @@
-import { Component, Relation } from '@overseer/engine/ecs'
-import { Material } from './Material'
-import { Geometry } from './geometry'
+import { Component } from '@overseer/engine/ecs'
 
 /**
 * Define a program.
 */
-@Component({ type: 'overseer:engine:mesh' })
+@Component({ type: 'overseer:mesh' })
 export class Mesh {
   /**
   * @see Component#initialize
   */
   initialize () {
-    this.state = {
-      material: null,
-      geometry: null,
-      render: true
-    }
+    this._material = null
+    this._geometry = null
+    this._visible = true
   }
 
   /**
-  * @param {boolean} value
+  * @return {boolean} True if this mesh is rendered, false otherwise.
   */
-  set render (value) {
-    this.state.render = value
+  get visible () {
+    return this._visible
   }
 
   /**
-  * @return {boolean}
+  * Change the rendering status of this mesh.
+  *
+  * @param {boolean} value - True to display this mesh, false otherwise.
   */
-  get render () {
-    return this.state.render
+  set visible (value) {
+    this.setVisible(value)
   }
 
   /**
-  * @return {Material}
+  * Change the rendering status of this mesh.
+  *
+  * @param {boolean} value - True to display this mesh, false otherwise.
+  * @return {Mesh} The current instance for chaining purposes.
   */
-  @Relation.one(Material)
+  setVisible (value) {
+    this._visible = value
+    return this
+  }
+
+  /**
+  * @return {Material} The material used to render this mesh.
+  */
   get material () {
-    return this.state.material
+    return this._material
   }
 
   /**
-  * @param {Material} value
+  * Change the material used to render this mesh.
+  *
+  * @param {Material} value - The new material to use to render this mesh.
   */
-  @Relation.one(Material)
   set material (value) {
-    this.state.material = value
-    this.touch()
+    this.setMaterial(value)
   }
 
   /**
-  * @return {Geometry}
+  * Change the material used to render this mesh.
+  *
+  * @param {Material} value - The new material to use to render this mesh.
+  * @return {Mesh} The current instance for chaining purposes.
   */
-  @Relation.one(Geometry)
+  setMaterial (value) {
+    this._material = value
+    return this
+  }
+
+  /**
+  * @return {Geometry} The structure of this mesh.
+  */
   get geometry () {
-    return this.state.geometry
+    return this._geometry
   }
 
   /**
-  * @param {Geometry} value
+  * Change the structure of this mesh.
+  *
+  * @param {Geometry} value - The new structure of this mesh.
   */
-  @Relation.one(Geometry)
   set geometry (value) {
-    this.state.geometry = value
-    this.touch()
+    this.setGeometry(value)
+  }
+
+  /**
+  * Change the structure of this mesh.
+  *
+  * @param {Geometry} value - The new structure of this mesh.
+  * @return {Mesh} The current instance for chaining purposes.
+  */
+  setGeometry (value) {
+    this._geometry = value
+    return this
   }
 }

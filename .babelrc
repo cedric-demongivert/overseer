@@ -1,5 +1,12 @@
 {
-  "presets": ["es2015", "es2016"],
+  "presets": [
+    [
+      "babel-preset-env",
+      {
+        "targets": "> 0.25%, ie 11"
+      }
+    ]
+  ],
   "plugins": [
     "transform-decorators-legacy",
     [
@@ -7,9 +14,11 @@
       {
         "root": ["."],
         "alias": {
-          "@glkit-math": "./src",
+          "@overseer": "./src/js"
         },
-        "extensions": [".js", ".json", ".jsx", ".css", ".sass", ".frag", ".vert"]
+        "extensions": [
+          ".js", ".json", ".jsx"
+        ]
       }
     ],
     [

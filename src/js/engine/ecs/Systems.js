@@ -1,4 +1,3 @@
-import { InvalidParameterError, InvalidInvocationError } from '@errors'
 import { System } from './System'
 
 const SYSTEM_STATE = {
@@ -46,7 +45,7 @@ export class Systems {
   _assertThatSystemServicesAreValid (system) {
     for (const service of System.services(system)) {
       if (this._services.has(service)) {
-        throw new InvalidParameterError('system', system, [
+        throw new Error([
           'Unnable to register the given system into the manager ',
           `${this._manager} because the service ${service.name} provided by the `,
           'given system is already registered by another service of the ',
@@ -65,8 +64,7 @@ export class Systems {
   */
   add (system) {
     if (this._updating) {
-      throw new InvalidInvocationError(
-        this.add,
+      throw new Error(
         'Unnable to mutate a system collection during an update.'
       )
     }
@@ -95,8 +93,7 @@ export class Systems {
   */
   delete (system) {
     if (this._updating) {
-      throw new InvalidInvocationError(
-        this.add,
+      throw new Error(
         'Unnable to mutate a system collection during an update.'
       )
     }
@@ -132,8 +129,7 @@ export class Systems {
   */
   update (delta) {
     if (this._updating) {
-      throw new InvalidInvocationError(
-        this.add,
+      throw new Error(
         'Trying to update an updating system.'
       )
     } else {
@@ -178,7 +174,7 @@ export class Systems {
   */
   service (service) {
     if (!this._services.has(service)) {
-      throw new InvalidParameterError('service', service, [
+      throw new Error([
         `Unnable to retrieve the service ${service.name} because it was `,
         'not currently provided by any system of this manager. Did you forgot ',
         'to register a system ?'

@@ -224,11 +224,11 @@ export class OrthographicCamera2D extends Camera2D {
     const hwidth = this.width / 2
     const hheight = this.height / 2
 
-    this._bottom = value.y - hheight
-    this._top = value.y + hheight
+    this._bottom = y - hheight
+    this._top = y + hheight
 
-    this._left = value.x - hwidth
-    this._right = value.x + hwidth
+    this._left = x - hwidth
+    this._right = x + hwidth
     this._synchronized = false
 
     return this
@@ -333,7 +333,7 @@ export class OrthographicCamera2D extends Camera2D {
   */
   setLeft (value) {
     const width = this.width
-    
+
     this._left = value
     this._right = value + width
     this._synchronized = false

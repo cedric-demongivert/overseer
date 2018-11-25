@@ -1,5 +1,3 @@
-import { InvalidParameterError } from '@errors'
-
 import { ComponentHandler } from './ComponentHandler'
 import { Entity } from './Entity'
 import { Identifier } from './Identifier'
@@ -245,13 +243,11 @@ export function Component ({ type, constructorIdentifier }) {
     rename(Result, `@Register(${Class.name})`)
 
     if (CONSTRUCTORS.has(constructorIdentifier)) {
-      throw new InvalidParameterError(
-        'configuration.constructorIdentifier', constructorIdentifier,
-        [
-          'The given, or generated constructorIdentifier already exists in ',
+      throw new Error([
+          'Invalid constructorIdentifier : the given, or generated ',
+          'constructorIdentifier already exists in ',
           'the current constructor database.'
-        ].join('')
-      )
+      ].join(''))
     } else {
       CONSTRUCTORS.set(constructorIdentifier, Result)
     }
@@ -288,10 +284,10 @@ Component.typeof = function (component) {
   } else if (component.constructor[_isComponent]) {
     return component.constructor[_type]
   } else {
-    throw new InvalidParameterError(
-      'component', component,
-      'The given value is nor a component nor a class.'
-    )
+    throw new Error([
+      'Unable to determine the type of the given value : the given value is ',
+      'nor a component nor a class.'
+    ].join(''))
   }
 }
 
@@ -308,10 +304,10 @@ Component.constructorIdentifier = function (component) {
   } else if (component.constructor[_isComponent]) {
     return component.constructor[_constructorIdentifier]
   } else {
-    throw new InvalidParameterError(
-      'component', component,
-      'The given value is nor a component nor a class.'
-    )
+    throw new Error([
+      'Unable to determine the constructor identifier of the given value : ',
+      'the given value is nor a component nor a class.'
+    ].join(''))
   }
 }
 
@@ -332,13 +328,11 @@ Component.constructor = function (component) {
       component.constructor[_constructorIdentifier]
     )
   } else {
-    throw new InvalidParameterError(
-      'component', component,
-      [
-        'The given value is not a component, not a class and not a ',
-        'constructor identifier.'
-      ].join('')
-    )
+    throw new Error([
+      'Unable to retrieve the constructor of the given value : ',
+      'the given value is not a component, not a class and not a ',
+      'constructor identifier.'
+    ].join(''))
   }
 }
 
@@ -355,13 +349,10 @@ Component.identifier = function (value) {
   } else if (Identifier.is(value)) {
     return value
   } else {
-    throw new InvalidParameterError(
-      'value', value,
-      [
-        `Unnable to fetch the identifier of '${value}', because `,
-        `'${value}' is nor a valid identifier, nor a component.`
-      ].join('')
-    )
+    throw new Error([
+      `Unnable to fetch the identifier of '${value}', because `,
+      `'${value}' is nor a valid identifier, nor a component.`
+    ].join(''))
   }
 }
 

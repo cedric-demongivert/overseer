@@ -1,4 +1,3 @@
-import { InvalidParameterError } from '@errors'
 import { Component } from './Component'
 
 const _wrapped = Symbol('Relation#_wrapped')
@@ -25,7 +24,7 @@ export class Relation {
         const component = this.manager.getComponent(identifier)
 
         if (component.type !== Component.typeof(Type)) {
-          throw new InvalidParameterError('value', value, [
+          throw new Error([
             `Incompatible component type : ${component.type} instead of `,
             `${Component.typeof(Type)}.`
           ].join(''))
