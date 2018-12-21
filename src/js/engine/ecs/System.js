@@ -1,49 +1,7 @@
-const _services = Symbol('System#_services')
-
 /**
 * An engine system.
 */
 export class System {
-  /**
-  * Allow to define which services a system can provide.
-  *
-  * @param {Iterable<Class>|function (system : System) : Iterable<Class>} services - Services that the current system can provide.
-  *
-  * @return {function (clazz : Class) : Class} A decorator.
-  */
-  static provide (services) {
-    return function (Class) {
-      Object.defineProperty(Class, _services, {
-        value: (typeof services[Symbol.iterator] === 'function') ? [...services]
-                                                                 : services,
-        configurable: true,
-        enumerable: false,
-        writable: false
-      })
-
-      return Class
-    }
-  }
-
-  /**
-  * Return an iterator over all services provided by a System.
-  *
-  * @param {System} system - A system to check.
-  *
-  * @return {Iterator<Class>} An iterator over all services provided by the given system.
-  */
-  static * services (system) {
-    const services = system.constructor[_services]
-
-    if (services == null) {
-
-    } else if (typeof services === 'function') {
-      yield * services(system)
-    } else {
-      yield * services
-    }
-  }
-
   /**
   * Create a new empty system.
   */
@@ -54,14 +12,10 @@ export class System {
   /**
   * Return the manager of this system.
   *
-  * @return {EntityManager} The manager of this system.
+  * @return {EntityComponentSystem} The manager of this system.
   */
   get manager () {
     return this._manager
-  }
-
-  service (service) {
-    return this._manager.service(service)
   }
 
   /**
@@ -72,56 +26,56 @@ export class System {
   /**
   * Called when the parent entity manager will add an entity.
   *
-  * @param {any} entity - The identifier of the entity to add.
+  * @param {number} entity - The identifier of the entity to add.
   */
   managerWillAddEntity (entity) { }
 
   /**
   * Called when the parent entity manager did add an entity.
   *
-  * @param {any} entity - The identifier of the added entity.
+  * @param {number} entity - The identifier of the added entity.
   */
   managerDidAddEntity (entity) { }
 
   /**
   * Called when the parent manager will delete an entity.
   *
-  * @param {any} entity - The identifier of the entity that will be deleted.
+  * @param {number} entity - The identifier of the entity that will be deleted.
   */
   managerWillDeleteEntity (entity) { }
 
   /**
   * Called when the parent manager did delete an entity.
   *
-  * @param {any} entity - The identifier of the entity that was deleted.
+  * @param {number} entity - The identifier of the entity that was deleted.
   */
   managerDidDeleteEntity (entity) { }
 
   /**
   * Called when the parent manager will add a component.
   *
-  * @param {Component} component - The component that will be added.
+  * @param {any} component - The component that will be added.
   */
   managerWillAddComponent (component) {}
 
   /**
   * Called when the parent manager did add a component.
   *
-  * @param {Component} component - The component that was added.
+  * @param {any} component - The component that was added.
   */
   managerDidAddComponent (component) {}
 
   /**
   * Called when the parent manager will delete a component.
   *
-  * @param {Component} component - The component that will be deleted.
+  * @param {any} component - The component that will be deleted.
   */
   managerWillDeleteComponent (component) {}
 
   /**
   * Called when the parent manager did delete a component.
   *
-  * @param {Component} component - The component that was deleted.
+  * @param {any} component - The component that was deleted.
   */
   managerDidDeleteComponent (component) {}
 
@@ -155,7 +109,7 @@ export class System {
   /**
   * Attach this system to a manager.
   *
-  * @param {Manager} manager - The future parent manager.
+  * @param {EntityComponentSystem} manager - The future parent manager.
   *
   * @return {System} The current system instance for chaining purpose.
   */
@@ -166,6 +120,8 @@ export class System {
       this._manager = manager
       this._manager.addSystem(this)
     }
+
+    return this
   }
 
   /**
@@ -176,23 +132,12 @@ export class System {
   detach () {
     if (this._manager != null) {
       if (this._manager.hasSystem(this)) {
-        this._manager.deleteSystem(this)
-      } else {
+        const oldManager = this._manager
         this._manager = null
+        oldManager.deleteSystem(this)
       }
     }
 
     return this
-  }
-
-  /**
-  * Return a service provided by this system.
-  *
-  * @param {Class} service - The service to return.
-  *
-  * @return {any} The service instance.
-  */
-  getService (service) {
-    return undefined
   }
 }

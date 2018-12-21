@@ -6,6 +6,7 @@ uniform mat3 localeToWorldNormal;
 uniform mat3 worldToViewNormal;
 
 varying vec4 fragColor;
+varying vec2 fragUv;
 
 void main () {
   gl_FragColor = fragColor;

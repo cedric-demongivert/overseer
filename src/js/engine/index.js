@@ -3,5 +3,5 @@ export * from './systems'
 export * from './components'
 
 export { Length } from './Length'
-export { OverseerMeshStructure } from './OverseerMeshStructure'
+export { overseerMeshStructure } from './overseerMeshStructure'
 export { OverseerScreen } from './OverseerScreen'

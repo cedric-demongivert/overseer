@@ -3,9 +3,9 @@ import { Component } from '@overseer/engine/ecs'
 /**
 * Define a geometry.
 */
-@Component({ type: 'overseer:geometry' })
+@Component({ name: 'overseer:geometry' })
 export class Geometry {
-  initialize () {
+  constructor () {
     this._vertices = null
     this._faces = null
   }
@@ -24,5 +24,22 @@ export class Geometry {
 
   set faceBuffer (buffer) {
     this._faces = buffer
+  }
+
+  setVertexBuffer (buffer) {
+    this._vertices = buffer
+    return this
+  }
+
+  setFaceBuffer (buffer) {
+    this._faces = buffer
+    return this
+  }
+
+  commit () {
+    if (this._vertices) this._vertices.commit()
+    if (this._faces) this._faces.commit()
+
+    return this
   }
 }

@@ -1,7 +1,7 @@
 import { Matrix3f } from '@cedric-demongivert/gl-tool-math'
 import { Component } from '@overseer/engine/ecs'
 
-@Component({ type: 'overseer:camera:2d' })
+@Component({ name: 'overseer:camera:2d' })
 export class Camera2D {
   /**
   * @return {Matrix3f} The World to view transformation matrix.

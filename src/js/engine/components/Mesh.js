@@ -3,12 +3,9 @@ import { Component } from '@overseer/engine/ecs'
 /**
 * Define a program.
 */
-@Component({ type: 'overseer:mesh' })
+@Component({ name: 'overseer:mesh' })
 export class Mesh {
-  /**
-  * @see Component#initialize
-  */
-  initialize () {
+  constructor () {
     this._material = null
     this._geometry = null
     this._visible = true

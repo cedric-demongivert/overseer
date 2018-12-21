@@ -1,5 +1,5 @@
 import { GLView } from '@cedric-demongivert/gl-tool-core'
-import { GLToolRenderingSystem } from './systems'
+import { GLToolRenderingSystem, GLToolMeshRenderingSystem } from './systems'
 
 export class OverseerScreen {
   /**
@@ -25,7 +25,8 @@ export class OverseerScreen {
 
   _initializeSystems () {
     return [
-      this._renderer
+      this._renderer,
+      new GLToolMeshRenderingSystem()
     ]
   }
 

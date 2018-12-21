@@ -3,7 +3,7 @@ import { Component } from '@overseer/engine/ecs'
 /**
 * Define a material
 */
-@Component({ type: 'overseer:material' })
+@Component({ name: 'overseer:material' })
 export class Material {
   /**
   * Create a new empty material.
@@ -25,6 +25,15 @@ export class Material {
   */
   set program (value) {
     this._program = value
+  }
+
+  getProgram () {
+    return this._program
+  }
+
+  setProgram (value) {
+    this._program = value
+    return this
   }
 
   /**

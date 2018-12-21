@@ -1,159 +1,114 @@
 import 'babel-polyfill'
 
+import { ignite } from './ignite'
+
 import {
   OverseerScreen,
-  Manager,
+  EntityComponentSystem,
+  EntityFactory,
   Viewport,
   OrthographicCamera2D,
-  Entity
+  overseerMeshStructure,
+  Program,
+  Geometry,
+  Transform,
+  Material,
+  Buffer,
+  Shader,
+  Mesh
 } from './engine'
+
 
 const overseer = new OverseerScreen(document.getElementById('app'))
 
-const manager = new Manager()
+const manager = new EntityComponentSystem()
+const entities = new EntityFactory(manager)
 
 // initialisation : vue
-const view = new Entity(manager)
+const view = entities.create()
 
-const viewport = view.create(Viewport)
-viewport.width = overseer.width
-viewport.height = overseer.height
-viewport.left = 0
-viewport.bottom = 0
-viewport.setBackground(0.98, 0.98, 0.98)
+view.create(Viewport)
+    .setWidth(overseer.width)
+    .setHeight(overseer.height)
+    .setLeft(0)
+    .setBottom(0)
+    .setBackground(0.0, 0.0, 0.0)
 
-window.addEventListener('resize', function updateTargetSize () {
-  viewport.width = overseer.width
-  viewport.height = overseer.height
-  viewport.left = 0
-  viewport.bottom = 0
-})
-
-const camera = view.create(OrthographicCamera2D)
-camera.right = overseer.width / 40
-camera.top = overseer.height / 40
-camera.left = 0
-camera.bottom = 0
-camera.unit = '1cm'
-camera.setCenter(0, 0)
-
-viewport.camera = camera
+const viewport = view.get(Viewport)
 
 window.addEventListener('resize', function updateTargetSize () {
-  camera.right = overseer.width / 40
-  camera.top = overseer.height / 40
-  camera.left = 0
-  camera.bottom = 0
+  viewport.setWidth(overseer.width)
+          .setHeight(overseer.height)
+          .setLeft(0)
+          .setBottom(0)
 })
 
-/*
-// initialisation : vue
-const view = new Entity(manager)
+view.create(OrthographicCamera2D)
+    .setWidth(overseer.width / 40)
+    .setHeight(overseer.height / 40)
+    .setCenter(0, 0)
+    .setUnit('1cm')
 
-Object.assign(view.create(OrthographicCamera2D), {
-  left: 0,
-  bottom: 0,
-  right: overseer.width / 40,
-  top: overseer.height / 40,
-  unit: '1cm'
-})
-
-view.get(OrthographicCamera2D).centerX = 0
-view.get(OrthographicCamera2D).centerY = 0
-
-Object.assign(view.create(Viewport), {
-  left: 0,
-  bottom: 0,
-  right: overseer.width,
-  top: overseer.height,
-  camera: view.get(OrthographicCamera2D),
-  background: new ColorRGBA().setHex(0xf0f0f0ff)
-})
-
+viewport.camera = view.get(OrthographicCamera2D)
 
 window.addEventListener('resize', function updateTargetSize () {
-  Object.assign(view.get(Viewport), {
-    left: 0,
-    bottom: 0,
-    right: overseer.width,
-    top: overseer.height
-  })
-
-  Object.assign(view.get(OrthographicCamera2D), {
-    left: 0,
-    bottom: 0,
-    right: overseer.width / 40,
-    top: overseer.height / 40
-  })
-
-  view.get(OrthographicCamera2D).centerX = 0
-  view.get(OrthographicCamera2D).centerY = 0
+  viewport.camera.setWidth(overseer.width / 40)
+                 .setHeight(overseer.height / 40)
+                 .setCenter(0, 0)
+                 .setUnit('1cm')
 })
 
-// initialisation : mesh
-const mesh = new Entity(manager)
+// initialisation : geometry
+const geometry = entities.create()
 
-Object.assign(mesh.create(Texture2D), {
-  wrapS: Texture2D.CLAMP_TO_EDGE,
-  wrapT: Texture2D.CLAMP_TO_EDGE,
-  mignificationFilter: Texture2D.LINEAR,
-  magnificationFilter: Texture2D.LINEAR,
-  content: document.getElementById('texture')
-})
+const triangleHeight = Math.sqrt(0.75)
+geometry.create(Buffer.Structure.Grouped, overseerMeshStructure, 3)
+        .push(3)
+        .setPosition(0, -0.5, -1/3 * triangleHeight)
+        .setPosition(1, 0, 2/3 * triangleHeight)
+        .setPosition(2, 0.5, -1/3 * triangleHeight)
+        .setUv(0, 0, 0)
+        .setUv(1, 0.5, 1)
+        .setUv(2, 1, 0)
+        .setColor(0, 1, 0, 0, 1)
+        .setColor(1, 0, 1, 0, 1)
+        .setColor(2, 0, 0, 1, 1)
 
-mesh.create(OverseerGeometry.Quad)
+geometry.create(Buffer.Face)
+        .push(0, 1, 2)
 
-Object.assign(mesh.create(Transform), {
-  size: [15, 15],
-  position: [0, 0, 0],
-  unit: '1cm'
-})
+geometry.create(Geometry)
+        .setVertexBuffer(geometry.get(Buffer.Structure.Grouped))
+        .setFaceBuffer(geometry.get(Buffer.Face))
 
-Object.assign(mesh.create(Program), {
-  vertexShader: require('@shaders/texture.vert'),
-  fragmentShader: require('@shaders/texture.frag')
-})
+// initialisation : material
+const material = entities.create()
 
-Object.assign(mesh.create(Material), {
-  program: mesh.get(Program)
-})
+material.create(Shader.Fragment, require('@shaders/basic.frag'))
+material.create(Shader.Vertex, require('@shaders/basic.vert'))
+material.create(
+  Program,
+  material.get(Shader.Vertex),
+  material.get(Shader.Fragment)
+)
+material.create(Material)
+        .setProgram(material.get(Program))
 
-mesh.get(Material).uniforms.colors = mesh.get(Texture2D)
+const mesh = entities.create()
 
-Object.assign(mesh.create(Mesh), {
-  material: mesh.get(Material),
-  geometry: mesh.get(OverseerGeometry.Quad),
-  render: true
-})
+mesh.create(Mesh)
+    .setGeometry(geometry.get(Geometry))
+    .setMaterial(material.get(Material))
 
-// initialisation : grille
-const grid = new Entity(manager)
-
-Object.assign(grid.create(SquareGrid), {
-  camera: view.get(OrthographicCamera2D)
-})
-
-// Rendering
-overseer.manager = manager
-*/
+mesh.create(Transform)
+    .setPosition(0, 0)
+    .setSize(10, 10)
+    .setUnit('1cm')
 
 overseer.map = manager
 
-const clock = {
-  seconds: 0,
-  delta: 0,
-  previous: null
-}
-
-function tick (time) {
-  clock.seconds = time / 1000
-  clock.delta = clock.previous == null ? clock.seconds : clock.seconds - clock.previous
-  clock.previous = clock.seconds
-
-  manager.update(clock.delta)
+ignite(function (delta) {
+  manager.update(delta)
+  mesh.get(Transform).rotate((2 * Math.PI) * delta * 0.1)
   overseer.render()
-
-  window.requestAnimationFrame(tick)
-}
-
-window.requestAnimationFrame(tick)
+})

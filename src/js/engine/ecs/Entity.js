@@ -1,5 +1,3 @@
-import { Identifier } from './Identifier'
-
 /**
 * An entity.
 *
@@ -7,45 +5,24 @@ import { Identifier } from './Identifier'
 */
 export class Entity {
   /**
-  * Return an entity identifier.
-  *
-  * @param {Entity|Identifier} value - An entity or an entity identifier.
-  *
-  * @return {Identifier} An entity identifier.
-  */
-  static identifier (value) {
-    if (value instanceof Entity) {
-      return value._identifier
-    } else if (Identifier.is(value)) {
-      return value
-    } else {
-      throw new Error(
-        [
-          `Unnable to fetch the identifier of '${value}', because `,
-          `'${value}' is nor a valid identifier nor an entity.`
-        ].join('')
-      )
-    }
-  }
-
-  /**
   * Create an entity and register it into a manager.
   *
-  * @param {Manager} manager - The entity related manager.
-  * @param {Identifier} [identifier=Identifier.create()] - The entity identifier.
+  * @param {EntityComponentSystem} manager - The entity related manager.
+  * @param {number} identifier - The entity identifier.
   */
   constructor (manager, identifier) {
-    this._identifier = identifier || Identifier.create()
+    this._identifier = identifier
     this._manager = manager
-    if (!this._manager.hasEntity(this)) {
-      this._manager.addEntity(this)
+
+    if (!this._manager.hasEntity(identifier)) {
+      this._manager.addEntity(identifier)
     }
   }
 
   /**
   * Return the entity identifier.
   *
-  * @return {any} The entity identifier.
+  * @return {number} The entity identifier.
   */
   get identifier () {
     return this._identifier
@@ -54,7 +31,7 @@ export class Entity {
   /**
   * Return the related entity manager.
   *
-  * @return {Manager} The related entity manager.
+  * @return {EntityComponentSystem} The related entity manager.
   */
   get manager () {
     return this._manager
@@ -63,7 +40,7 @@ export class Entity {
   /**
   * Check if this entity has a component of a particular type.
   *
-  * @param {any} type - A component type.
+  * @param {function} type - A component type.
   *
   * @return {boolean} True if this entity has any component of the given type.
   */
@@ -74,7 +51,7 @@ export class Entity {
   /**
   * Return a component of a particular type.
   *
-  * @param {any} type - A component type.
+  * @param {function} type - A component type.
   *
   * @return {Component} The component of the given type, if exists.
   */
@@ -89,8 +66,9 @@ export class Entity {
   *
   * @return {Component} The created component.
   */
-  create (type) {
-    return this._manager.createComponent(this._identifier, type)
+  create (type, ...parameters) {
+    this._manager.createComponent(this._identifier, type, ...parameters)
+    return this._manager.getComponent(this._identifier, type)
   }
 
   /**
@@ -106,23 +84,18 @@ export class Entity {
   }
 
   /**
-  * Iterate over all components of this entity.
+  * Return all components of this entity.
   *
-  * @return {Iterator<Component>} An iterator over all components of this entity.
+  * @return {Set<Component>} All components of this entity.
   */
-  * components () {
-    yield * this._manager.componentsOf(this._identifier)
+  get components () {
+    return this._manager.componentsOf(this._identifier)
   }
 
   /**
   * @see Object#toString
   */
   toString () {
-    return [
-      'Entity {',
-      `  identifier: ${this._identifier},`,
-      `  manager: ${this._manager},`,
-      '}'
-    ].join('\n')
+    return `Entity ${this._identifier}`
   }
 }

@@ -27,14 +27,14 @@
     "esdoc-standard-plugin": "^1.0.0",
     "jest": "^23.6.0",
     "laravel-mix": "^2.1.14",
-    "regenerator-runtime": "^0.12.1",
-    "raw-loader": "~0.5.1"
+    "raw-loader": "~0.5.1",
+    "regenerator-runtime": "^0.12.1"
   },
   "dependencies": {
-    "@cedric-demongivert/gl-tool-buffer": "^0.0.3",
+    "@cedric-demongivert/gl-tool-buffer": "^0.0.6",
     "@cedric-demongivert/gl-tool-core": "^0.0.2",
-    "@cedric-demongivert/gl-tool-math": "^0.0.8",
-    "@cedric-demongivert/gl-tool-shader": "^0.0.3",
+    "@cedric-demongivert/gl-tool-math": "^0.0.9",
+    "@cedric-demongivert/gl-tool-shader": "^0.0.9",
     "babel-polyfill": "~6.26.0",
     "lodash": "^4.17.10"
   }

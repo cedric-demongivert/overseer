@@ -58,7 +58,7 @@ export class GLToolRenderingSystem extends System {
 
     this.initializeContext(gl)
 
-    for (const target of this.manager.components(Viewport)) {
+    for (const target of this.manager.getComponentsOfType(Viewport)) {
       this.renderViewport(gl, target)
     }
 
@@ -69,8 +69,14 @@ export class GLToolRenderingSystem extends System {
     gl.viewport(this._left, this._bottom, this._width, this._height)
     gl.enable(gl.SCISSOR_TEST)
     gl.enable(gl.BLEND)
+    gl.enable(gl.DEPTH_TEST)
     gl.blendEquation(gl.FUNC_ADD)
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+    gl.blendFuncSeparate(
+      gl.SRC_ALPHA,
+      gl.ONE_MINUS_SRC_ALPHA,
+      gl.ONE,
+      gl.ONE_MINUS_SRC_ALPHA
+    )
   }
 
   renderViewport (gl, viewport) {
@@ -85,12 +91,15 @@ export class GLToolRenderingSystem extends System {
       viewport.background.r,
       viewport.background.g,
       viewport.background.b,
-      1
+      1.0
     )
 
+    gl.clearDepth(1.0)
+
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
     if (viewport.camera) {
-      for (const system of this.manager.systems()) {
+      for (const system of this.manager.systems) {
         if (system !== this && system.render) {
           system.render(gl, viewport)
         }
@@ -100,5 +109,7 @@ export class GLToolRenderingSystem extends System {
 
   resetContext (gl) {
     gl.disable(gl.SCISSOR_TEST)
+    gl.disable(gl.BLEND)
+    gl.disable(gl.DEPTH_TEST)
   }
 }

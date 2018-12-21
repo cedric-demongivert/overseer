@@ -58,7 +58,7 @@ export class Length {
       if (params instanceof Array) {
         return instance.set(...params)
       } else {
-        return instance.set(params)
+        return instance.set(params.value, params.unit)
       }
     }
 

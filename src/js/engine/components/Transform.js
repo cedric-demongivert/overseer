@@ -5,7 +5,7 @@ import { Matrix3f, Vector3f, Vector2f } from '@cedric-demongivert/gl-tool-math'
 /**
 * Assign a transformation matrix to the current entity.
 */
-@Component({ type: 'overseer:transform' })
+@Component({ name: 'overseer:transform' })
 export class Transform {
   /**
   * Apply a unit scale transformation to a given Matrix3f
@@ -53,7 +53,7 @@ export class Transform {
   * @return {Matrix3f} The world to local transformation matrix.
   */
   get worldToLocal () {
-    if (this._synchronized) this.synchronize()
+    if (!this._synchronized) this.synchronize()
     return this._worldToLocal
   }
 
@@ -73,7 +73,7 @@ export class Transform {
   * @return {Matrix3f} The local to world transformation matrix.
   */
   get localToWorld () {
-    if (this._synchronized) this.synchronize()
+    if (!this._synchronized) this.synchronize()
     return this._localToWorld
   }
 
@@ -103,8 +103,9 @@ export class Transform {
         this._localToWorld,
         this._localToWorld
       )
-      this._localToWorld.invert(this._worldToLocal)
     }
+
+    this._localToWorld.invert(this._worldToLocal)
 
     this.synchronized = true
   }
@@ -229,9 +230,9 @@ export class Transform {
   */
   setSize (width, height) {
     const transformation = this._transformation
-    const oldSize = new Vector2f()
+    const oldSize = new Vector3f()
 
-    transformation.extract2DScale(oldSize)
+    transformation.extractScale(oldSize)
     transformation.scale(width / oldSize.x, height / oldSize.y, 1.0)
 
     this.synchronized = false
@@ -321,7 +322,7 @@ export class Transform {
     const oldRotation = transformation.extract2DRotation()
 
     transformation.rotate(
-      newRotation - oldRotation, 0, 0
+      0, 0, newRotation - oldRotation
     )
 
     this.synchronized = false
@@ -424,7 +425,7 @@ export class Transform {
   * @return {Transform} This object for chaining purpose.
   */
   rotate (theta) {
-    this._transformation.rotate(theta, 0, 0)
+    this._transformation.rotate(0, 0, theta)
     this.synchronized = false
 
     return this

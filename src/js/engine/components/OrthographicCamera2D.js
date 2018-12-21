@@ -3,12 +3,16 @@ import { Component } from '@overseer/engine/ecs'
 import { Length } from '@overseer/engine/Length'
 import { Camera2D } from './Camera2D'
 
-@Component({ type: Component.typeof(Camera2D) })
+@Component({
+  name: 'overseer:camera:2d:orthographic',
+  sameAs: [Camera2D]
+})
 export class OrthographicCamera2D extends Camera2D {
   /**
   * @see Component#initialize
   */
-  initialize () {
+  constructor () {
+    super()
     this._viewToWorld = new Matrix3f()
     this._worldToView = new Matrix3f()
     this._synchronized = false
@@ -23,7 +27,7 @@ export class OrthographicCamera2D extends Camera2D {
   * @see Camera2D#get worldToView
   */
   get worldToView () {
-    if (this._dirtyMatrices) this._computeMatrices()
+    if (!this._synchronized) this.synchronize()
     return this._worldToView
   }
 
@@ -39,7 +43,7 @@ export class OrthographicCamera2D extends Camera2D {
   * @see Camera2D#get viewToWorld
   */
   get viewToWorld () {
-    if (this._dirtyMatrices) this._computeMatrices()
+    if (!this._synchronized) this.synchronize()
     return this._viewToWorld
   }
 
@@ -91,7 +95,7 @@ export class OrthographicCamera2D extends Camera2D {
       0, 0, 1
     )
 
-    this._viewToWorld.invert(this._worldToView)
+    this._worldToView.invert(this._viewToWorld)
     this._synchronized = true
   }
 
@@ -104,13 +108,23 @@ export class OrthographicCamera2D extends Camera2D {
     return this._unit
   }
 
+  getUnit () {
+    return this._unit
+  }
+
   /**
   * Change the unit of this camera.
   *
   * @param {Length} value - The new unit used by this camera.
   */
   set unit (value) {
+    this.setUnit(value)
+  }
+
+  setUnit (value) {
     this._unit = new Length(value)
+
+    return this
   }
 
   /**
@@ -364,7 +378,7 @@ export class OrthographicCamera2D extends Camera2D {
   *
   * @param {number} value - The new right location of the camera.
   *
-  * @return {camera} The current instance for chaining purpose.
+  * @return {OrthographicCamera2D} The current instance for chaining purpose.
   */
   setRight (value) {
     const width = this.width

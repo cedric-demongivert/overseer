@@ -4,7 +4,7 @@ import { Vector3f, Vector2f } from '@cedric-demongivert/gl-tool-math'
 /**
 * An area of the screen to render.
 */
-@Component({ type: 'overseer:viewport' })
+@Component({ name: 'overseer:viewport' })
 export class Viewport {
   /**
   * Create a new zero viewport.
