@@ -1,4 +1,4 @@
-#app, body, html {
+#application, body, html {
   display: block;
   position: absolute;
 
@@ -14,4 +14,12 @@
 
   width: auto;
   height: auto;
+}
+
+
+.entity-component-system-renderer {
+  display: block;
+
+  width: 100%;
+  height: 100%;
 }

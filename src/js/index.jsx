@@ -1,12 +1,16 @@
 import 'babel-polyfill'
 
+import React from 'react'
+import { render } from 'react-dom'
+
+import { ECSRenderer } from './editor/ECSRenderer'
+
 import {
   EntityComponentSystem,
   EntityFactory
 } from './ecs'
 
 import {
-  GLToolECSRenderer,
   Viewport,
   OrthographicCamera2D,
   overseerMeshStructure,
@@ -19,9 +23,7 @@ import {
   Mesh
 } from './overseer'
 
-import { ignite } from './ignite'
-
-const renderer = new GLToolECSRenderer(document.getElementById('app'))
+import { RenderingLoop } from './RenderingLoop'
 
 const entityComponentSystem = new EntityComponentSystem()
 const entities = new EntityFactory(entityComponentSystem)
@@ -30,35 +32,15 @@ const entities = new EntityFactory(entityComponentSystem)
 const view = entities.create()
 
 view.create(Viewport)
-    .setWidth(renderer.width)
-    .setHeight(renderer.height)
-    .setLeft(0)
-    .setBottom(0)
     .setBackground(0.95, 0.95, 0.95)
 
 const viewport = view.get(Viewport)
 
-window.addEventListener('resize', function updateTargetSize () {
-  viewport.setWidth(renderer.width)
-          .setHeight(renderer.height)
-          .setLeft(0)
-          .setBottom(0)
-})
-
 view.create(OrthographicCamera2D)
-    .setWidth(renderer.width / 40)
-    .setHeight(renderer.height / 40)
     .setCenter(0, 0)
     .setUnit('1cm')
 
 viewport.camera = view.get(OrthographicCamera2D)
-
-window.addEventListener('resize', function updateTargetSize () {
-  viewport.camera.setWidth(renderer.width / 40)
-                 .setHeight(renderer.height / 40)
-                 .setCenter(0, 0)
-                 .setUnit('1cm')
-})
 
 // initialisation : geometry
 const geometry = entities.create()
@@ -107,10 +89,28 @@ mesh.create(Transform)
     .setSize(10, 10)
     .setUnit('1cm')
 
-renderer.entityComponentSystem = entityComponentSystem
-
-ignite(function (delta) {
+new RenderingLoop(function (delta) {
   entityComponentSystem.update(delta)
   mesh.get(Transform).rotate((2 * Math.PI) * delta * 0.1)
-  renderer.render()
-})
+}).start()
+
+function onSizeChange (width, height) {
+  viewport.setWidth(width)
+          .setHeight(height)
+          .setLeft(0)
+          .setBottom(0)
+
+  viewport.camera.setWidth(width / 40)
+                 .setHeight(height / 40)
+                 .setCenter(0, 0)
+                 .setUnit('1cm')
+}
+
+render(
+  (
+    <ECSRenderer
+      entityComponentSystem={entityComponentSystem}
+      onSizeChange={onSizeChange}
+    />
+  ), document.getElementById('application')
+)

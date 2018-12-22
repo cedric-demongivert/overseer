@@ -10,7 +10,7 @@ mix.webpackConfig({
     ]
   }
 })
-.js('src/js/index.js', 'dist')
+.react('src/js/index.jsx', 'dist')
 .sass('src/scss/app.scss', 'dist')
 .copy('assets/index.html', 'dist')
 .copy('assets/images', 'dist/images')
