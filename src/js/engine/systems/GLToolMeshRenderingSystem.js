@@ -48,8 +48,8 @@ export class GLToolMeshRenderingSystem extends System {
         const transform = this.manager.getComponent(entity, Transform)
         localToWorld.copy(transform.localToWorld)
         worldToLocal.copy(transform.worldToLocal)
-        //Transform.applyUnitScale(transform.root.unit, camera.unit, worldToView)
-        //Transform.applyUnitScale(camera.unit, transform.root.unit, viewToWorld)
+        Transform.applyUnitScale(transform.root.unit, camera.unit, worldToView)
+        Transform.applyUnitScale(camera.unit, transform.root.unit, viewToWorld)
       } else {
         localToWorld.toIdentity()
         worldToLocal.toIdentity()

@@ -32,7 +32,7 @@ view.create(Viewport)
     .setHeight(overseer.height)
     .setLeft(0)
     .setBottom(0)
-    .setBackground(0.0, 0.0, 0.0)
+    .setBackground(0.95, 0.95, 0.95)
 
 const viewport = view.get(Viewport)
 
@@ -109,6 +109,6 @@ overseer.map = manager
 
 ignite(function (delta) {
   manager.update(delta)
-  mesh.get(Transform).rotate((2 * Math.PI) * delta * 0.1)
+  //mesh.get(Transform).rotate((2 * Math.PI) * delta * 0.1)
   overseer.render()
 })

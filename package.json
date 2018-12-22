@@ -35,6 +35,7 @@
     "@cedric-demongivert/gl-tool-core": "^0.0.2",
     "@cedric-demongivert/gl-tool-math": "^0.0.9",
     "@cedric-demongivert/gl-tool-shader": "^0.0.9",
+    "@cedric-demongivert/gl-tool-texture": "^0.0.4",
     "babel-polyfill": "~6.26.0",
     "lodash": "^4.17.10"
   }

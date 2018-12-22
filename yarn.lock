@@ -43,6 +43,13 @@
     "@cedric-demongivert/gl-tool-core" "^0.0.2"
     lodash "^4.17.11"
 
+"@cedric-demongivert/gl-tool-texture@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@cedric-demongivert/gl-tool-texture/-/gl-tool-texture-0.0.4.tgz#542124a4cb48fc7f5b2c79b0190dd6e024cfacb7"
+  integrity sha512-uH5cYCXRuRfTTus/ET8HsuXT67Oy3/djZDDNURKMnCLzpOk4osUs7oVKU8f/fEY7cg9jEsyS5WGz6FCGxz5XJA==
+  dependencies:
+    "@cedric-demongivert/gl-tool-core" "^0.0.2"
+
 "@types/node@*":
   version "10.12.18"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.18.tgz#1d3ca764718915584fcd9f6344621b7672665c67"
