@@ -32,7 +32,7 @@ const entities = new EntityFactory(entityComponentSystem)
 const view = entities.create()
 
 view.create(Viewport)
-    .setBackground(0.95, 0.95, 0.95)
+    .setBackground(0.075, 0.1, 0.15)
 
 const viewport = view.get(Viewport)
 
