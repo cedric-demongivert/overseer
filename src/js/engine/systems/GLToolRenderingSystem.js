@@ -77,6 +77,11 @@ export class GLToolRenderingSystem extends System {
       gl.ONE,
       gl.ONE_MINUS_SRC_ALPHA
     )
+
+    gl.scissor(this._left, this._bottom, this._width, this._height)
+    gl.clearColor(0.0, 0.0, 0.0, 1.0)
+    gl.clearDepth(1.0)
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
   }
 
   renderViewport (gl, viewport) {
