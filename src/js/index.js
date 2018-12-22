@@ -1,11 +1,12 @@
 import 'babel-polyfill'
 
-import { ignite } from './ignite'
+import {
+  EntityComponentSystem,
+  EntityFactory
+} from './ecs'
 
 import {
-  OverseerScreen,
-  EntityComponentSystem,
-  EntityFactory,
+  GLToolECSRenderer,
   Viewport,
   OrthographicCamera2D,
   overseerMeshStructure,
@@ -16,20 +17,21 @@ import {
   Buffer,
   Shader,
   Mesh
-} from './engine'
+} from './overseer'
 
+import { ignite } from './ignite'
 
-const overseer = new OverseerScreen(document.getElementById('app'))
+const renderer = new GLToolECSRenderer(document.getElementById('app'))
 
-const manager = new EntityComponentSystem()
-const entities = new EntityFactory(manager)
+const entityComponentSystem = new EntityComponentSystem()
+const entities = new EntityFactory(entityComponentSystem)
 
 // initialisation : vue
 const view = entities.create()
 
 view.create(Viewport)
-    .setWidth(overseer.width)
-    .setHeight(overseer.height)
+    .setWidth(renderer.width)
+    .setHeight(renderer.height)
     .setLeft(0)
     .setBottom(0)
     .setBackground(0.95, 0.95, 0.95)
@@ -37,23 +39,23 @@ view.create(Viewport)
 const viewport = view.get(Viewport)
 
 window.addEventListener('resize', function updateTargetSize () {
-  viewport.setWidth(overseer.width)
-          .setHeight(overseer.height)
+  viewport.setWidth(renderer.width)
+          .setHeight(renderer.height)
           .setLeft(0)
           .setBottom(0)
 })
 
 view.create(OrthographicCamera2D)
-    .setWidth(overseer.width / 40)
-    .setHeight(overseer.height / 40)
+    .setWidth(renderer.width / 40)
+    .setHeight(renderer.height / 40)
     .setCenter(0, 0)
     .setUnit('1cm')
 
 viewport.camera = view.get(OrthographicCamera2D)
 
 window.addEventListener('resize', function updateTargetSize () {
-  viewport.camera.setWidth(overseer.width / 40)
-                 .setHeight(overseer.height / 40)
+  viewport.camera.setWidth(renderer.width / 40)
+                 .setHeight(renderer.height / 40)
                  .setCenter(0, 0)
                  .setUnit('1cm')
 })
@@ -105,10 +107,10 @@ mesh.create(Transform)
     .setSize(10, 10)
     .setUnit('1cm')
 
-overseer.map = manager
+renderer.entityComponentSystem = entityComponentSystem
 
 ignite(function (delta) {
-  manager.update(delta)
-  //mesh.get(Transform).rotate((2 * Math.PI) * delta * 0.1)
-  overseer.render()
+  entityComponentSystem.update(delta)
+  mesh.get(Transform).rotate((2 * Math.PI) * delta * 0.1)
+  renderer.render()
 })

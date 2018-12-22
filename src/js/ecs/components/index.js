@@ -1,0 +1,5 @@
+export { Component } from './Component'
+export { ComponentManager } from './ComponentManager'
+export { ComponentType } from './ComponentType'
+export { ComponentTypeDatabase } from './ComponentTypeDatabase'
+export { componentTypes } from './componentTypes'

@@ -1,6 +1,0 @@
-export { EntityComponentSystem } from './EntityComponentSystem'
-export { System } from './System'
-export { Component } from './Component'
-export { Entity } from './Entity'
-export { EntityFactory } from './EntityFactory'
-export { componentTypes } from './componentTypes'

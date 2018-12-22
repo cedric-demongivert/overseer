@@ -15,6 +15,7 @@
         "root": ["."],
         "alias": {
           "@overseer": "./src/js",
+          "@ecs": "./src/js/ecs",
           "@shaders": "./src/shaders"
         },
         "extensions": [

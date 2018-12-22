@@ -37,6 +37,11 @@
     "@cedric-demongivert/gl-tool-shader": "^0.0.9",
     "@cedric-demongivert/gl-tool-texture": "^0.0.4",
     "babel-polyfill": "~6.26.0",
-    "lodash": "^4.17.10"
+    "bootstrap": "^4.2.1",
+    "lodash": "^4.17.10",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "reactstrap": "^6.5.0",
+    "redux": "^4.0.1"
   }
 }
