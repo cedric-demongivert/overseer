@@ -144,6 +144,33 @@ export class EntityComponentSystem {
     return this
   }
 
+  tagEntity (entity, tag) {
+    this._entities.tag(entity, tag)
+    return this
+  }
+
+  untagEntity (entity, tag) {
+    this._entities.untagEntity(entity, tag)
+    return this
+  }
+
+  setEntityLabel (entity, label) {
+    this._entities.setEntityLabel(entity, label)
+    return this
+  }
+
+  getEntityLabel (entity) {
+    return this._entities.getEntityLabel(entity)
+  }
+
+  getEntitiesWithLabel (label) {
+    return this._entities.getEntitiesWithLabel(label)
+  }
+
+  getEntitiesWithTag (tag) {
+    return this._entities.getEntitiesWithTag(tag)
+  }
+
   /**
   * Called when the manager will delete an entity.
   *

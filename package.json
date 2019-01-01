@@ -37,11 +37,15 @@
     "@cedric-demongivert/gl-tool-math": "^0.0.9",
     "@cedric-demongivert/gl-tool-shader": "^0.0.9",
     "@cedric-demongivert/gl-tool-texture": "^0.0.4",
+    "@fortawesome/fontawesome-free": "^5.6.3",
     "babel-polyfill": "~6.26.0",
     "bootstrap": "^4.2.1",
     "lodash": "^4.17.10",
     "react": "^16.7.0",
+    "react-bootstrap": "^0.32.4",
     "react-dom": "^16.7.0",
+    "react-hammerjs": "^1.0.1",
+    "react-virtualized": "^9.21.0",
     "reactstrap": "^6.5.0",
     "redux": "^4.0.1"
   }

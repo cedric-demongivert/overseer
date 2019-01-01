@@ -2,7 +2,7 @@ import React, { createRef, Component } from 'react'
 import { RenderingLoop } from '@overseer/RenderingLoop'
 import { GLToolECSRenderer } from '@overseer/overseer'
 
-export class ECSRenderer extends Component {
+export class EntityComponentSystemRenderer extends Component {
   constructor (props, context) {
     super(props, context)
     this._renderer = null

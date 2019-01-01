@@ -1,0 +1,49 @@
+.floating-panel-opener {
+  display: block;
+  position: absolute;
+
+  background-color: transparent;
+
+  &, &.floating-panel-opener-left {
+    left: 0px;
+    top: 0px;
+    bottom: auto;
+    right: auto;
+  }
+
+  &.floating-panel-opener-right {
+    left: auto;
+    right: 0px;
+    top: 0px;
+    bottom: auto;
+  }
+
+  height: $floating-panel-header-height;
+  width: $floating-panel-header-height;
+
+  padding: 0px;
+  margin: 0px;
+  border: none;
+  border-radius: 0px;
+
+  overflow-x: visible;
+  overflow-y: hidden;
+
+  .btn.btn-link {
+    display: block;
+
+    color: #ffffff;
+
+    width: $floating-panel-header-height;
+    height: $floating-panel-header-height;
+
+    padding: 0px;
+    margin: 0px;
+
+    border: none;
+    border-radius: 0px;
+
+    line-height: $floating-panel-header-height;
+    vertical-align: middle;
+  }
+}

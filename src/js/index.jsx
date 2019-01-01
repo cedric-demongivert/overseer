@@ -3,7 +3,7 @@ import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
 
-import { ECSRenderer } from './editor/ECSRenderer'
+import { EntityComponentSystemEditor } from './editor/EntityComponentSystemEditor'
 
 import {
   EntityComponentSystem,
@@ -106,11 +106,33 @@ function onSizeChange (width, height) {
                  .setUnit('1cm')
 }
 
-render(
-  (
-    <ECSRenderer
-      entityComponentSystem={entityComponentSystem}
-      onSizeChange={onSizeChange}
-    />
-  ), document.getElementById('application')
-)
+const state = {
+  isEntitiesPanelOpen: false,
+  isComponentsPanelOpen: false
+}
+
+function handleEntitiesPanelToggle () {
+  state.isEntitiesPanelOpen = !state.isEntitiesPanelOpen
+  doRender()
+}
+
+function handleComponentsPanelToggle () {
+  state.isComponentsPanelOpen = !state.isComponentsPanelOpen
+  doRender()
+}
+
+function doRender () {
+  render(
+    (
+      <EntityComponentSystemEditor
+        entityComponentSystem={entityComponentSystem}
+        onSizeChange={onSizeChange}
+        onEntitiesPanelToggle={handleEntitiesPanelToggle}
+        onComponentsPanelToggle={handleComponentsPanelToggle}
+        {...state}
+      />
+    ), document.getElementById('application')
+  )
+}
+
+doRender()

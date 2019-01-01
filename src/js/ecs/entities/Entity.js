@@ -83,6 +83,18 @@ export class Entity {
     return this
   }
 
+  tag (tag) {
+    this._manager.tagEntity(this._identifier, tag)
+  }
+
+  untag (tag) {
+    this._manager.untagEntity(this._identifier, tag)
+  }
+
+  get tags () {
+    return this._manager.getTagsOfEntity(this._identifier)
+  }
+
   /**
   * Return all components of this entity.
   *

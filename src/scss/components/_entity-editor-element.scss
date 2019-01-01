@@ -1,0 +1,94 @@
+.entity-editor-element {
+  display: block;
+  position: relative;
+
+  width: 100%;
+  height: 30px;
+
+  margin: 0px;
+  padding: 0px;
+  border: none;
+
+  box-sizing: border-box;
+
+  .btn.btn-primary {
+    display: block;
+    position: relative;
+
+    width: 100%;
+    height: 30px;
+
+    margin: 0px;
+    padding: 0px;
+    border: none;
+
+    border-radius: 0px;
+
+    box-sizing: border-box;
+
+    background-color: transparent;
+    color: $body-color;
+
+    @include transition(background-color .15s ease-in-out);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  .entity-editor-element-identifier {
+    display: block;
+    position: absolute;
+
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: auto;
+
+    width: 60px;
+    height: auto;
+
+    margin: 0px;
+    padding: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: none;
+
+    box-sizing: border-box;
+
+    line-height: 30px;
+    text-align: left;
+    vertical-align: middle;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .entity-editor-element-label {
+    display: block;
+    position: absolute;
+
+    left: 60px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+
+    width: auto;
+    height: auto;
+
+    margin: 0px;
+    padding: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: none;
+
+    box-sizing: border-box;
+
+    line-height: 30px;
+    text-align: left;
+    vertical-align: middle;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

@@ -1,25 +1,16 @@
-#application, body, html {
-  display: block;
-  position: absolute;
+@import '../../node_modules/bootstrap/scss/bootstrap';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome';
+@import '../../node_modules/@fortawesome/fontawesome-free/scss/solid';
 
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
 
-  box-sizing: border-box;
-  border: none;
-  margin: 0px;
-  padding: 0px;
+@import './vars';
+@import './base';
 
-  width: auto;
-  height: auto;
-}
-
-
-.entity-component-system-renderer {
-  display: block;
-
-  width: 100%;
-  height: 100%;
-}
+@import './components/entity-component-system-editor';
+@import './components/entity-component-system-renderer';
+@import './components/floating-panel-opener';
+@import './components/floating-panel';
+@import './components/filler';
+@import './components/entity-editor-element';
