@@ -20,7 +20,7 @@ export class EntityEditorElement extends PureComponent {
         style={this.props.style}
         className={this.getRootElementClasses().join(' ')}
       >
-        <Button block color='primary'>
+        <Button block color='primary' {...this.getTabIndex()}>
           <div className='entity-editor-element-identifier'>
             {this.props.identifier}
           </div>
@@ -30,5 +30,9 @@ export class EntityEditorElement extends PureComponent {
         </Button>
       </div>
     )
+  }
+
+  getTabIndex () {
+    return this.props.navigable ? {} : { tabIndex: -1 }
   }
 }

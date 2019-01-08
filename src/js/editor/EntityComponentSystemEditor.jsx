@@ -48,12 +48,6 @@ export class EntityComponentSystemEditor extends Component {
             open={this.props.isEntitiesPanelOpen}
           />
 
-          <FloatingPanelOpener
-            snap='right'
-            onToggle={this.props.onComponentsPanelToggle}
-            open={this.props.isComponentsPanelOpen}
-          />
-
           <FloatingPanel
             snap='left'
             title='Entitées'
@@ -64,9 +58,16 @@ export class EntityComponentSystemEditor extends Component {
               <EntityEditor
                 entityComponentSystem={this.props.entityComponentSystem}
                 entities={[...this.props.entityComponentSystem.entities]}
+                navigable={this.props.isEntitiesPanelOpen}
               />
             </SizeAdapter>
           </FloatingPanel>
+
+          <FloatingPanelOpener
+            snap='right'
+            onToggle={this.props.onComponentsPanelToggle}
+            open={this.props.isComponentsPanelOpen}
+          />
 
           <FloatingPanel
             snap='right'

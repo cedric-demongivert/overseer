@@ -1,4 +1,5 @@
 import React, { createRef, Component } from 'react'
+import PropTypes from 'prop-types'
 import { RenderingLoop } from '@overseer/RenderingLoop'
 import { GLToolECSRenderer } from '@overseer/overseer'
 
@@ -47,4 +48,9 @@ export class EntityComponentSystemRenderer extends Component {
       ref={this._container}
     />
   }
+}
+
+EntityComponentSystemRenderer.propTypes = {
+  entityComponentSystem: PropTypes.object.isRequired,
+  onSizeChange: PropTypes.func
 }

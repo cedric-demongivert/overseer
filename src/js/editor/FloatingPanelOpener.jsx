@@ -10,11 +10,15 @@ export class FloatingPanelOpener extends PureComponent {
   render () {
     return (
       <div className={this.getRootElementClasses().join(' ')}>
-        <Button bsStyle='link' onClick={this.toggle}>
+        <Button bsStyle='link' onClick={this.toggle} {...this.getTabIndex()}>
           <span className='fas fa-bars' />
         </Button>
       </div>
     )
+  }
+
+  getTabIndex () {
+    return this.props.open ? { tabIndex: -1 } : { }
   }
 
   toggle () {

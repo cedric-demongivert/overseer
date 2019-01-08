@@ -30,7 +30,7 @@ export class TagManager {
   *
   * @return {boolean} True if the given entity has the given tag.
   */
-  hasTag (identifier, tag) {
+  doesEntityHasTag (identifier, tag) {
     return this._tags.has(tag) && this._entitiesByTag.get(tag).has(identifier)
   }
 
@@ -42,7 +42,7 @@ export class TagManager {
   *
   * @return {TagManager} The current manager instance for chaining purposes.
   */
-  addTag (identifier, tag) {
+  addTagToEntity (identifier, tag) {
     if (!this._tags.has(tag)) {
       this._tags.add(tag)
       this._entitiesByTag.set(tag, new Set())
@@ -66,7 +66,7 @@ export class TagManager {
   *
   * @return {TagManager} The current manager instance for chaining purposes.
   */
-  deleteTag (identifier, tag) {
+  deleteTagOfEntity (identifier, tag) {
     if (this._tags.has(tag) && this._tagsByEntity.has(identifier)) {
       const relatedEntities = this._entitiesByTag.get(tag)
       const relatedTags = this._tagsByEntity.get(identifier)
@@ -119,7 +119,7 @@ export class TagManager {
 
     for (const tag of this._tags) {
       for (const identifier of this.getEntitiesWithTag(tag)) {
-        copy.addTag(identifier, tag)
+        copy.addTagToEntity(identifier, tag)
       }
     }
 
@@ -171,10 +171,10 @@ export class TagManager {
   clearTagsOfEntity (identifier) {
     if (this._tagsByEntity.has(identifier)) {
       for (const tag of this._tagsByEntity.get(identifier)) {
-        this.deleteTag(identifier, tag)
+        this.deleteTagOfEntity(identifier, tag)
       }
     }
-    
+
     return this
   }
 

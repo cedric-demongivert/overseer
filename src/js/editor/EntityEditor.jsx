@@ -14,11 +14,12 @@ export class EntityEditor extends Component {
     return (
       <div className='entity-editor'>
         <List
+          tabIndex={-1}
           height={this.props.height || 200}
           width={this.props.width || 300}
           rowCount={this.props.entities.length}
           rowHeight={30}
-          rowRenderer={this.renderEntity}
+          rowRenderer={this.renderEntity.bind(this)}
         />
       </div>
     )
@@ -36,10 +37,21 @@ export class EntityEditor extends Component {
       <EntityEditorElement
         style={style}
         key={key}
-        identifier={this.props.entities[index]}
-        label={`Entity n°${this.props.entities[index]}`}
+        identifier={this.getEntity(index)}
+        label={this.getLabelOfEntity(index)}
         selected={false}
+        navigable={this.props.navigable}
       />
     )
+  }
+
+  getEntity (index) {
+    return this.props.entities[index]
+  }
+
+  getLabelOfEntity (index) {
+    return this.props.entityComponentSystem.getLabelOfEntity(
+      this.props.entities[index]
+    ) || `Entity ${this.props.entities[index]}`
   }
 }

@@ -1,4 +1,5 @@
 import { TagManager } from './TagManager'
+import { LabelManager } from './LabelManager'
 
 /**
 * A collection of entities.
@@ -10,8 +11,7 @@ export class EntityManager {
   constructor () {
     this._entities = new Set()
     this._tags = new TagManager()
-    this._labels = new Map()
-    this._entitiesByLabel = new Map()
+    this._labels = new LabelManager()
   }
 
   /**
@@ -29,6 +29,13 @@ export class EntityManager {
   }
 
   /**
+  * @return {Set<string>} All registered labels.
+  */
+  get labels () {
+    return this._labels.labels
+  }
+
+  /**
   * Register a new entity.
   *
   * @throws {Error} If the given entity was already registered.
@@ -37,7 +44,7 @@ export class EntityManager {
   *
   * @return {EntityManager} The current instance for chaining purpose.
   */
-  register (entity) {
+  registerEntity (entity) {
     if (this._entities.has(entity)) {
       throw new Error([
         `Unable to register the entity : ${entity}, because this entity was `,
@@ -46,7 +53,34 @@ export class EntityManager {
     }
 
     this._entities.add(entity)
-    this.setLabel(entity, null)
+
+    return this
+  }
+
+  /**
+  * Check if an entity was registered.
+  *
+  * @param {number} entity - An entity to search.
+  *
+  * @return {boolean} True if the given entity was registered.
+  */
+  hasEntity (entity) {
+    return this._entities.has(entity)
+  }
+
+  /**
+  * Delete a managed entity.
+  *
+  * @param {number} entity - An entity to delete.
+  *
+  * @return {EntityManager} The current instance for chaining purpose.
+  */
+  deleteEntity (entity) {
+    this.assertThatEntityWasRegistered(entity, `Unable to delete the entity ${entity}`)
+
+    this._entities.delete(entity)
+    this._tags.clearTagsOfEntity(entity)
+    this._labels.deleteLabelOfEntity(entity)
 
     return this
   }
@@ -82,9 +116,9 @@ export class EntityManager {
   *
   * @return {boolean} True if the given entity has the given tag.
   */
-  hasTag (entity, tag) {
-    this.assertThatEntityExists(entity, `Unable to check if the entity ${entity} has the tag "${tag}"`)
-    return this._tags.hasTag(entity, tag)
+  doesEntityHasTag (entity, tag) {
+    this.assertThatEntityWasRegistered(entity, `Unable to check if the entity ${entity} has the tag "${tag}"`)
+    return this._tags.doesEntityHasTag(entity, tag)
   }
 
   /**
@@ -97,10 +131,10 @@ export class EntityManager {
   *
   * @return {EntityManager} The current instance for chaining purpose.
   */
-  addTag (entity, tag) {
-    this.assertThatEntityExists(entity, `Unable to tag the entity ${entity} with "${tag}"`)
+  addTagToEntity (entity, tag) {
+    this.assertThatEntityWasRegistered(entity, `Unable to tag the entity ${entity} with "${tag}"`)
 
-    this._tags.addTag(entity, tag)
+    this._tags.addTagToEntity(entity, tag)
 
     return this
   }
@@ -115,10 +149,10 @@ export class EntityManager {
   *
   * @return {EntityManager} The current instance for chaining purpose.
   */
-  deleteTag (entity, tag) {
-    this.assertThatEntityExists(entity, `Unable to remove the tag "${tag}" from entity ${entity}`)
+  deleteTagOfEntity (entity, tag) {
+    this.assertThatEntityWasRegistered(entity, `Unable to remove the tag "${tag}" from entity ${entity}`)
 
-    this._tags.deleteTag(entity, tag)
+    this._tags.deleteTagOfEntity(entity, tag)
 
     return this
   }
@@ -144,9 +178,37 @@ export class EntityManager {
   * @return {Set<string>} All tags of the given entity.
   */
   getTagsOfEntity (identifier) {
-    this.assertThatEntityExists(entity, `Unable to fetch tags of entity ${identifier}`)
+    this.assertThatEntityWasRegistered(entity, `Unable to fetch tags of entity ${identifier}`)
 
     return this._tags.getTagsOfEntity(identifier)
+  }
+
+  /**
+  * Delete all tags of a given entity.
+  *
+  * @throws {Error} If the given entity was not registered.
+  *
+  * @param {number} identifier - The identifier of an entity from wich we will delete all attached tag.
+  *
+  * @return {EntityManager} The current instance for chaining purpose.
+  */
+  clearTagsOfEntity (identifier) {
+    this.assertThatEntityWasRegistered(entity, `Unable to clear tags of entity ${identifier}`)
+
+    this._tags.clearTagsOfEntity(identifier)
+
+    return this
+  }
+
+  /**
+  * Clear all tags of the manager.
+  *
+  * @return {EntityManager} The current instance for chaining purpose.
+  */
+  clearTags () {
+    this._tags.clear()
+
+    return this
   }
 
   /**
@@ -158,28 +220,10 @@ export class EntityManager {
   *
   * @return {EntityManager} The current manager instance for chaining purposes.
   */
-  setLabel (entity, label) {
-    this.assertThatEntityExists(entity, `Unable to rename the entity ${entity} to "${label}"`)
+  setLabelOfEntity (entity, label) {
+    this.assertThatEntityWasRegistered(entity, `Unable to rename the entity ${entity} to "${label}"`)
 
-    if (label == null) label = `Entity #${entity}`
-
-    const oldLabel = this._labels.get(entity)
-
-    if (oldLabel !== label) {
-      this._entitiesByLabel.get(oldLabel).delete(entity)
-
-      if (this._entitiesByLabel.get(oldLabel).size <= 0) {
-        this._entitiesByLabel.delete(oldLabel)
-      }
-
-      this._labels.set(entity, label)
-
-      if (!this._entitiesByLabel.has(label)) {
-        this._entitiesByLabel.set(label, new Set())
-      }
-
-      this._entitiesByLabel.get(label).add(entity)
-    }
+    this._labels.setLabelOfEntity(entity, label)
 
     return this
   }
@@ -191,10 +235,10 @@ export class EntityManager {
   *
   * @return {string} The label of the given entity.
   */
-  getLabel (entity) {
-    this.assertThatEntityExists(entity, `Unable to get the label of the entity ${entity}`)
+  getLabelOfEntity (entity) {
+    this.assertThatEntityWasRegistered(entity, `Unable to get the label of the entity ${entity}`)
 
-    return this._labels.get(entity)
+    return this._labels.getLabelOfEntity(entity)
   }
 
   /**
@@ -205,41 +249,45 @@ export class EntityManager {
   * @return {Set<number>} All registered entities with the given label.
   */
   getEntitiesWithLabel (label) {
-    return this._entitiesByLabel.get(label)
+    return this._labels.getEntitiesWithLabel(label)
   }
 
   /**
-  * Check if an entity was registered.
+  * Compare this object instance with another value and return true if they are both equals.
   *
-  * @param {number} entity - An entity to search.
+  * @param {any} other - Another object instance to use as a comparison.
   *
-  * @return {boolean} True if the given entity was registered.
+  * @return {boolean} True if this object is equal to the other one.
   */
-  has (entity) {
-    return this._entities.has(entity)
-  }
+  equals (other) {
+    if (other == null) return false
+    if (other == this) return true
 
-  /**
-  * Delete a managed entity.
-  *
-  * @param {number} entity - An entity to delete.
-  *
-  * @return {EntityManager} The current instance for chaining purpose.
-  */
-  delete (entity) {
-    this.assertThatEntityExists(entity, `Unable to delete the entity ${entity}`)
+    if (other instanceof EntityManager) {
+      if (other.entities.size !== this._entities.size) return false
 
-    this._entities.delete(entity)
-    this._tags.clearTagsOfEntity(entity)
+      for (const entity of this._entities) {
+        if (!other.hasEntity(entity)) return false
+      }
 
-    const oldLabel = this._labels.get(entity)
-    this._entitiesByLabel.get(oldLabel).delete(entity)
+      if (!other._labels.equals(this._labels)) return false
+      if (!other._tags.equals(this._tags)) return false
 
-    if (this._entitiesByLabel.get(oldLabel).size <= 0) {
-      this._entitiesByLabel.delete(oldLabel)
+      return true
     }
 
-    this._labels.delete(entity)
+    return false
+  }
+
+  /**
+  * Clear this entity manager of its content.
+  *
+  * @return {EntityManager} This manager instance for chaining purposes.
+  */
+  clear () {
+    this._entities.clear()
+    this._tags.clear()
+    this._labels.clear()
 
     return this
   }

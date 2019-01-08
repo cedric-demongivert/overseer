@@ -150,6 +150,10 @@
 
         line-height: $floating-panel-header-height;
         vertical-align: middle;
+
+        &:focus {
+          background-color: rgba(0, 0, 0, 0.12);
+        }
       }
     }
 

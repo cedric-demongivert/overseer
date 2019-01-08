@@ -29,10 +29,21 @@
     background-color: transparent;
     color: $body-color;
 
-    @include transition(background-color .15s ease-in-out);
-
-    &:hover {
+    &:hover, &.hover, &:focus, &.focus {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
       background-color: rgba(0, 0, 0, 0.12);
+    }
+
+    &:active, &.active {
+      outline: none !important;
+      box-shadow: none !important;
+      border: none !important;
+      background-color: #1E88E5;
+      color: $white;
+
+      @include transition(background-color .0s ease-in-out);
     }
   }
 

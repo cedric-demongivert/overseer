@@ -31,7 +31,7 @@ export class FloatingPanel extends PureComponent {
         <div className={this.getRootElementClasses().join(' ')}>
           <div className='floating-panel-header' onClick={this.toggle}>
             <div className='floating-panel-header-toggle' onClick={this.toggle}>
-              <Button bsStyle='link' onClick={this.toggle}>
+              <Button bsStyle='link' onClick={this.toggle} {...this.getTabIndex()}>
                 <span className='fas fa-bars' />
               </Button>
             </div>
@@ -45,6 +45,10 @@ export class FloatingPanel extends PureComponent {
         </div>
       </Hammer>
     )
+  }
+
+  getTabIndex () {
+    return this.props.open ? {} : { tabIndex: -1 }
   }
 
   toggle () {

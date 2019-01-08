@@ -75,6 +75,20 @@ export class EntityComponentSystem {
   }
 
   /**
+  * @return {Set<string>} All registered tags as a set.
+  */
+  get tags () {
+    return this._entities.tags
+  }
+
+  /**
+  * @return {Set<string>} All registered labels.
+  */
+  get labels () {
+    return this._entities.labels
+  }
+
+  /**
   * Add a new entity into this manager.
   *
   * @param {number} identifier - The identifier of the entity to add.
@@ -82,10 +96,10 @@ export class EntityComponentSystem {
   * @return {EntityComponentSystem} The current manager instance for chaining purpose.
   */
   addEntity (identifier) {
-    if (!this._entities.has(identifier)) {
+    if (!this._entities.hasEntity(identifier)) {
       this._managerWillAddEntity(identifier)
     }
-    this._entities.register(identifier)
+    this._entities.registerEntity(identifier)
     this._managerDidAddEntity(identifier)
 
     return this
@@ -121,7 +135,7 @@ export class EntityComponentSystem {
   * @return {boolean} True if the entity exists in this manager.
   */
   hasEntity (identifier) {
-    return this._entities.has(identifier)
+    return this._entities.hasEntity(identifier)
   }
 
   /**
@@ -132,44 +146,149 @@ export class EntityComponentSystem {
   * @return {EntityComponentSystem} The current manager instance for chaining purpose.
   */
   deleteEntity (identifier) {
-    if (this._entities.has(identifier)) {
+    if (this._entities.hasEntity(identifier)) {
       this._managerWillDeleteEntity(identifier)
       for (const component of this.componentsOf(identifier)) {
         this.deleteComponent(component)
       }
-      this._entities.delete(identifier)
+      this._entities.deleteEntity(identifier)
       this._managerDidDeleteEntity(identifier)
     }
 
     return this
   }
 
-  tagEntity (entity, tag) {
-    this._entities.tag(entity, tag)
+  /**
+  * Check if a given entity has a given tag.
+  *
+  * @throws {Error} If the given entity was not registered.
+  *
+  * @param {number} entity - An entity identifier.
+  * @param {string} tag - A tag to search for.
+  *
+  * @return {boolean} True if the given entity has the given tag.
+  */
+  doesEntityHasTag (entity, tag) {
+    return this._entities.doesEntityHasTag(entity, tag)
+  }
+
+  /**
+  * Add a Tag to a given entity.
+  *
+  * @throws {Error} If the given entity was not registered.
+  *
+  * @param {number} entity - An entity to tag.
+  * @param {string} tag - A tag.
+  *
+  * @return {EntityComponentSystem} The current instance for chaining purpose.
+  */
+  addTagToEntity (entity, tag) {
+    this._entities.addTagToEntity(entity, tag)
     return this
   }
 
-  untagEntity (entity, tag) {
-    this._entities.untagEntity(entity, tag)
+  /**
+  * Delete a tag from a given entity.
+  *
+  * @throws {Error} If the given entity was not registered.
+  *
+  * @param {number} entity - An entity from wich we will delete a tag.
+  * @param {string} tag - A tag.
+  *
+  * @return {EntityComponentSystem} The current instance for chaining purpose.
+  */
+  deleteTagOfEntity (entity, tag) {
+    this._entities.deleteTagOfEntity(entity, tag)
     return this
   }
 
-  setEntityLabel (entity, label) {
-    this._entities.setEntityLabel(entity, label)
+  /**
+  * Return all entities with the given tag.
+  *
+  * @param {string} tag - A tag to search for.
+  *
+  * @return {Set<number>} All registered entities with the given tag.
+  */
+  getEntitiesWithTag (tag) {
+    return this._entities.getEntitiesWithTag(tag)
+  }
+
+  /**
+  * Return all tags of a given entity.
+  *
+  * @throws {Error} If the given entity was not registered.
+  *
+  * @param {number} identifier - An entity identifier to search for.
+  *
+  * @return {Set<string>} All tags of the given entity.
+  */
+  getTagsOfEntity (identifier) {
+    return this._entities.getTagsOfEntity(identifier)
+  }
+
+  /**
+  * Delete all tags of a given entity.
+  *
+  * @throws {Error} If the given entity was not registered.
+  *
+  * @param {number} identifier - The identifier of an entity from wich we will delete all attached tag.
+  *
+  * @return {EntityComponentSystem} The current instance for chaining purpose.
+  */
+  clearTagsOfEntity (identifier) {
+    this._entities.clearTagsOfEntity(identifier)
+
     return this
   }
 
-  getEntityLabel (entity) {
-    return this._entities.getEntityLabel(entity)
+  /**
+  * Clear all tags of the manager.
+  *
+  * @return {EntityManager} The current instance for chaining purpose.
+  */
+  clearTags () {
+    this._entities.clearTags()
+
+    return this
   }
 
+  /**
+  * Change the label of an entity.
+  *
+  *
+  * @param {number} entity - An entity to rename.
+  * @param {string} label - The new name of the given entity.
+  *
+  * @return {EntityComponentSystem} The current manager instance for chaining purposes.
+  */
+  setLabelOfEntity (entity, label) {
+    this._entities.setLabelOfEntity(entity, label)
+
+    return this
+  }
+
+  /**
+  * Return the label of a given entity.
+  *
+  * @param {number} entity - An entity to find.
+  *
+  * @return {string} The label of the given entity.
+  */
+  getLabelOfEntity (entity) {
+    return this._entities.getLabelOfEntity(entity)
+  }
+
+  /**
+  * Return all entities with a given label.
+  *
+  * @param {string} label - A label to search for.
+  *
+  * @return {Set<number>} All registered entities with the given label.
+  */
   getEntitiesWithLabel (label) {
     return this._entities.getEntitiesWithLabel(label)
   }
 
-  getEntitiesWithTag (tag) {
-    return this._entities.getEntitiesWithTag(tag)
-  }
 
   /**
   * Called when the manager will delete an entity.

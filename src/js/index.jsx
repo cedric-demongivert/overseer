@@ -29,24 +29,24 @@ const entityComponentSystem = new EntityComponentSystem()
 const entities = new EntityFactory(entityComponentSystem)
 
 // initialisation : vue
-const view = entities.create()
+const view = entities.create().setLabel('view')
 
-view.create(Viewport)
+view.createComponent(Viewport)
     .setBackground(0.075, 0.1, 0.15)
 
-const viewport = view.get(Viewport)
+const viewport = view.getComponent(Viewport)
 
-view.create(OrthographicCamera2D)
+view.createComponent(OrthographicCamera2D)
     .setCenter(0, 0)
     .setUnit('1cm')
 
-viewport.camera = view.get(OrthographicCamera2D)
+viewport.camera = view.getComponent(OrthographicCamera2D)
 
 // initialisation : geometry
-const geometry = entities.create()
+const geometry = entities.create().setLabel("geometry")
 
 const triangleHeight = Math.sqrt(0.75)
-geometry.create(Buffer.Structure.Grouped, overseerMeshStructure, 3)
+geometry.createComponent(Buffer.Structure.Grouped, overseerMeshStructure, 3)
         .push(3)
         .setPosition(0, -0.5, -1/3 * triangleHeight)
         .setPosition(1, 0, 2/3 * triangleHeight)
@@ -58,40 +58,40 @@ geometry.create(Buffer.Structure.Grouped, overseerMeshStructure, 3)
         .setColor(1, 0, 1, 0, 1)
         .setColor(2, 0, 0, 1, 1)
 
-geometry.create(Buffer.Face)
+geometry.createComponent(Buffer.Face)
         .push(0, 1, 2)
 
-geometry.create(Geometry)
-        .setVertexBuffer(geometry.get(Buffer.Structure.Grouped))
-        .setFaceBuffer(geometry.get(Buffer.Face))
+geometry.createComponent(Geometry)
+        .setVertexBuffer(geometry.getComponent(Buffer.Structure.Grouped))
+        .setFaceBuffer(geometry.getComponent(Buffer.Face))
 
 // initialisation : material
-const material = entities.create()
+const material = entities.create().setLabel("material")
 
-material.create(Shader.Fragment, require('@shaders/basic.frag'))
-material.create(Shader.Vertex, require('@shaders/basic.vert'))
-material.create(
+material.createComponent(Shader.Fragment, require('@shaders/basic.frag'))
+material.createComponent(Shader.Vertex, require('@shaders/basic.vert'))
+material.createComponent(
   Program,
-  material.get(Shader.Vertex),
-  material.get(Shader.Fragment)
+  material.getComponent(Shader.Vertex),
+  material.getComponent(Shader.Fragment)
 )
-material.create(Material)
-        .setProgram(material.get(Program))
+material.createComponent(Material)
+        .setProgram(material.getComponent(Program))
 
-const mesh = entities.create()
+const mesh = entities.create().setLabel("mesh")
 
-mesh.create(Mesh)
-    .setGeometry(geometry.get(Geometry))
-    .setMaterial(material.get(Material))
+mesh.createComponent(Mesh)
+    .setGeometry(geometry.getComponent(Geometry))
+    .setMaterial(material.getComponent(Material))
 
-mesh.create(Transform)
+mesh.createComponent(Transform)
     .setPosition(0, 0)
     .setSize(10, 10)
     .setUnit('1cm')
 
 new RenderingLoop(function (delta) {
   entityComponentSystem.update(delta)
-  mesh.get(Transform).rotate((2 * Math.PI) * delta * 0.1)
+  mesh.getComponent(Transform).rotate((2 * Math.PI) * delta * 0.1)
 }).start()
 
 function onSizeChange (width, height) {
