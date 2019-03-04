@@ -16,7 +16,9 @@
         "alias": {
           "@overseer": "./src/js",
           "@ecs": "./src/js/ecs",
-          "@shaders": "./src/shaders"
+          "@shaders": "./src/shaders",
+          "@redux": "./src/redux",
+          "@editor": "./src/js/editor"
         },
         "extensions": [
           ".js", ".json", ".jsx"

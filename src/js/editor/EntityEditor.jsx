@@ -1,57 +1,46 @@
 import React, { Component } from 'react'
 import { List } from 'react-virtualized'
 
-import { EntityEditorElement } from './EntityEditorElement'
+import { Ordering, OrderingElement, EntityList } from './components'
+import { $ordering } from '@redux'
+
+const FIELD_LABEL = 0
+const FIELD_IDENTIFIER = 1
 
 export class EntityEditor extends Component {
   constructor (props, context) {
     super(props, context)
 
-    this.renderEntity = this.renderEntity.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+
+    this.state = {
+      ordering: new $ordering.Ordering()
+    }
+  }
+
+  handleChange (newValue) {
+    console.log(newValue)
+    this.setState({
+      ordering: newValue
+    })
   }
 
   render () {
     return (
       <div className='entity-editor'>
-        <List
-          tabIndex={-1}
-          height={this.props.height || 200}
-          width={this.props.width || 300}
-          rowCount={this.props.entities.length}
-          rowHeight={30}
-          rowRenderer={this.renderEntity.bind(this)}
+        <Ordering value={this.state.ordering} onChange={this.handleChange}>
+          <OrderingElement
+            field={FIELD_IDENTIFIER}
+            width={60}
+          >N°</OrderingElement>
+          <OrderingElement field={FIELD_LABEL}>Label</OrderingElement>
+        </Ordering>
+        <EntityList
+          value={this.props.entities}
+          manager={this.props.entityComponentSystem}
+          navigable
         />
       </div>
     )
-  }
-
-  renderEntity ({
-    index,
-    isScrolling,
-    isVisible,
-    key,
-    parent,
-    style
-  }) {
-    return (
-      <EntityEditorElement
-        style={style}
-        key={key}
-        identifier={this.getEntity(index)}
-        label={this.getLabelOfEntity(index)}
-        selected={false}
-        navigable={this.props.navigable}
-      />
-    )
-  }
-
-  getEntity (index) {
-    return this.props.entities[index]
-  }
-
-  getLabelOfEntity (index) {
-    return this.props.entityComponentSystem.getLabelOfEntity(
-      this.props.entities[index]
-    ) || `Entity ${this.props.entities[index]}`
   }
 }

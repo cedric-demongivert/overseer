@@ -9,9 +9,13 @@
 @import './base';
 @import './utils';
 
+@import './components/list';
+@import './components/list-entity';
+
 @import './components/entity-component-system-editor';
 @import './components/entity-component-system-renderer';
+@import './components/entity-editor';
 @import './components/floating-panel-opener';
 @import './components/floating-panel';
 @import './components/filler';
-@import './components/entity-editor-element';
+@import './components/ordering';

@@ -2,8 +2,10 @@ import 'babel-polyfill'
 
 import React from 'react'
 import { render } from 'react-dom'
+import { Provider } from 'react-redux'
 
-import { EntityComponentSystemEditor } from './editor/EntityComponentSystemEditor'
+import { EntityComponentSystemEditor } from '@editor/EntityComponentSystemEditor'
+import { editorStore } from '@editor/editorStore'
 
 import {
   EntityComponentSystem,
@@ -124,13 +126,15 @@ function handleComponentsPanelToggle () {
 function doRender () {
   render(
     (
-      <EntityComponentSystemEditor
-        entityComponentSystem={entityComponentSystem}
-        onSizeChange={onSizeChange}
-        onEntitiesPanelToggle={handleEntitiesPanelToggle}
-        onComponentsPanelToggle={handleComponentsPanelToggle}
-        {...state}
-      />
+      <Provider store={editorStore}>
+        <EntityComponentSystemEditor
+          entityComponentSystem={entityComponentSystem}
+          onSizeChange={onSizeChange}
+          onEntitiesPanelToggle={handleEntitiesPanelToggle}
+          onComponentsPanelToggle={handleComponentsPanelToggle}
+          {...state}
+        />
+      </Provider>
     ), document.getElementById('application')
   )
 }

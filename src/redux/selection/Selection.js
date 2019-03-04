@@ -1,31 +1,19 @@
+import { Set, List, Record } from 'immutable'
+
 /**
 * A selection of items.
 */
-export class Selection {
-  /**
-  * Create a new empty selection.
-  */
-  constructor () {
-    this._elements = new Set()
-    this._history = new Array()
-  }
-
+export class Selection extends new Record({
+  elements: new Set(),
+  history: new List()
+}) {
   /**
   * Number of selected items.
   *
   * @return {number} The number of selected items.
   */
   get size () {
-    return this._elements.size
-  }
-
-  /**
-  * Return all selected elements in the order of their selection.
-  *
-  * @return {Iterable<any>} An iterable over all selected elements in the order of their selection.
-  */
-  elements () {
-    return this._history
+    return this.elements.size
   }
 
   /**
@@ -36,17 +24,18 @@ export class Selection {
   * @return {boolean} True if the given element is in the current selection.
   */
   has (element) {
-    return this._elements.has(element)
+    return this.elements.has(element)
   }
 
   /**
   * Return an element of this selection in the order of their addition.
   *
   * @param {number} index - Index of the element to get.
+  *
   * @return {any} The selected element at the given index.
   */
   get (index) {
-    return this._history[index]
+    return this.history.get(index)
   }
 
   /**
@@ -57,7 +46,7 @@ export class Selection {
   * @return {number} The index of the given element.
   */
   indexOf (element) {
-    return this._history.indexOf(element)
+    return this.history.indexOf(element)
   }
 
   /**
@@ -66,7 +55,7 @@ export class Selection {
   * @return {any} The first element selected if any.
   */
   first () {
-    return this._history.size > 0 ? this._history[0] : undefined
+    return this.history.size > 0 ? this.history.first() : undefined
   }
 
   /**
@@ -75,7 +64,7 @@ export class Selection {
   * @return {any} The last element selected if any.
   */
   last () {
-    return this._history.size > 0 ? this._history[this._history.length - 1] : undefined
+    return this.history.size > 0 ? this.history.last() : undefined
   }
 
   /**
@@ -83,18 +72,21 @@ export class Selection {
   *
   * @param {any} element - Element to add.
   *
-  * @return {Selection} The current selection instance for chaining purposes.
+  * @return {Selection} An updated selection instance.
   */
   add (element) {
-    if (!this._elements.has(element)) {
-      this._elements.add(element)
-      this._history.push(element)
+    if (!this.elements.has(element)) {
+      return new Selection({
+        elements: this.elements.add(element),
+        history: this.history.push(element)
+      })
     } else {
-      this._history.splice(this._history.indexOf(element), 1)
-      this._history.push(element)
+      return new Selection({
+        elements: this.elements,
+        history: this.history.splice(this.history.indexOf(element), 1)
+                             .push(element)
+      })
     }
-
-    return this
   }
 
   /**
@@ -102,14 +94,25 @@ export class Selection {
   *
   * @param {Iterable<any>} elements - Elements to add.
   *
-  * @return {Selection} The current selection instance for chaining purposes.
+  * @return {Selection} An updated selection instance.
   */
   addAll (elements) {
+    const elements = this.elements.asMutable()
+    const history = this.history.asMutable()
+
     for (const element of elements) {
-      this.select(element)
+      if (!elements.has(element)) {
+        elements.add(element),
+        history.push(element)
+      } else {
+        history.splice(history.indexOf(element), 1).push(element)
+      }
     }
 
-    return this
+    return new Selection({
+      elements.asImmutable(),
+      history.asImmutable()
+    })
   }
 
   /**
@@ -117,12 +120,14 @@ export class Selection {
   *
   * @param {any} element - Element to delete.
   *
-  * @return {Selection} The current selection instance for chaining purposes.
+  * @return {Selection} An updated selection instance.
   */
   delete (element) {
-    if (this._elements.has(element)) {
-      this._elements.delete(element)
-      this._history.splice(this._history.indexOf(element), 1)
+    if (this.elements.has(element)) {
+      return new Selection({
+        elements: this.elements.delete(element),
+        history: this.history.splice(this.history.indexOf(element), 1)
+      })
     }
 
     return this
@@ -133,25 +138,32 @@ export class Selection {
   *
   * @param {any} element - Elements to delete.
   *
-  * @return {Selection} The current selection instance for chaining purposes.
+  * @return {Selection} An updated selection instance.
   */
   deleteAll (elements) {
+    const elements = this.elements.asMutable()
+    const history = this.history.asMutable()
+
     for (const element of elements) {
-      this.unselect(element)
+      if (elements.has(element)) {
+        elements.delete(element)
+        history.splice(history.indexOf(element), 1)
+      }
     }
 
-    return this
+    return new Selection({
+      elements,
+      history
+    })
   }
 
   /**
   * Clear this selection.
   *
-  * @return {Selection} The current selection instance for chaining purposes.
+  * @return {Selection} An updated selection instance.
   */
   clear () {
-    this._elements.clear()
-    this._history.length = 0
-    return this
+    return Selection.EMPTY
   }
 
   /**
@@ -160,7 +172,7 @@ export class Selection {
   * @return {Selection} A clone of this selection.
   */
   clone () {
-    return new Selection().selectAll(this)
+    return new Selection().addAll(this)
   }
 
   /**
@@ -175,14 +187,7 @@ export class Selection {
     if (other == this) return true
 
     if (other instanceof Selection) {
-      for (let index = 0; index < this._history.size; ++index) {
-        if (
-          (other.equals && !this.get(index).equals(other.get(index))) ||
-          (this.get(index) !== other.get(index))
-        ) return false
-      }
-
-      return true
+      return this.history.equals(other.history)
     }
 
     return false
@@ -194,6 +199,8 @@ export class Selection {
   * @return {Iterator<any>} Return an iterator over each element of this selection in their addition order.
   */
   [Symbol.iterator] () {
-    return this._history[Symbol.iterator]()
+    return this.history.values()
   }
 }
+
+Selection.EMPTY = new Selection()

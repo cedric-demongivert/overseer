@@ -1,0 +1,18 @@
+.list {
+  display: block;
+
+  width: auto;
+  height: auto;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  .list-element {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    overflow: hidden;
+  }
+}

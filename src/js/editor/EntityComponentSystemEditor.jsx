@@ -5,7 +5,6 @@ import { EntityComponentSystemRenderer } from './EntityComponentSystemRenderer'
 import { FloatingPanel } from './FloatingPanel'
 import { FloatingPanelOpener } from './FloatingPanelOpener'
 import { EntityEditor } from './EntityEditor'
-import { SizeAdapter } from './SizeAdapter'
 
 export class EntityComponentSystemEditor extends Component {
   constructor (props, context) {
@@ -54,13 +53,11 @@ export class EntityComponentSystemEditor extends Component {
             onToggle={this.props.onEntitiesPanelToggle}
             open={this.props.isEntitiesPanelOpen}
           >
-            <SizeAdapter>
-              <EntityEditor
-                entityComponentSystem={this.props.entityComponentSystem}
-                entities={[...this.props.entityComponentSystem.entities]}
-                navigable={this.props.isEntitiesPanelOpen}
-              />
-            </SizeAdapter>
+            <EntityEditor
+              entityComponentSystem={this.props.entityComponentSystem}
+              entities={[...this.props.entityComponentSystem.entities]}
+              navigable={this.props.isEntitiesPanelOpen}
+            />
           </FloatingPanel>
 
           <FloatingPanelOpener
