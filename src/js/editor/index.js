@@ -1,7 +1,10 @@
-export { EntityComponentSystemRenderer } from './EntityComponentSystemRenderer'
-export { FloatingPanel } from './FloatingPanel'
-export { Editor } from './Editor'
+import * as Anchor from './Anchor'
+
+export { Anchor }
+export { nothing } from './nothing'
+
+export { decorator as GSEditor } from './component'
 export { EntityComponentSystemEditor } from './EntityComponentSystemEditor'
-export { Selection } from './Selection'
-export { FloatingPanelOpener } from './FloatingPanelOpener'
-export { SizeAdapter } from './SizeAdapter'
+export { EntityComponentSystemRenderer } from './EntityComponentSystemRenderer'
+export { Panel } from './Panel'
+export { ToolBar } from './ToolBar'

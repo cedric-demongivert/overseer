@@ -1,142 +1,80 @@
-import 'babel-polyfill'
+import '@babel/polyfill'
 
 import React from 'react'
 import { render } from 'react-dom'
-import { Provider } from 'react-redux'
-
-import { EntityComponentSystemEditor } from '@editor/EntityComponentSystemEditor'
-import { editorStore } from '@editor/editorStore'
 
 import {
   EntityComponentSystem,
-  EntityFactory
-} from './ecs'
+  EntityComponentSystemBuilder
+} from '@cedric-demongivert/gl-tool-ecs'
+
+import { ecs } from '@redux'
 
 import {
-  Viewport,
-  OrthographicCamera2D,
-  overseerMeshStructure,
-  Program,
-  Geometry,
-  Transform,
-  Material,
-  Buffer,
-  Shader,
-  Mesh
-} from './overseer'
+  TransformationSystem,
+  CameraSystem
+} from './systems'
 
-import { RenderingLoop } from './RenderingLoop'
+import { Viewport, OrthographicCamera2D, Unit } from './components'
+import { EntityComponentSystemEditor } from './editor'
+import { initializeSampleScene } from './initializeSampleScene'
 
-const entityComponentSystem = new EntityComponentSystem()
-const entities = new EntityFactory(entityComponentSystem)
+const builder = new EntityComponentSystemBuilder()
+const entityComponentSystem = new EntityComponentSystem(builder)
+const transformations = new TransformationSystem()
+const cameras = new CameraSystem()
 
-// initialisation : vue
-const view = entities.create().setLabel('view')
+initializeSampleScene(entityComponentSystem)
 
-view.createComponent(Viewport)
-    .setBackground(0.075, 0.1, 0.15)
+entityComponentSystem.addSystem(transformations)
+entityComponentSystem.addSystem(cameras)
 
-const viewport = view.getComponent(Viewport)
+function onSizeChange ({ width, height }) {
+  const ecs = entityComponentSystem
+  const entities = entityComponentSystem.getEntitiesWithType(Viewport)
 
-view.createComponent(OrthographicCamera2D)
-    .setCenter(0, 0)
-    .setUnit('1cm')
+  for (let index = 0, size = entities.size; index < size; ++index) {
+    const entity = entities.get(index)
+    const viewport = ecs.getInstance(entity, Viewport)
 
-viewport.camera = view.getComponent(OrthographicCamera2D)
+    viewport.setWidth(width)
+    viewport.setHeight(height)
+    viewport.setLeft(0)
+    viewport.setBottom(0)
 
-// initialisation : geometry
-const geometry = entities.create().setLabel("geometry")
+    const cameraEntity = ecs.getEntityOfInstance(viewport.camera)
+    const camera = ecs.getInstance(cameraEntity, OrthographicCamera2D)
+    const unit = ecs.getInstance(cameraEntity, Unit)
 
-const triangleHeight = Math.sqrt(0.75)
-geometry.createComponent(Buffer.Structure.Grouped, overseerMeshStructure, 3)
-        .push(3)
-        .setPosition(0, -0.5, -1/3 * triangleHeight)
-        .setPosition(1, 0, 2/3 * triangleHeight)
-        .setPosition(2, 0.5, -1/3 * triangleHeight)
-        .setUv(0, 0, 0)
-        .setUv(1, 0.5, 1)
-        .setUv(2, 1, 0)
-        .setColor(0, 1, 0, 0, 1)
-        .setColor(1, 0, 1, 0, 1)
-        .setColor(2, 0, 0, 1, 1)
+    camera.setWidth(width / 40)
+    camera.setHeight(height / 40)
+    camera.setCenter(0, 0)
 
-geometry.createComponent(Buffer.Face)
-        .push(0, 1, 2)
+    unit.set('0.1cm')
 
-geometry.createComponent(Geometry)
-        .setVertexBuffer(geometry.getComponent(Buffer.Structure.Grouped))
-        .setFaceBuffer(geometry.getComponent(Buffer.Face))
-
-// initialisation : material
-const material = entities.create().setLabel("material")
-
-material.createComponent(Shader.Fragment, require('@shaders/basic.frag'))
-material.createComponent(Shader.Vertex, require('@shaders/basic.vert'))
-material.createComponent(
-  Program,
-  material.getComponent(Shader.Vertex),
-  material.getComponent(Shader.Fragment)
-)
-material.createComponent(Material)
-        .setProgram(material.getComponent(Program))
-
-const mesh = entities.create().setLabel("mesh")
-
-mesh.createComponent(Mesh)
-    .setGeometry(geometry.getComponent(Geometry))
-    .setMaterial(material.getComponent(Material))
-
-mesh.createComponent(Transform)
-    .setPosition(0, 0)
-    .setSize(10, 10)
-    .setUnit('1cm')
-
-new RenderingLoop(function (delta) {
-  entityComponentSystem.update(delta)
-  mesh.getComponent(Transform).rotate((2 * Math.PI) * delta * 0.1)
-}).start()
-
-function onSizeChange (width, height) {
-  viewport.setWidth(width)
-          .setHeight(height)
-          .setLeft(0)
-          .setBottom(0)
-
-  viewport.camera.setWidth(width / 40)
-                 .setHeight(height / 40)
-                 .setCenter(0, 0)
-                 .setUnit('1cm')
+    transformations.commit(cameraEntity)
+    cameras.commit(cameraEntity)
+  }
 }
 
-const state = {
-  isEntitiesPanelOpen: false,
-  isComponentsPanelOpen: false
+transformations.commitAll()
+cameras.commitAll()
+
+function onChange (event) {
+  ecs.reduce(entityComponentSystem, event)
+  refresh()
 }
 
-function handleEntitiesPanelToggle () {
-  state.isEntitiesPanelOpen = !state.isEntitiesPanelOpen
-  doRender()
-}
-
-function handleComponentsPanelToggle () {
-  state.isComponentsPanelOpen = !state.isComponentsPanelOpen
-  doRender()
-}
-
-function doRender () {
+function refresh () {
   render(
     (
-      <Provider store={editorStore}>
-        <EntityComponentSystemEditor
-          entityComponentSystem={entityComponentSystem}
-          onSizeChange={onSizeChange}
-          onEntitiesPanelToggle={handleEntitiesPanelToggle}
-          onComponentsPanelToggle={handleComponentsPanelToggle}
-          {...state}
-        />
-      </Provider>
+      <EntityComponentSystemEditor
+        entityComponentSystem={entityComponentSystem}
+        onSizeChange={onSizeChange}
+        onChange={onChange}
+      />
     ), document.getElementById('application')
   )
 }
 
-doRender()
+refresh()

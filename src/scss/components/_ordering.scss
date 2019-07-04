@@ -15,7 +15,11 @@ $ordering-font-size: 14px;
 
   overflow: hidden;
 
-  .ordering-element {
+  & + .ordering {
+    border-top: none;
+  }
+
+  .ordering-field {
     display: flex;
     flex: auto;
 
@@ -53,7 +57,7 @@ $ordering-font-size: 14px;
       @include transition(background-color .0s ease-in-out);
     }
 
-    .ordering-element-label {
+    .ordering-field-label {
       flex: auto;
 
       height: $ordering-height;
@@ -66,7 +70,7 @@ $ordering-font-size: 14px;
       text-align: left;
     }
 
-    .ordering-element-indicator {
+    .ordering-field-indicator {
       width: 10px;
       height: $ordering-height;
 
@@ -79,16 +83,16 @@ $ordering-font-size: 14px;
         vertical-align: middle;
       }
 
-      &.ordering-element-indicator-none {
+      &.ordering-field-indicator-none {
 
       }
 
-      &.ordering-element-indicator-ascending {
+      &.ordering-field-indicator-ascending {
         @extend .fas;
         @extend .fa-caret-up;
       }
 
-      &.ordering-element-indicator-descending {
+      &.ordering-field-indicator-descending {
         @extend .fas;
         @extend .fa-caret-down;
       }

@@ -1,0 +1,63 @@
+$toolbar-height: 50px;
+
+.toolbar {
+  display: flex;
+  position: absolute;
+
+  margin: 0px;
+  padding: 0px;
+
+  border: none;
+
+  .toolbar-start {
+    order: 0;
+    flex: 0 0 auto;
+    align-self: flex-start;
+  }
+
+  .toolbar-end {
+    order: 2;
+    flex: 0 0 auto;
+    align-self: flex-end;
+  }
+
+  .toolbar-center {
+    order: 1;
+    flex: 1 0 auto;
+    align-self: center;
+  }
+
+  .btn {
+    display: block;
+
+    margin: 0px;
+    padding: 0px;
+    border: none;
+    border-radius: 0px;
+
+    width: $toolbar-height;
+    height: $toolbar-height;
+
+    line-height: $toolbar-height;
+
+    vertical-align: middle;
+    text-align: center;
+
+    outline: none;
+    box-shadow: none;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    &:focus, &.is-focus {
+      background-color: rgba(255, 255, 255, 0.24);
+      color: #ffffff;
+    }
+
+    &:hover, &.is-hovered {
+      background-color: rgba(255, 255, 255, 0.24);
+      color: #ffffff;
+    }
+  }
+}

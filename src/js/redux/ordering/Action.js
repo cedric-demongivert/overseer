@@ -1,0 +1,7 @@
+export const TOGGLE = 'ordering:toggle'
+export const ASCEND = 'ordering:ascend'
+export const DESCEND = 'ordering:descend'
+export const UNORDER = 'ordering:unorder'
+export const ORDER = 'ordering:order'
+export const ONLY = 'ordering:only'
+export const CLEAR = 'ordering:clear'

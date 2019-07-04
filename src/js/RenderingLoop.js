@@ -1,4 +1,9 @@
 export class RenderingLoop {
+  /**
+  * Create a new rendering loop.
+  *
+  * @param {function} loop - The loop function.
+  */
   constructor (loop) {
     this._loop = loop
     this._running = false
@@ -35,11 +40,17 @@ export class RenderingLoop {
     }
   }
 
-  run () {
+  /**
+  * Execute this loop only once.
+  */
+  once () {
     this.start()
     this.stop()
   }
 
+  /**
+  * Start this rendering loop.
+  */
   start () {
     if (this._running) {
       throw new Error(
@@ -53,6 +64,9 @@ export class RenderingLoop {
     }
   }
 
+  /**
+  * Abort the current execution.
+  */
   cancel () {
     if (this._running) {
       window.cancelAnimationFrame(this._executionIdentifier)
@@ -65,6 +79,9 @@ export class RenderingLoop {
     }
   }
 
+  /**
+  * Gracefully stop this rendering loop.
+  */
   stop () {
     if (this._running) {
       this._running = false

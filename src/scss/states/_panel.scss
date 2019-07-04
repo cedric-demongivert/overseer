@@ -1,0 +1,12 @@
+.panel {
+  .panel-header, .panel-footer {
+    &-addons {
+      &.is-start { order: 0; }
+      &.is-end { order: 2; }
+    }
+
+    &.is-clickable {
+      cursor: pointer;
+    }
+  }
+}

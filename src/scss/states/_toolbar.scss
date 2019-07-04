@@ -1,0 +1,47 @@
+.toolbar {
+  &, &.is-snap-top, &.is-snap-bottom {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    width: 100%;
+    height: $toolbar-height;
+  }
+
+  &.is-snap-left, &.is-snap-right {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    width: $toolbar-height;
+    height: 100%;
+  }
+
+  &, &.is-snap-top {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+  }
+
+  &.is-snap-bottom {
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+  }
+
+  &.is-snap-left {
+    top:0px;
+    bottom: 0px;
+    left: 0px;
+  }
+
+  &.is-snap-right {
+    top:0px;
+    bottom: 0px;
+    left: 0px;
+  }
+}

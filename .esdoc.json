@@ -2,6 +2,7 @@
   "source": "./src/js/errors",
   "destination": "./doc",
   "plugins": [
+    "@babel/plugin-proposal-decorators",
     {
       "name": "esdoc-standard-plugin",
       "option": {

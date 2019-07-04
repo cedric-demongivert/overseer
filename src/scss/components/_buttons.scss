@@ -1,0 +1,29 @@
+.btn {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+
+  &.btn-block {
+    margin: 0px;
+    padding: 0px;
+    border: none;
+    border-radius: 0px;
+    
+    text-align: center;
+
+    &:focus, &.is-focused, &:active, &.is-active, &:hover, &.is-hovered,
+    &:active:focus {
+      background-color: rgba(0, 0, 0, 0.1);
+      transition: background-color $transition-duration ease-in;
+      border: none;
+      color: $body-color;
+
+      outline: none;
+      box-shadow: none;
+      text-decoration: none;
+    }
+  }
+}

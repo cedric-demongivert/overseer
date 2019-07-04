@@ -1,0 +1,71 @@
+.panel.panel-floating {
+  &.is-snap-left {
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: auto;
+
+    box-shadow: 3px 0px 8px 0px rgba(0,0,0,0.24);
+  }
+
+  &.is-snap-right {
+    left: auto;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+
+    box-shadow: -3px 0px -8px 0px rgba(0,0,0,0.24);
+
+    .is-start {
+      order: 2;
+    }
+
+    .is-end {
+      order: 0;
+    }
+  }
+
+  &.is-open {
+    &.is-snap-left {
+      left: 0px;
+    }
+
+    &.is-snap-right {
+      right: 0px;
+    }
+  }
+
+  &.is-close {
+    &.is-snap-left {
+      left: -$floating-panel-width - 10px;
+    }
+
+    &.is-snap-right {
+      right: -$floating-panel-width - 10px;
+    }
+  }
+
+  &.is-opening {
+    &.is-snap-left {
+      left: 0px;
+      @include transition(left 0.2s ease-in-out);
+    }
+
+    &.is-snap-right {
+      right: 0px;
+      @include transition(right 0.2s ease-in-out);
+    }
+  }
+
+  &.is-closing {
+    &.is-snap-left {
+      left: -$floating-panel-width - 10px;
+      @include transition(left 0.2s ease-in-out);
+    }
+
+    &.is-snap-right {
+      right: -$floating-panel-width - 10px;
+      @include transition(right 0.2s ease-in-out);
+    }
+  }
+}

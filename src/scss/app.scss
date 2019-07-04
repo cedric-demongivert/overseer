@@ -9,13 +9,36 @@
 @import './base';
 @import './utils';
 
-@import './components/list';
-@import './components/list-entity';
+@import './components/buttons';
+
+@import './components/collection';
+@import './components/collection-table';
+@import './components/collection-list';
+
+@import './components/panel';
+@import './components/panel-floating';
+
+@import './components/toolbar';
+
+@import './components/filter';
 
 @import './components/entity-component-system-editor';
 @import './components/entity-component-system-renderer';
+
 @import './components/entity-editor';
-@import './components/floating-panel-opener';
-@import './components/floating-panel';
-@import './components/filler';
+@import './components/components-editor';
+@import './components/component-editor';
+
+@import './components/control';
+
 @import './components/ordering';
+@import './components/highlight';
+
+@import './states/panel';
+@import './states/panel-floating';
+
+@import './states/toolbar';
+
+@import './states/filter';
+
+@import './states/components-editor';

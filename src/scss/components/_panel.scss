@@ -1,0 +1,121 @@
+$panel-header-height: 50px;
+$panel-footer-height: 50px;
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+
+  width: 100%;
+  max-width: 100%;
+
+  height: auto;
+
+  &, & > .panel-header, & > .panel-body, & > .panel-footer {
+    width: 100%;
+    max-width: 100%;
+
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    border-radius: 0px;
+
+    box-sizing: border-box;
+
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+  & > .panel-header {
+    order: 0;
+    flex: 0 0 $panel-header-height;
+
+    .btn.btn-block {
+      height: $panel-header-height;
+      width: $panel-header-height;
+    }
+  }
+
+  & > .panel-body {
+    order: 1;
+    flex: 1 1 auto;
+
+    overflow-y: auto;
+  }
+
+  & > .panel-footer{
+    order: 2;
+    flex: 0 0 $panel-footer-height;
+
+    .btn.btn-block {
+      height: $panel-footer-height;
+      width: $panel-footer-height;
+    }
+  }
+
+  & > .panel-header, & > .panel-footer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    color: $body-color;
+  }
+
+  & > .panel-header {
+    & > .panel-header-content, & > .panel-header-addons {
+      height: $panel-header-height;
+
+      line-height: $panel-header-height;
+      vertical-align: middle;
+
+      padding: 0px;
+      margin: 0px;
+
+      border: none;
+      border-radius: 0px;
+    }
+
+    & > .panel-header-content {
+      order: 1;
+      flex: 1 0 auto;
+      overflow: hidden;
+    }
+
+     & > .panel-header-addons {
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+  }
+
+  & > .panel-footer {
+    & > .panel-footer-content, & > .panel-footer-addons {
+      height: $panel-footer-height;
+
+      line-height: $panel-footer-height;
+      vertical-align: middle;
+
+      padding: 0px;
+      margin: 0px;
+
+      border: none;
+      border-radius: 0px;
+    }
+
+    & > .panel-footer-content {
+      order: 1;
+      flex: 1 0 auto;
+      overflow: hidden;
+    }
+
+     & > .panel-footer-addons {
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+  }
+}

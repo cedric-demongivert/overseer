@@ -1,0 +1,64 @@
+$control-line-height: 26px;
+
+.control {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+
+  width: 100%;
+  max-width: 100%;
+  height: $control-line-height;
+
+  border: none;
+
+  padding: 0px;
+  margin: 0px;
+
+  overflow: hidden;
+}
+
+.control.control-number {
+  input {
+    flex: 1 0 auto;
+
+    height: $control-line-height;
+    width: 0px;
+    min-width: 0px;
+    max-width: none;
+
+    outline: none;
+
+    border: none;
+
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .control-increments {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    flex: 0 0 auto;
+
+    height: $control-line-height;
+
+    border: none;
+
+    padding: 0px;
+    margin: 0px;
+
+    .btn.btn-block {
+      flex: 1 1 auto;
+
+      width: 20px;
+      font-size: floor($control-line-height / 2);
+    }
+  }
+}

@@ -1,0 +1,37 @@
+$components-editor-element-height: 25px;
+$components-editor-element-font-size: 14px;
+$components-editor-identifier-column-width: 60px;
+
+.components-editor {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+
+  .components-editor-entity {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    .components-editor-entity-identifier, .components-editor-entity-label {
+      height: $components-editor-element-height;
+      line-height: $components-editor-element-height;
+      vertical-align: middle;
+      text-align: left;
+    }
+
+    .components-editor-entity-identifier {
+      flex: 0 0 $components-editor-identifier-column-width;
+      padding-left: 10px;
+    }
+
+    .components-editor-entity-label {
+      flex: 1 0 auto;
+      padding-right: 10px;
+    }
+  }
+}

@@ -1,0 +1,32 @@
+$component-editor-element-height: 25px;
+$component-editor-element-font-size: 14px;
+
+.panel.component-editor {
+  .panel-header, .panel-body, .panel-footer {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .panel-header .panel-header-content {
+    text-align: left;
+  }
+
+  .panel-header .panel-header-content,
+  .panel-header .panel-header-addons
+  {
+    height: $component-editor-element-height;
+    line-height: $component-editor-element-height;
+    vertical-align: middle;
+
+    font-size: $component-editor-element-font-size;
+  }
+
+  .panel-header, .panel-footer {
+    flex: 0 0 $component-editor-element-height;
+    font-weight: bold;
+  }
+
+  &, .panel-header {
+    border-bottom: 1px solid $outline-color;
+  }
+}

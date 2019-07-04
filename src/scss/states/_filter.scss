@@ -1,0 +1,15 @@
+.filter {
+  &.is-dirty .filter-clear {
+    opacity: 1;
+    visibility: visible;
+    flex: 0 0 $filter-height + 10px;
+    width: auto;
+    padding-right: 10px;
+
+    transition: visibility $transition-duration step-start,
+                flex $transition-duration step-start,
+                width $transition-duration step-start,
+                padding-right $transition-duration step-start,
+                opacity $transition-duration ease-out;
+  }
+}

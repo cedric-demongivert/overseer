@@ -1,0 +1,12 @@
+.collection.collection-list {
+  flex-direction: row;
+
+  & > .element {
+    flex: 0 0 100%;
+
+    max-width: 100%;
+
+    overflow: hidden;
+    overflow-y: auto;
+  }
+}

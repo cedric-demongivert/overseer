@@ -1,0 +1,6 @@
+export const ADD = 'selection:add'
+export const ADD_MANY = 'selection:add-many'
+export const DELETE = 'selection:delete'
+export const DELETE_MANY = 'selection:delete-many'
+export const ONLY = 'selection:only'
+export const CLEAR = 'selection:clear'

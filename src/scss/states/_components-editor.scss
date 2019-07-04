@@ -1,0 +1,18 @@
+.components-editor {
+  &.is-empty {
+    .message {
+      display: block;
+      flex: 0 0 auto;
+
+      padding: 0px;
+      margin: 0px;
+
+      padding-left: 10px;
+      padding-right: 10px;
+
+      text-align: center;
+
+      color: transparentize($body-color, 0.3);
+    }
+  }
+}

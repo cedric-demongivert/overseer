@@ -1,0 +1,36 @@
+$floating-panel-width: 350px;
+$floating-panel-header-font-size: $h6-font-size;
+
+.panel.panel-floating {
+  position: absolute;
+
+  left: 0px;
+  top: 0px;
+  bottom: 0px;
+  right: auto;
+
+  width: $floating-panel-width;
+
+  background-color: white;
+  box-shadow: 3px 0px 8px 0px rgba(0,0,0,0.24);
+
+  overflow-x: visible;
+  overflow-y: hidden;
+
+  .panel-header {
+    &, * {
+      font-size: $floating-panel-header-font-size;
+      color: $body-color;
+    }
+
+    &, & > * {
+      text-align: center;
+      line-height: $panel-header-height;
+      vertical-align: middle;
+      font-family: 'Roboto Slab', serif;
+    }
+  }
+
+  .panel-body {
+  }
+}
