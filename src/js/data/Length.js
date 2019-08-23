@@ -123,6 +123,29 @@ export class Length {
     }
   }
 
+  decimals (value) {
+    let index = 0
+    while (value >= 1.0) {
+      index += 1
+      value /= 10
+    }
+    return index
+  }
+
+  order (n) {
+    if (this.decimals(this._value) > n) {
+      while (this.decimals(this._value) > n && $upper.has(this._unit)) {
+        this._value = this.in($upper.get(this._unit))
+        this._unit = $upper.get(this._unit)
+      }
+    } else {
+      while (this.decimals(this._value) < n && $lower.has(this._unit)) {
+        this._value = this.in($lower.get(this._unit))
+        this._unit = $lower.get(this._unit)
+      }
+    }
+  }
+
   /**
   * @return {number} The length value.
   */
@@ -353,6 +376,44 @@ const $values = new Map([
   [Length.Pm, 1000000000000000],
   [Length.Em, 1000000000000000000],
   [Length.ua, 149597870000]
+])
+
+const $upper = new Map([
+  [Length.am, Length.fm],
+  [Length.fm, Length.pm],
+  [Length.pm, Length.nm],
+  [Length.nm, Length.μm],
+  [Length.μm, Length.mm],
+  [Length.mm, Length.cm],
+  [Length.cm, Length.dm],
+  [Length.dm, Length.m],
+  [Length.m, Length.dam],
+  [Length.dam, Length.hm],
+  [Length.hm, Length.km],
+  [Length.km, Length.Mm],
+  [Length.Mm, Length.Gm],
+  [Length.Gm, Length.Tm],
+  [Length.Tm, Length.Pm],
+  [Length.Pm, Length.Em]
+])
+
+const $lower = new Map([
+  [Length.fm, Length.am],
+  [Length.pm, Length.fm],
+  [Length.nm, Length.pm],
+  [Length.μm, Length.nm],
+  [Length.mm, Length.μm],
+  [Length.cm, Length.mm],
+  [Length.dm, Length.cm],
+  [Length.m, Length.dm],
+  [Length.dam, Length.m],
+  [Length.hm, Length.dam],
+  [Length.km, Length.hm],
+  [Length.Mm, Length.km],
+  [Length.Gm, Length.Mm],
+  [Length.Tm, Length.Gm],
+  [Length.Pm, Length.Tm],
+  [Length.Em, Length.Pm]
 ])
 
 const parser = new RegExp(

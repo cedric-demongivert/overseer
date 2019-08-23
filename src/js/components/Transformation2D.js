@@ -1,18 +1,6 @@
 import { Transformation2D as Data } from '../data/Transformation2D'
 import { GSEditor } from '../editor'
-import { TransformationSystem } from '../systems'
-
-function requireSystem (ecs, type) {
-  const systems = ecs.systems
-
-  for (let index = 0, size = systems.size; index < size; ++index) {
-    if (systems.get(index) instanceof type) {
-      return systems.get(index)
-    }
-  }
-
-  throw new Error()
-}
+import { TransformationManagementSystem } from '../systems'
 
 export const Transformation2D = GSEditor({
   /**
@@ -22,11 +10,11 @@ export const Transformation2D = GSEditor({
     position: {
       label: 'Location',
       editor: GSEditor.vector2f(),
-      getter (component) { return component.location },
-      setter (component, value, ecs) {
+      getter (ecs, component) { return component.location },
+      setter (ecs, component, value) {
         component.location = value
 
-        requireSystem(ecs, TransformationSystem).commit(
+        ecs.requireSystem(TransformationManagementSystem).commit(
           ecs.getEntityOfInstance(component)
         )
       }
@@ -34,11 +22,11 @@ export const Transformation2D = GSEditor({
     scale: {
       label: 'Scale',
       editor: GSEditor.vector2f(),
-      getter (component) { return component.scale },
-      setter (component, value, ecs) {
+      getter (ecs, component) { return component.scale },
+      setter (ecs, component, value) {
         component.scale = value
 
-        requireSystem(ecs, TransformationSystem).commit(
+        ecs.requireSystem(TransformationManagementSystem).commit(
           ecs.getEntityOfInstance(component)
         )
       }
@@ -46,13 +34,13 @@ export const Transformation2D = GSEditor({
     rotation: {
       label: 'Rotation',
       editor: GSEditor.number(),
-      getter (component) {
+      getter (ecs, component) {
         return (component.rotation / (2 * Math.PI)) * 360
       },
-      setter (component, value, ecs) {
+      setter (ecs, component, value) {
         component.rotation = (value / 360) * 2 * Math.PI
 
-        requireSystem(ecs, TransformationSystem).commit(
+        ecs.requireSystem(TransformationManagementSystem).commit(
           ecs.getEntityOfInstance(component)
         )
       }

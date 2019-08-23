@@ -4,6 +4,7 @@ import { GLContext } from '@cedric-demongivert/gl-tool-core'
 import { Viewport } from '../components/Viewport'
 
 import { OverseerSystem } from './OverseerSystem'
+import { LayerManagementSystem } from './LayerManagementSystem'
 
 export class GLToolRenderingSystem extends OverseerSystem {
   /**
@@ -19,6 +20,22 @@ export class GLToolRenderingSystem extends OverseerSystem {
     this._context = null
     this._gl = null
     this._color = new Vector3f()
+
+    this._layers = null
+  }
+
+  /**
+  * @see gltool-ecs/System#initialize
+  */
+  initialize () {
+    this._layers = this.manager.requireSystem(LayerManagementSystem)
+  }
+
+  /**
+  * @see gltool-ecs/System#destroy
+  */
+  destroy () {
+    this._layers = null
   }
 
   get left () {
@@ -106,14 +123,13 @@ export class GLToolRenderingSystem extends OverseerSystem {
 
     this._gl.enable(this._gl.SCISSOR_TEST)
     this._gl.enable(this._gl.BLEND)
-    this._gl.enable(this._gl.DEPTH_TEST)
 
-    this._gl.blendEquation(this._gl.FUNC_ADD)
+    this._gl.blendEquationSeparate(this._gl.FUNC_ADD, this._gl.FUNC_ADD)
     this._gl.blendFuncSeparate(
       this._gl.SRC_ALPHA,
       this._gl.ONE_MINUS_SRC_ALPHA,
       this._gl.ONE,
-      this._gl.ONE_MINUS_SRC_ALPHA
+      this._gl.ONE_MINUS_SRC_ALPHA,
     )
 
     this._gl.scissor(this._left, this._bottom, this._width, this._height)
@@ -127,8 +143,7 @@ export class GLToolRenderingSystem extends OverseerSystem {
   */
   clear (color) {
     this._gl.clearColor(color.x, color.y, color.z, 1.0)
-    this._gl.clearDepth(1.0)
-    this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT)
+    this._gl.clear(this._gl.COLOR_BUFFER_BIT)
   }
 
   /**
@@ -154,16 +169,30 @@ export class GLToolRenderingSystem extends OverseerSystem {
     const viewport = this.manager.getInstance(entity, Viewport)
 
     this.restrict(viewport)
-    this.clear(this._color)
+    this.clear(viewport.background)
 
     if (viewport.camera) {
-      const systems = this.manager.systems
+      const entities = this.manager.entities.size
 
-      for (let index = 0, size = systems.size; index < size; ++index) {
-        const system = systems.get(index)
-        if (system.isGLToolRenderable) {
-          system.render(this._gl, viewport)
-        }
+      for (let index = 0; index < entities; ++index) {
+        this.renderEntity(viewport, this._layers.getEntity(index))
+      }
+    }
+  }
+
+  /**
+  * Render an entity.
+  *
+  * @param {Viewport} viewport - A viewport instance to render.
+  * @param {number} entity - An entity to render.
+  */
+  renderEntity (viewport, entity) {
+    const systems = this.manager.systems
+
+    for (let index = 0, size = systems.size; index < size; ++index) {
+      const system = systems.get(index)
+      if (system.isGLToolRenderable) {
+        system.render(this._gl, viewport, entity)
       }
     }
   }
@@ -174,6 +203,5 @@ export class GLToolRenderingSystem extends OverseerSystem {
   terminateRendering () {
     this._gl.disable(this._gl.SCISSOR_TEST)
     this._gl.disable(this._gl.BLEND)
-    this._gl.disable(this._gl.DEPTH_TEST)
   }
 }

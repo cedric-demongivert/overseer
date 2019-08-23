@@ -1,6 +1,7 @@
 import { GSEditor } from './GSEditor'
 import { NumberEditor } from './NumberEditor'
 import { Vector2fEditor } from './Vector2fEditor'
+import { Vector3fEditor } from './Vector3fEditor'
 import { Matrix4fEditor } from './Matrix4fEditor'
 
 const EMPTY_PROPERTIES = {}
@@ -14,10 +15,23 @@ export function decorator (handler) {
     const descriptor = properties[property]
     const identifier = editor.define(property)
 
-    if (descriptor.label) editor.defineLabel(identifier, descriptor.label)
-    if (descriptor.getter) editor.defineAccessor(identifier, descriptor.getter)
-    if (descriptor.setter) editor.defineMutator(identifier, descriptor.setter)
-    if (descriptor.editor) editor.defineEditor(identifier, descriptor.editor)
+    if (descriptor.label) {
+      editor.defineLabel(identifier, descriptor.label)
+    }
+
+    if (descriptor.getter) {
+      descriptor.getter = descriptor.getter.bind(descriptor)
+      editor.defineAccessor(identifier, descriptor.getter)
+    }
+
+    if (descriptor.setter) {
+      descriptor.setter = descriptor.setter.bind(descriptor)
+      editor.defineMutator(identifier, descriptor.setter)
+    }
+
+    if (descriptor.editor) {
+      editor.defineEditor(identifier, descriptor.editor)
+    }
   }
 
   handler.editor = editor
@@ -32,6 +46,14 @@ decorator.number = function () {
 
 decorator.vector2f = function () {
   return Vector2fEditor
+}
+
+decorator.vector3f = function () {
+  return Vector3fEditor
+}
+
+decorator.color = function () {
+  return Vector3fEditor
 }
 
 decorator.matrix4f = function () {

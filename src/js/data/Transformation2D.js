@@ -41,23 +41,23 @@ export class Transformation2D {
     const tx = this._location.x
     const ty = this._location.y
     const cos = Math.cos(this._rotation)
-    const sin= Math.sin(this._rotation)
+    const sin = Math.sin(this._rotation)
 
     target.multiplyWithStaticMatrixAsLeftOperand(
       cos, -sin, 0, 0,
       sin,  cos, 0, 0,
         0,    0, 1, 0,
-        0,    0, 0, 1,
+        0,    0, 0, 1
     ).multiplyWithStaticMatrixAsLeftOperand(
       sx,  0, 0, 0,
        0, sy, 0, 0,
        0,  0, 1, 0,
-       0,  0, 0, 1,
+       0,  0, 0, 1
     ).multiplyWithStaticMatrixAsLeftOperand(
-       1, 0, 0, 0,
-       0, 1, 0, 0,
+       1, 0, 0, tx,
+       0, 1, 0, ty,
        0, 0, 1, 0,
-       tx, ty, 0, 1,
+       0, 0, 0, 1
     )
   }
 
@@ -78,17 +78,17 @@ export class Transformation2D {
       sx,  0, 0, 0,
        0, sy, 0, 0,
        0,  0, 1, 0,
-       0,  0, 0, 1,
+       0,  0, 0, 1
     ).multiplyWithStaticMatrixAsRightOperand(
       cos, -sin, 0, 0,
       sin,  cos, 0, 0,
         0,    0, 1, 0,
-        0,    0, 0, 1,
+        0,    0, 0, 1
     ).multiplyWithStaticMatrixAsRightOperand(
        1, 0, 0, 0,
        0, 1, 0, 0,
        0, 0, 1, 0,
-       tx, ty, 0, 1,
+       tx, ty, 0, 1
     )
   }
 

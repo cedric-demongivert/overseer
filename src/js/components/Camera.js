@@ -9,20 +9,20 @@ export const Camera = GSEditor({
     worldToView: {
       label: 'World to view matrix',
       editor: GSEditor.matrix4f(),
-      getter (component) {
+      getter (ecs, component) {
         return component.worldToView
       },
-      setter (component, value, ecs) {
+      setter (ecs, component, value) {
         component.worldToView = value
       }
     },
     viewToWorld: {
       label: 'View to world matrix',
       editor: GSEditor.matrix4f(),
-      getter (component) {
+      getter (ecs, component) {
         return component.viewToWorld
       },
-      setter (component, value, ecs) {
+      setter (ecs, component, value) {
         component.viewToWorld = value
       }
     }

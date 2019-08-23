@@ -22,8 +22,10 @@
 
 @import './components/filter';
 
+@import './components/scale';
+
 @import './components/entity-component-system-editor';
-@import './components/entity-component-system-renderer';
+@import './components/rendering';
 
 @import './components/entity-editor';
 @import './components/components-editor';
@@ -40,5 +42,7 @@
 @import './states/toolbar';
 
 @import './states/filter';
+
+@import './states/control';
 
 @import './states/components-editor';

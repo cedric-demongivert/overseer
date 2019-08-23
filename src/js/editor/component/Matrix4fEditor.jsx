@@ -58,28 +58,29 @@ export class Matrix4fEditor extends PureComponent {
     return result
   }
 
-  renderRow (index) {
+  renderRow (row) {
     const cells = []
 
     cells.push(
       <div className='element' style={{flex: '0 0 25px'}} key={0}>
-        { index + 1 }
+        { row + 1 }
       </div>
     )
 
     for (let cell = 0; cell < 4; ++cell) {
+      // transposed due to incapacity of webgl to transpose matrix in live
       cells.push(
         <div className='element' key={cell + 1}>
           <NumberEditor
-            value={this.props.value.getCell(cell, index)}
-            onChange={this.handleChanges[index * 4 + cell]}
+            value={this.props.value.getCell(row, cell)}
+            onChange={this.handleChanges[cell * 4 + row]}
             readonly={this.props.readonly}
           />
         </div>
       )
     }
 
-    return <div className='element' key={index}>{cells}</div>
+    return <div className='element' key={row}>{cells}</div>
   }
 }
 

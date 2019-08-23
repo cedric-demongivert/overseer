@@ -1,6 +1,6 @@
 .collection {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-start;
@@ -20,7 +20,7 @@
   box-sizing: border-box;
 
   & > .element {
-    width: auto;
+    flex: 1 0 auto;
     height: auto;
 
     margin: 0px;

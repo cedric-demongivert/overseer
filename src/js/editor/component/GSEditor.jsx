@@ -141,7 +141,7 @@ export class GSEditor {
 
     this._setters[identifier] = mutator
     this._mutators[identifier] = (
-      (value, component, ecs) => mutator(component, value, ecs)
+      (value, ecs, component) => mutator(ecs, component, value)
     )
   }
 
@@ -297,7 +297,10 @@ export class GSEditor {
       const parameters = Object.assign({}, properties)
 
       if (this._getters[index]) {
-        parameters.value = this._getters[index](properties.value)
+        parameters.value = this._getters[index](
+          properties.entityComponentSystem,
+          properties.value
+        )
       }
 
       if (this._setters[index]) {

@@ -194,11 +194,11 @@ export class Viewport {
     const hwidth = this.width / 2
     const hheight = this.height / 2
 
-    this._bottom = value.y - hheight
-    this._top = value.y + hheight
+    this._bottom = y - hheight
+    this._top = y + hheight
 
-    this._left = value.x - hwidth
-    this._right = value.x + hwidth
+    this._left = x - hwidth
+    this._right = x + hwidth
   }
 
   /**

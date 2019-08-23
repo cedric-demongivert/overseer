@@ -1,5 +1,15 @@
 import { Matrix4f, Vector2f } from '@cedric-demongivert/gl-tool-math'
 
+function gcd (a, b) {
+  while (b) {
+    const tmp = b
+    b = a % b
+    a = tmp
+  }
+
+  return a
+}
+
 export class OrthographicCamera2D {
   /**
   * @see Component#initialize
@@ -69,6 +79,23 @@ export class OrthographicCamera2D {
   }
 
   /**
+  * @return {number} The squared radius of this camera.
+  */
+  get squaredRadius () {
+    const width = this.width
+    const height = this.height
+
+    return width * width + height * height
+  }
+
+  /**
+  * @return {number} The radius of this camera.
+  */
+  get radius () {
+    return Math.sqrt(this.squaredRadius)
+  }
+
+  /**
   * Return the x component of the center of this camera.
   *
   * @return {number} The x component of the center of this camera.
@@ -134,7 +161,7 @@ export class OrthographicCamera2D {
   * @return {Vector2f} The current center of the camera.
   */
   get center () {
-    return this.getCenter()
+    return this.extractCenter()
   }
 
   /**
@@ -237,6 +264,13 @@ export class OrthographicCamera2D {
 
     this._bottom = centerY - hheight,
     this._top = centerY + hheight
+  }
+
+  /**
+  * @return {number} The aspect ratio of the camera as a number.
+  */
+  get aspectRatio () {
+    return this.width / this.height
   }
 
   /**

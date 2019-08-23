@@ -1,10 +1,11 @@
-import { Matrix3f } from '@cedric-demongivert/gl-tool-math'
+import { Matrix4f } from '@cedric-demongivert/gl-tool-math'
 import { GLContextualisation } from '@cedric-demongivert/gl-tool-core'
 
 import { Mesh } from '../components/Mesh'
 
 import { OverseerSystem } from './OverseerSystem'
-import { TransformationSystem } from './TransformationSystem'
+import { TransformationManagementSystem } from './TransformationManagementSystem'
+import { UnitManagementSystem } from './UnitManagementSystem'
 
 export class GLToolMeshRenderingSystem extends OverseerSystem {
   /**
@@ -12,8 +13,11 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
   */
   constructor () {
     super()
-    this._entitiesWithMesh = null
     this._transformations = null
+    this._units = null
+    this._transpose = new Matrix4f()
+    this._worldToView = new Matrix4f()
+    this._viewToWorld = new Matrix4f()
   }
 
   get isGLToolRenderable () {
@@ -24,8 +28,8 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
   * @see gltool-ecs/System#initialize
   */
   initialize () {
-    this._entitiesWithMesh = this.manager.getEntitiesWithType(Mesh)
-    this._transformations = this.require(TransformationSystem)
+    this._transformations = this.manager.requireSystem(TransformationManagementSystem)
+    this._units = this.manager.requireSystem(UnitManagementSystem)
   }
 
   /**
@@ -34,6 +38,7 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
   destroy () {
     this._entitiesWithMesh = null
     this._transformations = null
+    this._units = null
   }
 
   /**
@@ -41,12 +46,11 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
   *
   * @param {WebGLRenderingContext} gl - A webgl rendering context to use.
   * @param {Viewport} viewport - The viewport to render.
+  * @param {number} entity - An entity to render as a mesh.
   */
-  render (gl, viewport) {
-    const size = this._entitiesWithMesh.size
-
-    for (let index = 0; index < size; ++index) {
-      this.renderMesh(gl, viewport.camera, this._entitiesWithMesh.get(index))
+  render (gl, viewport, entity) {
+    if (this.manager.hasComponent(entity, Mesh)) {
+      this.renderMesh(gl, viewport.camera, entity)
     }
   }
 
@@ -61,6 +65,14 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
     const mesh = this.manager.getInstance(entity, Mesh)
     const transform = this._transformations.getTransformation(entity)
 
+    const meshUnit = this._units.get(entity)
+    const viewUnit = this._units.get(this.manager.getEntityOfInstance(camera))
+
+    this._worldToView.copy(camera.worldToView)
+    viewUnit.applyToMatrix(meshUnit, this._worldToView)
+    this._viewToWorld.copy(camera.viewToWorld)
+    meshUnit.applyToMatrix(viewUnit, this._viewToWorld)
+
     const glProgram = mesh.material.program.contextualisation(gl)
     const glUniforms =  glProgram.uniforms
     const glVertices = mesh.geometry.vertexBuffer.buffer.contextualisation(gl)
@@ -70,8 +82,8 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
 
     glUniforms.setIfExists('localToWorld', false, transform.localToWorld.buffer)
     glUniforms.setIfExists('worldToLocal', false, transform.worldToLocal.buffer)
-    glUniforms.setIfExists('worldToView', false, camera.worldToView.buffer)
-    glUniforms.setIfExists('viewToWorld', false, camera.viewToWorld.buffer)
+    glUniforms.setIfExists('worldToView', false, this._worldToView.buffer)
+    glUniforms.setIfExists('viewToWorld', false, this._viewToWorld.buffer)
 
     if (!glVertices.synchronized) glVertices.synchronize()
     if (!glFaces.synchronized) glFaces.synchronize()
@@ -80,7 +92,10 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
     glFaces.bind()
 
     gl.drawElements(
-      gl.TRIANGLES, glFaces.descriptor.size * 3, gl.UNSIGNED_SHORT, 0
+      gl.TRIANGLES,
+      glFaces.descriptor.size * 3,
+      gl.UNSIGNED_SHORT,
+      0
     )
   }
 }

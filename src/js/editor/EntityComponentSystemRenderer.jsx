@@ -12,25 +12,29 @@ export class EntityComponentSystemRenderer extends Component {
   constructor (props, context) {
     super(props, context)
 
-    this.onSizeChange = this.onSizeChange.bind(this)
+    this.handleSizeChange = this.handleSizeChange.bind(this)
     this.ECSWillRender = this.ECSWillRender.bind(this)
 
     this._renderer = null
     this._loop = new RenderingLoop(this.ECSWillRender)
     this._container = createRef()
+    this._custom = createRef()
     this._oldRendererSize = null
     this._newRendererSize = { width: 0, height: 0 }
+    this.state = { frame: 0 }
   }
 
   ECSWillRender (delta) {
     this._renderer.render()
+    this.setState(x => ({ frame: x.frame + 1 }))
   }
 
   componentDidMount () {
     this._renderer = new GLToolECSRenderer(this._container.current)
     this._renderer.entityComponentSystem = this.props.entityComponentSystem
-    this.onSizeChange()
-    window.addEventListener('resize', this.onSizeChange)
+    this.handleSizeChange()
+    window.addEventListener('resize', this.handleSizeChange)
+    this.props.onInitialization(this._custom.current)
     this._loop.start()
   }
 
@@ -39,13 +43,14 @@ export class EntityComponentSystemRenderer extends Component {
   }
 
   componentWillUnmount () {
-    window.removeEventListener('resize', this.onSizeChange)
+    this.props.onDestruction(this._custom.current)
+    window.removeEventListener('resize', this.handleSizeChange)
     this._loop.cancel()
     this._renderer.destroy()
     this._renderer = null
   }
 
-  onSizeChange () {
+  handleSizeChange () {
     this._newRendererSize.width = this._renderer.width
     this._newRendererSize.height = this._renderer.height
 
@@ -60,18 +65,32 @@ export class EntityComponentSystemRenderer extends Component {
   }
 
   render () {
-    return <div
-      className="entity-component-system-renderer"
-      ref={this._container}
-    />
+    return (
+      <div className='rendering entity-component-system-rendering'>
+        <div className='layer' ref={this._container} />
+        <div className='layer'>
+          <div className='layer' ref={this._custom} />
+          {
+            React.Children.map(this.props.children, child => (
+              React.cloneElement(child, { frame: this.state.frame })
+            ))
+          }
+        </div>
+      </div>
+    )
   }
 }
 
 EntityComponentSystemRenderer.propTypes = {
   entityComponentSystem: PropTypes.instanceOf(EntityComponentSystem),
-  onSizeChange: PropTypes.func
+  onSizeChange: PropTypes.func,
+  onInitialization: PropTypes.func,
+  onDestruction: PropTypes.func,
+  children: PropTypes.node
 }
 
 EntityComponentSystemRenderer.defaultProps = {
-  onSizeChange: nothing
+  onSizeChange: nothing,
+  onInitialization: nothing,
+  onDestruction: nothing
 }

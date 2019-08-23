@@ -9,20 +9,20 @@ export const Transformation = GSEditor({
     worldToLocal: {
       label: 'World to local matrix',
       editor: GSEditor.matrix4f(),
-      getter (component) {
+      getter (ecs, component) {
         return component.worldToLocal
       },
-      setter (component, value, ecs) {
+      setter (ecs, component, value) {
         component.worldToLocal = value
       }
     },
     localToWorld: {
       label: 'Local to world matrix',
       editor: GSEditor.matrix4f(),
-      getter (component) {
+      getter (ecs, component) {
         return component.localToWorld
       },
-      setter (component, value, ecs) {
+      setter (ecs, component, value) {
         component.localToWorld = value
       }
     }

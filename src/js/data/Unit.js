@@ -32,6 +32,16 @@ export class Unit {
   * @param {Matrix4f} target - A matrix to scale.
   */
   apply (unit, target) {
+    this.applyToMatrix(unit, target)
+  }
+
+  /**
+  * Apply this unit to the given matrix.
+  *
+  * @param {Unit} unit - Base unit of the matrix to scale.
+  * @param {Matrix4f} target - A matrix to scale.
+  */
+  applyToMatrix (unit, target) {
     const si = unit.unit.in(this._unit.unit) / this._unit.value
 
     target.multiplyWithStaticMatrixAsRightOperand(
@@ -40,6 +50,17 @@ export class Unit {
        0,  0, 1, 0,
        0,  0, 0, 1
     )
+  }
+
+  /**
+  * Apply this unit to the given vector.
+  *
+  * @param {Unit} unit - Base unit of the vector to scale.
+  * @param {Vector4f} target - A vector to scale.
+  */
+  applyToVector (unit, target) {
+    const si = unit.unit.in(this._unit.unit) / this._unit.value
+    target.set(target.x * si, target.y * si, target.z, target.w)
   }
 
   /**

@@ -3,26 +3,37 @@ import { OrthographicCamera2D } from '../components/OrthographicCamera2D'
 import { Transformation } from '../components/Transformation'
 
 import { OverseerSystem } from './OverseerSystem'
-import { TransformationSystem } from './TransformationSystem'
+import { TransformationManagementSystem } from './TransformationManagementSystem'
+import { UnitManagementSystem } from './UnitManagementSystem'
 
-export class CameraSystem extends OverseerSystem {
+export class CameraManagementSystem extends OverseerSystem {
   constructor () {
     super()
     this._transformations = null
+    this._units = null
   }
 
   /**
   * @see gltool-ecs/System#initialize
   */
   initialize () {
-    this._transformations = this.require(TransformationSystem)
+    this._transformations = this.manager.requireSystem(TransformationManagementSystem)
+    this._units = this.manager.requireSystem(UnitManagementSystem)
+  }
+
+  /**
+  * @see gltool-ecs/System#destroy
+  */
+  destroy () {
+    this._transformations = null
+    this._units = null
   }
 
   /**
   * Refresh all existing camera matrices.
   */
   commitAll () {
-    const entities = this._manager.getEntitiesWithType(Camera)
+    const entities = this.manager.getEntitiesWithType(Camera)
 
     for (let index = 0, size = entities.size; index < size; ++index) {
       this.commit(entities.get(index))
@@ -59,5 +70,33 @@ export class CameraSystem extends OverseerSystem {
       camera.worldToView
     )
     camera.worldToView.invert(camera.viewToWorld)
+  }
+
+  /**
+  * Return the orthographic 2D data of a camera if any.
+  *
+  * @param {Camera} camera - An instance of camera.
+  *
+  * @return {OrthographicCamera2D} The orthographic 2D data of the given camera if any.
+  */
+  getOrthographic2D (camera) {
+    const entity = this.manager.getEntityOfInstance(camera)
+
+    if (this.manager.hasComponent(entity, OrthographicCamera2D)) {
+      return this.manager.getInstance(entity, OrthographicCamera2D)
+    } else {
+      return null
+    }
+  }
+
+  /**
+  * Resolve and return the unit of a given camera.
+  *
+  * @param {Camera} camera - An instance of camera.
+  *
+  * @return {Unit} The unit of the given camera.
+  */
+  getUnitOf (camera) {
+    return this._units.get(this.manager.getEntityOfInstance(camera))
   }
 }

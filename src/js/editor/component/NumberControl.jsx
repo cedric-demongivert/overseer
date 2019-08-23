@@ -48,7 +48,7 @@ export class NumberControl extends Component {
     super(props, context)
 
     this.precision = precision(props.increment)
-    
+
     this.state = {
       value: this.format(props.value)
     }

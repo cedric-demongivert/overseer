@@ -11,10 +11,7 @@ function deleteEntities (state, entities) {
 }
 
 function updateComponent (state, payload) {
-  payload.mutator(
-    state.getInstanceOfComponent(payload.component),
-    state
-  )
+  payload.mutator(state, state.getInstanceOfComponent(payload.component))
 
   return state
 }
