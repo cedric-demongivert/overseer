@@ -32,6 +32,21 @@ export class BoundingSquare {
   }
 
   /**
+  * Set this bounding square as the bounding square of the given bounding circle.
+  *
+  * @param {BoundingCircle} boundingCircle - A bounding circle to wrap into a square.
+  */
+  ofCircle (boundingCircle) {
+    const radius = boundingCircle.radius
+    const center = boundingCircle.center
+
+    this._left = center.x - radius
+    this._right = center.x + radius
+    this._bottom = center.y - radius
+    this._top = center.y + radius
+  }
+
+  /**
   * Return the x component of the center of this bounding square.
   *
   * @return {number} The x component of the center of this bounding square.
@@ -195,7 +210,7 @@ export class BoundingSquare {
     const centerY = this.centerY
     const hheight = value / 2
 
-    this._bottom = centerY - hheight,
+    this._bottom = centerY - hheight
     this._top = centerY + hheight
   }
 

@@ -5,7 +5,7 @@ export class BoundingCircle {
   * Create a new unitary bounding circle.
   */
   constructor () {
-    this._location = new Vector2f()
+    this._center = new Vector2f()
     this._radius = 1
     this._squaredRadius = 1
   }
@@ -14,7 +14,7 @@ export class BoundingCircle {
   * Reset this component instance to its initial state.
   */
   reset () {
-    this._location.set(0, 0)
+    this._center.set(0, 0)
     this._radius = 1
     this._squaredRadius = 1
   }
@@ -25,25 +25,34 @@ export class BoundingCircle {
   * @param {BoundingCircle} other - Other instance to copy.
   */
   copy (other) {
-    this._location.copy(other.location)
+    this._center.copy(other.center)
     this._radius = other.radius
     this._squaredRadius = other.radius * other.radius
   }
 
-  /**
-  * @return {Vector2f} The location of this bounding circle.
-  */
-  get location () {
-    return this._location
+  ofSquare (boundingSquare) {
+    const width = boundingSquare.width
+    const height = boundingSquare.height
+
+    this._center.set(boundingSquare.centerX, boundingSquare.centerY)
+    this._squaredRadius = (width * width + height * height) / 4.0
+    this._radius = Math.sqrt(this._squaredRadius)
   }
 
   /**
-  * Update the location of this bounding circle.
-  *
-  * @param {Vector2f} location - The new location of this bounding circle.
+  * @return {Vector2f} The center of this bounding circle.
   */
-  set location (location) {
-    this._location.copy(location)
+  get center () {
+    return this._center
+  }
+
+  /**
+  * Update the center of this bounding circle.
+  *
+  * @param {Vector2f} center - The new center of this bounding circle.
+  */
+  set center (center) {
+    this._center.copy(center)
   }
 
   /**
@@ -64,21 +73,37 @@ export class BoundingCircle {
   }
 
   /**
-  * Update the location of this bounding circle.
-  *
-  * @param {number} x - The location of this bounding circle in abscissa.
-  * @param {number} y - The location of this bounding circle in ordinates.
+  * @return {number} The squared radius of this bounding circle.
   */
-  setLocation (x, y) {
-    this._location.set(x, y)
+  get squaredRadius () {
+    return this._squaredRadius
   }
 
   /**
-  * @return {boolean} True if this bounding circle contains the given location.
+  * Update the center of this bounding circle.
+  *
+  * @param {number} x - The center of this bounding circle in abscissa.
+  * @param {number} y - The center of this bounding circle in ordinates.
+  */
+  setCenter (x, y) {
+    this._center.set(x, y)
+  }
+
+  /**
+  * Update the radius of this bounding circle.
+  *
+  * @param {number} radius - The new radius of this bounding circle.
+  */
+  setRadius (radius) {
+    this.radius = radius
+  }
+
+  /**
+  * @return {boolean} True if this bounding circle contains the given center.
   */
   contains (x, y) {
-    const dx = x - this._location.x
-    const dy = y - this._location.y
+    const dx = x - this._center.x
+    const dy = y - this._center.y
 
     return dx * dx + dy * dy < this._squaredRadius
   }

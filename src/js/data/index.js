@@ -1,6 +1,7 @@
 export { BoundingCircle } from './BoundingCircle'
 export { BoundingSquare } from './BoundingSquare'
 export { Camera } from './Camera'
+export { Draggable } from './Draggable'
 export { Geometry } from './Geometry'
 export { Hierarchy } from './Hierarchy'
 export { Label } from './Label'

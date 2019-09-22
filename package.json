@@ -35,10 +35,10 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.0",
     "@cedric-demongivert/gl-tool-buffer": "^0.0.6",
-    "@cedric-demongivert/gl-tool-collection": "^0.0.4",
+    "@cedric-demongivert/gl-tool-collection": "^0.1.0",
     "@cedric-demongivert/gl-tool-core": "^0.0.2",
     "@cedric-demongivert/gl-tool-ecs": "0.1.0",
-    "@cedric-demongivert/gl-tool-math": "^0.0.10",
+    "@cedric-demongivert/gl-tool-math": "^0.1.0",
     "@cedric-demongivert/gl-tool-shader": "^0.1.1",
     "@cedric-demongivert/gl-tool-texture": "^0.0.5",
     "@fortawesome/fontawesome-free": "^5.6.3",

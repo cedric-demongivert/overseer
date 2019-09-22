@@ -61,10 +61,10 @@ export class OrthographicCamera2D {
     const py = -((top + bottom) / (top - bottom))
 
     target.set(
-      sx,  0, px, 0,
-       0, sy, py, 0,
-       0,  0,  1, 0,
-       0,  0,  0, 1
+      sx,  0, 0, px,
+       0, sy, 0, py,
+       0,  0, 1,  0,
+       0,  0, 0,  1
     )
   }
 

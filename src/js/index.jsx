@@ -18,7 +18,10 @@ import {
   LayerManagementSystem,
   GLToolGridSystem,
   DOMMouseSourceSystem,
-  MouseManagementSystem
+  MouseManagementSystem,
+  Camera2DDraggingSystem,
+  ShapeManagementSystem,
+  MouseButton
 } from './systems'
 
 import { Viewport, OrthographicCamera2D, Unit } from './components'
@@ -36,6 +39,9 @@ const transformations = new TransformationManagementSystem()
 const layers = new LayerManagementSystem()
 const cameras = new CameraManagementSystem()
 const mouse = new MouseManagementSystem()
+const shapes = new ShapeManagementSystem()
+const grid = new GLToolGridSystem()
+const cameraDragging = new Camera2DDraggingSystem()
 
 // initialization
 initializeSampleScene(entityComponentSystem)
@@ -46,7 +52,9 @@ entityComponentSystem.addSystem(units)
 entityComponentSystem.addSystem(layers)
 entityComponentSystem.addSystem(transformations)
 entityComponentSystem.addSystem(cameras)
-entityComponentSystem.addSystem(new GLToolGridSystem())
+entityComponentSystem.addSystem(shapes)
+entityComponentSystem.addSystem(grid)
+entityComponentSystem.addSystem(cameraDragging)
 
 function onSizeChange ({ width, height }) {
   const ecs = entityComponentSystem
@@ -102,21 +110,9 @@ function animate (delta) {
   const rdelta = (animate.START == null) ? 0 : delta - animate.START
   if (animate.START == null) animate.START = delta
 
-  const camera = entityComponentSystem.getEntitiesWithType(
-    OrthographicCamera2D
-  ).get(0)
-
-  entityComponentSystem.getInstance(camera, Unit).unit.value = Math.pow(1.1, rdelta * 0.01) / 100.0
-  cameras.commitAll()
-
-  //console.log(entityComponentSystem.getInstance(camera, Unit).unit.toString())
+  entityComponentSystem.update(delta)
 
   window.requestAnimationFrame(animate)
 }
 
-function log (delta) {
-  window.requestAnimationFrame(log)
-}
-
-//window.requestAnimationFrame(animate)
-window.requestAnimationFrame(log)
+window.requestAnimationFrame(animate)

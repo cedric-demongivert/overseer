@@ -1,5 +1,4 @@
-import { ArrayPack } from '@cedric-demongivert/gl-tool-collection'
-import { PackCircularBuffer } from '@cedric-demongivert/gl-tool-collection'
+import { Packs } from '@cedric-demongivert/gl-tool-collection'
 import { bissect } from '@cedric-demongivert/gl-tool-collection'
 
 export class MouseLocationBuffer {
@@ -12,9 +11,10 @@ export class MouseLocationBuffer {
     this._offset = 0
     this._size = 0
 
-    this._x = new PackCircularBuffer(new ArrayPack(capacity))
-    this._y = new PackCircularBuffer(new ArrayPack(capacity))
-    this._timestamps = new PackCircularBuffer(new ArrayPack(capacity))
+    this._x = Packs.circular(Packs.float32(capacity))
+    this._y = Packs.circular(Packs.float32(capacity))
+    this._viewports = Packs.circular(Packs.any(capacity))
+    this._timestamps = Packs.circular(Packs.uint32(capacity))
   }
 
   /**
@@ -55,24 +55,31 @@ export class MouseLocationBuffer {
   * Push a location into this buffer.
   *
   * @param {number} timestamp - Timestamp of the location.
+  * @param {Viewport} viewport - The active viewport.
   * @param {number} x - X location of the mouse in screen space.
   * @param {number} y - Y location of the mouse in screen space.
   */
-  push (timestamp, x, y) {
+  push (timestamp, viewport, x, y) {
     if (this._timestamps.size <= 0 || timestamp >= this._timestamps.get(0)) {
       const index = bissect(this._timestamps, timestamp)
 
       if (index >= 0) {
         this._timestamps.set(index, timestamp)
+        this._viewports.set(index, viewport)
         this._x.set(index, x)
         this._y.set(index, y)
       } else {
         const insertionIndex = - index - 1
         this._timestamps.insert(insertionIndex, timestamp)
+        this._viewports.set(insertionIndex, viewport)
         this._x.insert(insertionIndex, x)
         this._y.insert(insertionIndex, y)
       }
     }
+  }
+
+  viewport (index) {
+    return this._viewports.get(this._viewports.size - index - 1)
   }
 
   /**
@@ -114,6 +121,7 @@ export class MouseLocationBuffer {
   clear () {
     this._x.clear()
     this._y.clear()
+    this._viewports.clear()
     this._timestamps.clear()
   }
 }

@@ -18,6 +18,8 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
     this._transpose = new Matrix4f()
     this._worldToView = new Matrix4f()
     this._viewToWorld = new Matrix4f()
+    this._worldtoLocal = new Matrix4f()
+    this._localToWorld = new Matrix4f()
   }
 
   get isGLToolRenderable () {
@@ -73,6 +75,9 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
     this._viewToWorld.copy(camera.viewToWorld)
     meshUnit.applyToMatrix(viewUnit, this._viewToWorld)
 
+    this._worldtoLocal.copy(transform.worldToLocal)
+    this._localToWorld.copy(transform.localToWorld)
+
     const glProgram = mesh.material.program.contextualisation(gl)
     const glUniforms =  glProgram.uniforms
     const glVertices = mesh.geometry.vertexBuffer.buffer.contextualisation(gl)
@@ -80,8 +85,8 @@ export class GLToolMeshRenderingSystem extends OverseerSystem {
 
     glProgram.use()
 
-    glUniforms.setIfExists('localToWorld', false, transform.localToWorld.buffer)
-    glUniforms.setIfExists('worldToLocal', false, transform.worldToLocal.buffer)
+    glUniforms.setIfExists('localToWorld', false, this._localToWorld.buffer)
+    glUniforms.setIfExists('worldToLocal', false, this._worldtoLocal.buffer)
     glUniforms.setIfExists('worldToView', false, this._worldToView.buffer)
     glUniforms.setIfExists('viewToWorld', false, this._viewToWorld.buffer)
 

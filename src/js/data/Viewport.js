@@ -379,4 +379,27 @@ export class Viewport {
     this._top = value
     this._bottom = value - height
   }
+
+  toScreenXCoordinate (viewportXCoordinate) {
+    return (((viewportXCoordinate - this._left) / this.width) - 0.5) * 2
+  }
+
+  toScreenYCoordinate (viewportYCoordinate) {
+    return (((viewportYCoordinate - this._bottom) / this.height) - 0.5) * 2
+  }
+
+  /**
+  * Returns true if the given location is a location of this viewport.
+  *
+  * @param {number} x - Location coordinate in abscissa.
+  * @param {number} y - Location coordinate in ordinate.
+  *
+  * @return {boolean} True if the given location is into this viewport.
+  */
+  contains (x, y) {
+    return x >= this._left &&
+           x < this._right &&
+           y >= this._bottom &&
+           y < this._top
+  }
 }

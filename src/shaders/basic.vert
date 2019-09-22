@@ -13,7 +13,7 @@ varying vec4 fragColor;
 varying vec2 fragUv;
 
 void main () {
-  gl_Position = worldToView * localToWorld * vec4(position, 0.0, 1.0);
+  gl_Position = vec4(position, 0.0, 1.0) * localToWorld * worldToView;
   gl_PointSize = 1.0;
   fragColor = color;
   fragUv = uv;

@@ -2,6 +2,7 @@ import { Entity } from '@cedric-demongivert/gl-tool-ecs'
 
 import {
   Camera,
+  Draggable,
   FaceBuffer,
   FragmentShader,
   Geometry,
@@ -18,7 +19,8 @@ import {
   Unit,
   VertexBuffer,
   VertexShader,
-  Viewport
+  Viewport,
+  BoundingCircle
 } from './components'
 
 import {
@@ -44,6 +46,8 @@ function createTypes (ecs) {
   ecs.createType(VertexShader)
   ecs.createType(SquareGrid)
   ecs.createType(Viewport)
+  ecs.createType(BoundingCircle)
+  ecs.createType(Draggable)
 }
 
 function createGrid (ecs) {
@@ -92,6 +96,7 @@ function createCamera (ecs) {
   camera.createComponent(Transformation)
   camera.createComponent(OrthographicCamera2D)
   camera.createComponent(Unit)
+  camera.createComponent(Draggable)
 
   camera.getInstance(Label).set('camera')
   camera.getInstance(OrthographicCamera2D).setCenter(0, 0)
@@ -181,6 +186,7 @@ function createMesh (ecs) {
   mesh.createComponent(Layer)
   mesh.createComponent(Label)
   mesh.createComponent(Mesh)
+  mesh.createComponent(BoundingCircle)
   mesh.createComponent(Transformation)
   mesh.createComponent(Transformation2D)
   mesh.createComponent(Unit)
@@ -190,6 +196,8 @@ function createMesh (ecs) {
   mesh.getInstance(Mesh).setMaterial(material.getInstance(Material))
   mesh.getInstance(Transformation2D).setLocation(0, 0)
   mesh.getInstance(Transformation2D).setScale(1, 1)
+  mesh.getInstance(BoundingCircle).setCenter(0, 0)
+  mesh.getInstance(BoundingCircle).setRadius(1)
   mesh.getInstance(Unit).set('3m')
   mesh.getInstance(Layer).set(2)
 }
