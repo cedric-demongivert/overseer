@@ -1,0 +1,6 @@
+export { ComponentEditor } from './ComponentEditor'
+export { Increment } from './Increment'
+export { Matrix4fEditor } from './Matrix4fEditor'
+export { NumberEditor } from './NumberEditor'
+export { Vector2fEditor } from './Vector2fEditor'
+export { Vector3fEditor } from './Vector3fEditor'

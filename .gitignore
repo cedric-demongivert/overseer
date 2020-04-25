@@ -1,5 +1,5 @@
-node_modules/
-dist/
-doc/
-coverage/
+node_modules
+distribution
+coverage
 npm-debug.log
+yarn-error.log

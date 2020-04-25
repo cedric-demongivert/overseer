@@ -1,31 +1,3 @@
 {
-  "presets": [
-    [
-      "@babel/preset-env", {
-        "targets": "> 0.25%, not ie <= 11, not dead"
-      }
-    ]
-  ],
-  "plugins": [
-    [
-      "@babel/plugin-proposal-decorators", {
-        "legacy": true
-      }
-    ],
-    [
-      "module-resolver", {
-        "root": ["."],
-        "alias": {
-          "@overseer": "./src/js",
-          "@ecs": "./src/js/ecs",
-          "@shaders": "./src/shaders",
-          "@redux": "./src/js/redux",
-          "@editor": "./src/js/editor"
-        },
-        "extensions": [
-          ".js", ".json", ".jsx"
-        ]
-      }
-    ]
-  ]
+  "presets": ["@babel/preset-env"]
 }

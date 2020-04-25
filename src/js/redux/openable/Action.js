@@ -1,6 +1,0 @@
-export const OPEN   = 'openable:open'
-export const OPENED = 'openable:opened'
-export const CLOSE  = 'openable:close'
-export const CLOSED = 'openable:closed'
-export const TOGGLE = 'openable:toggle'
-export const SET    = 'openable:set'

@@ -1,19 +1,22 @@
-var mix = require('laravel-mix')
+const mix = require('laravel-mix')
+const package = require('./package.json')
 
-mix.webpackConfig({
-  module: {
-    rules: [
-      {
-        test: /\.vert|\.frag$/i,
-        use: 'raw-loader'
-      }
-    ]
-  }
-})
-.react('src/js/index.jsx', 'dist')
-.sass('src/scss/app.scss', 'dist')
-.copy('assets/index.html', 'dist')
-.copy('assets/images', 'dist/images')
-.setPublicPath('dist')
-.sourceMaps(true)
-.disableNotifications()
+const externals = []
+
+for (const name in package.dependencies) {
+  externals.push(new RegExp(`^${name}(\\/.+)?$`))
+}
+
+mix.disableNotifications()
+   .webpackConfig({
+     'externals': externals,
+     'output': {
+       'library': package.name,
+       'libraryTarget': 'umd'
+     }
+   })
+   .ts('sources/index.ts', 'distribution')
+   .copy('LICENSE.md', 'distribution')
+   .copy('package.json', 'distribution')
+   .copy('README.md', 'distribution')
+   .setPublicPath('distribution')
