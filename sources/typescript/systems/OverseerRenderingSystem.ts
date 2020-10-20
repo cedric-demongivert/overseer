@@ -1,0 +1,75 @@
+import { ShaderCollection } from '@cedric-demongivert/gl-tool-shader'
+import { ProgramCollection } from '@cedric-demongivert/gl-tool-shader'
+import { ShaderType } from '@cedric-demongivert/gl-tool-shader'
+import { ShaderComponentSystem } from '@cedric-demongivert/gl-tool-shader'
+import { ProgramComponentSystem } from '@cedric-demongivert/gl-tool-shader'
+import { BufferCollection } from '@cedric-demongivert/gl-tool-buffer'
+import { GeometryCollection } from '@cedric-demongivert/gl-tool-buffer'
+import { GeometryComponentSystem } from '@cedric-demongivert/gl-tool-buffer'
+import { BufferComponentSystem } from '@cedric-demongivert/gl-tool-buffer'
+
+import { OverseerSystem } from './OverseerSystem'
+
+export class OverseerRenderingSystem extends OverseerSystem {
+  public readonly shaders  : ShaderCollection
+  public readonly programs : ProgramCollection
+  public readonly buffers  : BufferCollection
+  public readonly geometries : GeometryCollection
+
+  public readonly bufferComponents : BufferComponentSystem
+  public readonly geometryComponents : GeometryComponentSystem
+  public readonly shaderComponents : ShaderComponentSystem
+  public readonly programComponents : ProgramComponentSystem
+
+  /*
+  * Create a new WebGLRenderingSystem.
+  */
+  public constructor () {
+    super()
+
+    this.shaders = new ShaderCollection()
+    this.programs = new ProgramCollection()
+    this.buffers = new BufferCollection()
+    this.geometries = new GeometryCollection(this.buffers)
+    this.bufferComponents = new BufferComponentSystem(this.buffers)
+    this.geometryComponents = new GeometryComponentSystem(this.geometries)
+    this.shaderComponents = new ShaderComponentSystem(this.shaders)
+    this.programComponents = new ProgramComponentSystem(this.programs)
+
+    this.shaders.addListener(this.programs)
+  }
+
+  /**
+  * @see OverseerSystem.initialize
+  */
+  public initialize () : void {
+    this.manager.addSystem(this.shaders)
+    this.manager.addSystem(this.shaderComponents)
+    this.manager.addSystem(this.programs)
+    this.manager.addSystem(this.programComponents)
+
+    this.manager.addSystem(this.buffers)
+    this.manager.addSystem(this.bufferComponents)
+    this.manager.addSystem(this.geometries)
+    this.manager.addSystem(this.geometryComponents)
+  }
+
+  /**
+  * @see OverseerSystem.destroy
+  */
+  public destroy () : void {
+    this.manager.deleteSystem(this.shaders)
+    this.manager.deleteSystem(this.shaderComponents)
+    this.manager.deleteSystem(this.programs)
+    this.manager.deleteSystem(this.programComponents)
+
+    this.manager.deleteSystem(this.buffers)
+    this.manager.deleteSystem(this.bufferComponents)
+    this.manager.deleteSystem(this.geometries)
+    this.manager.deleteSystem(this.geometryComponents)
+  }
+}
+
+export namespace OverseerRenderingContext {
+
+}

@@ -1,9 +1,12 @@
-const lengthValue = Symbol()
+const lengthValueSymbol : symbol = Symbol()
 
 /**
 * A length.
 */
 export class Length {
+  private _value : number
+  private _unit : Length.Unit
+
   /**
   * Create a new length.
   *
@@ -332,30 +335,35 @@ export class Length {
     return `${this.value}${this.unit}`
   }
 
-  [lengthValue] () {
+  [lengthValueSymbol] () {
     return this
   }
 }
 
-Length.am = 'am'
-Length.fm = 'fm'
-Length.pm = 'pm'
-Length.nm = 'nm'
-Length.μm = 'μm'
-Length.mm = 'mm'
-Length.cm = 'cm'
-Length.dm = 'dm'
-Length.m = 'm'
-Length.dam = 'dam'
-Length.hm = 'hm'
-Length.km = 'km'
-Length.Mm = 'Mm'
-Length.Gm = 'Gm'
-Length.Tm = 'Tm'
-Length.Pm = 'Pm'
-Length.Em = 'Em'
-Length.ua = 'ua'
-Length.lengthValue = lengthValue
+export namespace Length {
+  export type Unit = string
+
+  export const am  : Unit = 'am'
+  export const fm  : Unit = 'fm'
+  export const pm  : Unit = 'pm'
+  export const nm  : Unit = 'nm'
+  export const μm  : Unit = 'μm'
+  export const mm  : Unit = 'mm'
+  export const cm  : Unit = 'cm'
+  export const dm  : Unit = 'dm'
+  export const m   : Unit = 'm'
+  export const dam : Unit = 'dam'
+  export const hm  : Unit = 'hm'
+  export const km  : Unit = 'km'
+  export const Mm  : Unit = 'Mm'
+  export const Gm  : Unit = 'Gm'
+  export const Tm  : Unit = 'Tm'
+  export const Pm  : Unit = 'Pm'
+  export const Em  : Unit = 'Em'
+  export const ua  : Unit = 'ua'
+
+  export const lengthValue : symbol = lengthValueSymbol
+}
 
 const $values = new Map([
   [Length.am, 0.000000000000000001],

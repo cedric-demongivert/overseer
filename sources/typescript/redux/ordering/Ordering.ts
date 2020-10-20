@@ -30,7 +30,7 @@ export class Ordering {
       }
     }
 
-    return undefined
+    return OrderingDirection.NONE
   }
 
   /**
@@ -103,6 +103,10 @@ export class Ordering {
   * @return A new updated ordering instance.
   */
   public orderBy (field : number, direction : OrderingDirection = OrderingDirection.ASCENDING) : Ordering {
+    if (direction === OrderingDirection.NONE) {
+      return this.delete(field)
+    }
+
     const orders : List<Order> = this.orders
 
     for (let index = 0, size = orders.size; index < size; ++index) {

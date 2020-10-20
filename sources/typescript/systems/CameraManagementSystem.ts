@@ -26,8 +26,8 @@ export class CameraManagementSystem extends OverseerSystem {
   * @see gltool-ecs/System#initialize
   */
   public initialize () : void {
-    this.transformation = this.manager.requireSystem(TransformationManagementSystem) as TransformationManagementSystem
-    this.unit = this.manager.requireSystem(UnitManagementSystem) as UnitManagementSystem
+    this.transformation = this.manager.requireSystem(TransformationManagementSystem)
+    this.unit = this.manager.requireSystem(UnitManagementSystem)
   }
 
   /**
@@ -66,8 +66,8 @@ export class CameraManagementSystem extends OverseerSystem {
   * @param entity - The entity to refresh.
   */
   public commitOrthographicCamera2D (entity : Entity) : void {
-    const orthographicCamera : OrthographicCamera2D = this.manager.getComponent(entity, OrthographicCamera2DType).data
-    const camera : Camera = this.manager.getComponent(entity, CameraType).data
+    const orthographicCamera : OrthographicCamera2D = this.manager.getComponentOfEntity(entity, OrthographicCamera2DType).data
+    const camera : Camera = this.manager.getComponentOfEntity(entity, CameraType).data
     const transformation : Transformation = this.transformation.getTransformation(entity)
 
     orthographicCamera.extractWorldToView(camera.worldToView)

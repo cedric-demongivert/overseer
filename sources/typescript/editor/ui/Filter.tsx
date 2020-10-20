@@ -1,6 +1,6 @@
 import { PureComponent } from 'react'
 import { RefObject } from 'react'
-import { ReactNode } from 'react'
+import { ReactElement } from 'react'
 import { ChangeEvent } from 'react'
 import { KeyboardEvent } from 'react'
 import * as React from 'react'
@@ -84,7 +84,7 @@ export class Filter extends PureComponent<Filter.Properties> {
   /**
   * @see React/Component#render
   */
-  public render () : ReactNode {
+  public render () : ReactElement {
     return (
       <div className={classnames('filter', this.props.className)}>
         <Button className='filter-focus fas fa-search' onClick={this.focus} />

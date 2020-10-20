@@ -1,0 +1,74 @@
+import { GeometryCollection } from '@cedric-demongivert/gl-tool-buffer'
+import { GeometryIdentifier } from '@cedric-demongivert/gl-tool-buffer'
+import { ShaderCollection } from '@cedric-demongivert/gl-tool-shader'
+import { ShaderIdentifier } from '@cedric-demongivert/gl-tool-shader'
+import { ShaderType } from '@cedric-demongivert/gl-tool-shader'
+
+import { OverseerSystem } from '../OverseerSystem'
+
+import { DrawingGeometry } from './DrawingGeometry'
+import { DrawingShader } from './DrawingShader'
+
+export class DrawingSystem extends OverseerSystem {
+  private _geometries : GeometryCollection
+  private _shaders : ShaderCollection
+
+  private _worldGeometry : GeometryIdentifier
+  private _worldShader : ShaderIdentifier
+
+  /**
+  * Create a new layering management system.
+  */
+  public constructor () {
+    super()
+
+    this._geometries = null
+    this._shaders = null
+    this._worldGeometry = 0
+    this._worldShader = 0
+  }
+
+  /**
+  * @see OverseerSystem.initialize
+  */
+  public initialize () : void {
+    const geometries : GeometryCollection = this.manager.requireSystem(GeometryCollection)
+    const shaders : ShaderCollection = this.manager.requireSystem(ShaderCollection)
+
+    const worldGeometry : GeometryIdentifier = geometries.create()
+
+    geometries.setFaces(worldGeometry, DrawingGeometry.FACES)
+    geometries.setVertices(worldGeometry, DrawingGeometry.WORLD)
+    geometries.commit(worldGeometry)
+
+    const worldShader : ShaderIdentifier = shaders.create(ShaderType.VERTEX)
+
+    shaders.setSource(worldShader, DrawingShader.WORLD_VERTEX)
+
+    this._geometries = geometries
+    this._shaders = shaders
+    this._worldGeometry = worldGeometry
+    this._worldShader = worldShader
+  }
+
+  /**
+  * @see OverseerSystem.destroy
+  */
+  public destroy () : void {
+    this._geometries.delete(this._worldGeometry)
+    this._shaders.delete(this._worldShader)
+
+    this._worldGeometry = 0
+    this._worldShader = 0
+    this._geometries = null
+    this._shaders = null
+  }
+
+  public getWorldGeometry () : GeometryIdentifier {
+    return this._worldGeometry
+  }
+
+  public getWorldShader () : ShaderIdentifier {
+    return this._worldShader
+  }
+}

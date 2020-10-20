@@ -5,7 +5,7 @@ import { Vector2f } from '@cedric-demongivert/gl-tool-math'
 import { OrthographicCamera2D } from '../components/OrthographicCamera2D'
 import { GSEditor } from '../editor/GSEditor'
 
-import { CameraManagementSystem } from '../systems'
+import { CameraManagementSystem } from '../systems/CameraManagementSystem'
 import { OverseerComponentType } from './OverseerComponentType'
 
 export const OrthographicCamera2DType : OverseerComponentType<OrthographicCamera2D> = GSEditor({

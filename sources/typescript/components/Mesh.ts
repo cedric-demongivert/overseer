@@ -1,9 +1,12 @@
+import { Component } from '@cedric-demongivert/gl-tool-ecs'
+import { Geometry } from '@cedric-demongivert/gl-tool-buffer'
+
 import { Material } from './Material'
-import { Geometry } from './Geometry'
 
 export class Mesh {
-  public material : Material
-  public geometry : Geometry
+  public material : Component<Material>
+  public geometry : Component<Geometry>
+  
   public visible : boolean
 
   public constructor () {

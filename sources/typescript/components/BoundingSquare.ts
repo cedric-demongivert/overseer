@@ -122,7 +122,7 @@ export class BoundingSquare {
   *
   * @return The current center of the bounding square.
   */
-  public extractCenter (result : Vector2f = new Vector2f()) : void {
+  public extractCenter (result : Vector2f = new Vector2f()) : Vector2f {
     result.set(this.centerX, this.centerY)
     return result
   }

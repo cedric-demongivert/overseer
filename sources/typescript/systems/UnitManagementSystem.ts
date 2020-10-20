@@ -25,7 +25,7 @@ export class UnitManagementSystem extends OverseerSystem {
   * @see gltool-ecs/System#initialize
   */
   public initialize () {
-    this.hierarchy = this.manager.requireSystem(HierarchyManagementSystem) as HierarchyManagementSystem
+    this.hierarchy = this.manager.requireSystem(HierarchyManagementSystem)
   }
 
   /**
@@ -62,7 +62,7 @@ export class UnitManagementSystem extends OverseerSystem {
 
     do {
       if (this.manager.hasComponent(current, UnitType)) {
-        return this.manager.getComponent(current, UnitType).data
+        return this.manager.getComponentOfEntity(current, UnitType).data
       }
 
       current = this.hierarchy.getParent(current)

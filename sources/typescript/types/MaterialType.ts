@@ -1,7 +1,7 @@
 import { Material } from '../components/Material'
 import { OverseerComponentType } from './OverseerComponentType'
 
-export const MaterialComponentType : OverseerComponentType<Material> = {
+export const MaterialType : OverseerComponentType<Material> = {
   name: 'Material',
 
   /**

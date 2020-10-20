@@ -4,7 +4,7 @@ import { Vector2f } from '@cedric-demongivert/gl-tool-math'
 
 import { Transformation2D } from '../components/Transformation2D'
 import { GSEditor } from '../editor/GSEditor'
-import { TransformationManagementSystem } from '../systems'
+import { TransformationManagementSystem } from '../systems/TransformationManagementSystem'
 
 import { OverseerComponentType } from './OverseerComponentType'
 

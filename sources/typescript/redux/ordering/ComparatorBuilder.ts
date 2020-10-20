@@ -1,18 +1,22 @@
-import { firstBy } from 'thenBy'
+import { firstBy } from 'thenby'
 
-import * as Direction from './Direction'
+import { Ordering } from './Ordering'
+import { Order } from './Order'
+import { OrderingDirection } from './OrderingDirection'
 
 export class ComparatorBuilder {
+  private _comparators : Map<number, any>
+
   /**
   * Create a new comparator builder.
   *
-  * @param {any[]} [configuration] - Builder initial configuration.
+  * @param [configuration] - Builder initial configuration.
   */
-  constructor (configuration) {
-    this._comparators = new Map()
+  public constructor (configuration : any[]) {
+    this._comparators = new Map<number, any>()
 
     if (configuration && configuration.length > 1) {
-      for (let index = 0; index < configuration; index += 2) {
+      for (let index = 0; index < configuration.length; index += 2) {
         this._comparators.set(configuration[index], configuration[index + 1])
       }
     }
@@ -21,27 +25,26 @@ export class ComparatorBuilder {
   /**
   * Create and return a comparison function that match the given ordering.
   *
-  * @param {Ordering} ordering - An ordering to match.
+  * @param ordering - An ordering to match.
   *
-  * @return {function} An comparison function in accordance with the given ordering.
+  * @return An comparison function in accordance with the given ordering.
   */
-  orderBy (ordering) {
+  public orderBy (ordering : Ordering) : Function {
     let result = undefined
 
-    for (let index = 0; index < ordering.size; ++index) {
-      const field = ordering.getField(index)
-      const direction = ordering.getDirection(index)
+    for (let index = 0; index < ordering.orders.size; ++index) {
+      const order : Order = ordering.orders.get(index)
 
-      if (this._comparators.has(field)) {
+      if (this._comparators.has(order.field)) {
         if (result == null) {
           result = firstBy(
-            this._comparators.get(field),
-            direction === Direction.ASCENDING ? 1 : -1
+            this._comparators.get(order.field),
+            order.direction === OrderingDirection.ASCENDING ? 1 : -1
           )
         } else {
           result = result.thenBy(
-            this._comparators.get(field),
-            direction === Direction.ASCENDING ? 1 : -1
+            this._comparators.get(order.field),
+            order.direction === OrderingDirection.ASCENDING ? 1 : -1
           )
         }
       }
@@ -50,26 +53,23 @@ export class ComparatorBuilder {
     return result
   }
 
-  fields () {
+  public fields () : Iterator<number> {
     return this._comparators.keys()
   }
 
-  hasComparaotor (field) {
+  public hasComparaotor (field : number) : boolean  {
     return this._comparators.has(field)
   }
 
-  setComparator (field, comperator) {
-    this._comparators.set(field, comperator)
-    return this
+  public setComparator (field : number, comparator : any) : void {
+    this._comparators.set(field, comparator)
   }
 
-  deleteComparator (field) {
+  public deleteComparator (field : number) : void {
     this._comparators.delete(field)
-    return this
   }
 
-  clear () {
+  public clear () : void {
     this._comparators.clear()
-    return this
   }
 }

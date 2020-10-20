@@ -3,10 +3,12 @@ export type OrderingDirection = number
 export namespace OrderingDirection {
   export const ASCENDING  : OrderingDirection = 0
   export const DESCENDING : OrderingDirection = 1
+  export const NONE       : OrderingDirection = 3
 
   export const ALL        : OrderingDirection[] = [
     ASCENDING,
-    DESCENDING
+    DESCENDING,
+    NONE
   ]
 
   /**
@@ -20,6 +22,7 @@ export namespace OrderingDirection {
     switch (value) {
       case ASCENDING  : return 'ASCENDING'
       case DESCENDING : return 'DESCENDING'
+      case NONE       : return 'NONE'
       default         : return undefined
     }
   }

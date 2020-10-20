@@ -22,7 +22,7 @@ export class TransformationManagementSystem extends OverseerSystem {
   /**
   * Instantiate a new transformation management system.
   */
-  constructor () {
+  public constructor () {
     super()
     this.hierarchy = null
     this.unit = null
@@ -31,15 +31,15 @@ export class TransformationManagementSystem extends OverseerSystem {
   /**
   * @see gltool-ecs/System#initialize
   */
-  initialize () {
-    this.hierarchy = this.manager.requireSystem(HierarchyManagementSystem) as HierarchyManagementSystem
-    this.unit = this.manager.requireSystem(UnitManagementSystem) as UnitManagementSystem
+  public initialize () {
+    this.hierarchy = this.manager.requireSystem(HierarchyManagementSystem)
+    this.unit = this.manager.requireSystem(UnitManagementSystem)
   }
 
   /**
   * @see gltool-ecs/System#destroy
   */
-  destroy () {
+  public destroy () {
     this.hierarchy = null
     this.unit = null
   }
@@ -69,8 +69,8 @@ export class TransformationManagementSystem extends OverseerSystem {
   * @param entity - The entity to refresh.
   */
   public commitTransformation2D (entity : Entity) : void {
-    const transform2D : Transformation2D = this.manager.getComponent(entity, Transformation2DType).data
-    const transform : Transformation = this.manager.getComponent(entity, TransformationType).data
+    const transform2D : Transformation2D = this.manager.getComponentOfEntity(entity, Transformation2DType).data
+    const transform : Transformation = this.manager.getComponentOfEntity(entity, TransformationType).data
     const parentTransform : Transformation = this.getParentTransformation(entity)
     const unit : Unit = this.unit.getUnit(entity)
     const parentUnit : Unit = this.unit.getParentUnit(entity)
@@ -93,7 +93,7 @@ export class TransformationManagementSystem extends OverseerSystem {
   * @param entity - The entity to refresh.
   */
   public commitUnit (entity : Entity) : void {
-    const transform : Transformation = this.manager.getComponent(entity, TransformationType).data
+    const transform : Transformation = this.manager.getComponentOfEntity(entity, TransformationType).data
     const parentTransform : Transformation = this.getParentTransformation(entity)
     const unit : Unit = this.unit.getUnit(entity)
     const parentUnit : Unit = this.unit.getParentUnit(entity)
@@ -156,7 +156,7 @@ export class TransformationManagementSystem extends OverseerSystem {
 
     while (parent != null) {
       if (this.manager.hasComponent(parent, TransformationType)) {
-        return this.manager.getComponent(parent, TransformationType).data
+        return this.manager.getComponentOfEntity(parent, TransformationType).data
       }
 
       parent = this.hierarchy.getParent(entity)
@@ -177,7 +177,7 @@ export class TransformationManagementSystem extends OverseerSystem {
 
     while (current != null) {
       if (this.manager.hasComponent(current, TransformationType)) {
-        return this.manager.getComponent(current, TransformationType).data
+        return this.manager.getComponentOfEntity(current, TransformationType).data
       }
 
       current = this.hierarchy.getParent(current)

@@ -1,7 +1,8 @@
+import { Component } from '@cedric-demongivert/gl-tool-ecs'
 import { Program } from '@cedric-demongivert/gl-tool-shader'
 
 export class Material {
-  public program  : Program
+  public program  : Component<Program>
   public readonly uniforms : Map<string, any>
 
   /**

@@ -4,7 +4,7 @@ import * as React from 'react'
 
 import classnames from 'classnames'
 
-import { OpenableState } from '../redux/openable/OpenableState'
+import { OpenableState } from '../../redux/openable/OpenableState'
 import { nothing } from './nothing'
 
 export class Openable extends PureComponent<Openable.Properties> {
@@ -70,4 +70,14 @@ export namespace Openable {
     className? : string,
     children : ReactNode
   }
+
+  /*
+  export function augment (Component : Function) : Function {
+    return function ({ state } : any) : ReactElement {
+      return (
+        <Openable
+      )
+    }
+  }
+  */
 }

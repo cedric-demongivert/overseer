@@ -1,4 +1,6 @@
 import { Pack } from '@cedric-demongivert/gl-tool-collection'
+import { Sequence } from '@cedric-demongivert/gl-tool-collection'
+import { bissect } from '@cedric-demongivert/gl-tool-collection'
 import { Entity } from '@cedric-demongivert/gl-tool-ecs'
 
 import { LayerType } from '../types/LayerType'
@@ -29,7 +31,15 @@ export class LayerManagementSystem extends OverseerSystem {
   public initialize () : void {
     this.entities = Pack.unsignedUpTo(this.manager.capacity.entities, this.manager.capacity.entities)
     this.priorities = Pack.unsignedUpTo(this.manager.capacity.entities, this.manager.capacity.entities)
-    this.hierarchy = this.manager.requireSystem(HierarchyManagementSystem) as HierarchyManagementSystem
+    this.hierarchy = this.manager.requireSystem(HierarchyManagementSystem)
+
+    const entities : Sequence<number> = this.manager.entities
+
+    for (let index = 0, size = entities.size; index < size; ++index) {
+      this.entities.push(entities.get(index))
+    }
+
+    this.refresh()
   }
 
   /**
@@ -39,6 +49,15 @@ export class LayerManagementSystem extends OverseerSystem {
     this.entities = null
     this.priorities = null
     this.hierarchy = null
+  }
+
+  public managerDidAddEntity (entity : Entity) : void {
+    this.entities.push(entity)
+    this.refresh()
+  }
+
+  public managerWillDeleteEntity (entity : Entity) : void {
+    this.entities.delete(bissect(this.entities, entity, this.comparePriority))
   }
 
   /**
@@ -121,7 +140,7 @@ export class LayerManagementSystem extends OverseerSystem {
 
     while (current != null) {
       if (this.manager.hasComponent(current, LayerType)) {
-        return this.manager.getComponent(current, LayerType).data
+        return this.manager.getComponentOfEntity(current, LayerType).data
       }
 
       current = this.hierarchy.getParent(current)
