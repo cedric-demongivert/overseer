@@ -1,6 +1,5 @@
 import { ShaderCollection } from '@cedric-demongivert/gl-tool-shader'
 import { ProgramCollection } from '@cedric-demongivert/gl-tool-shader'
-import { ShaderType } from '@cedric-demongivert/gl-tool-shader'
 import { ShaderComponentSystem } from '@cedric-demongivert/gl-tool-shader'
 import { ProgramComponentSystem } from '@cedric-demongivert/gl-tool-shader'
 import { BufferCollection } from '@cedric-demongivert/gl-tool-buffer'

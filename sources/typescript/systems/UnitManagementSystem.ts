@@ -11,28 +11,28 @@ export class UnitManagementSystem extends OverseerSystem {
   /**
   * Hierarchy system used by this system.
   */
-  public hierarchy : HierarchyManagementSystem
+  public hierarchyManagementSystem : HierarchyManagementSystem
 
   /**
   * Create a new Unit management system.
   */
   public constructor () {
     super()
-    this.hierarchy = null
+    this.hierarchyManagementSystem = null
   }
 
   /**
   * @see gltool-ecs/System#initialize
   */
   public initialize () {
-    this.hierarchy = this.manager.requireSystem(HierarchyManagementSystem)
+    this.hierarchyManagementSystem = this.manager.requireSystem(HierarchyManagementSystem)
   }
 
   /**
   * @see gltool-ecs/System#destroy
   */
   public destroy () {
-    this.hierarchy = null
+    this.hierarchyManagementSystem = null
   }
 
   /**
@@ -43,10 +43,10 @@ export class UnitManagementSystem extends OverseerSystem {
   * @return The parent unit of the given entity.
   */
   public getParentUnit (entity : Entity) : Unit {
-    if (this.hierarchy.isRoot(entity)) {
+    if (this.hierarchyManagementSystem.isRoot(entity)) {
       return null
     } else {
-      return this.getUnit(this.hierarchy.getParent(entity))
+      return this.getUnit(this.hierarchyManagementSystem.getParent(entity))
     }
   }
 
@@ -65,9 +65,31 @@ export class UnitManagementSystem extends OverseerSystem {
         return this.manager.getComponentOfEntity(current, UnitType).data
       }
 
-      current = this.hierarchy.getParent(current)
+      current = this.hierarchyManagementSystem.getParent(current)
     } while (current != null)
 
     return null
+  }
+
+  /**
+  * Return the root unit that is applied to the given entity.
+  *
+  * @param entity - An entity to search.
+  *
+  * @return The root unit applied to the given entity.
+  */
+  public getRootUnit (entity : Entity) : Unit {
+    let current : Entity = entity
+    let result : Unit = null
+
+    do {
+      if (this.manager.hasComponent(current, UnitType)) {
+        result = this.manager.getComponentOfEntity(current, UnitType).data
+      }
+
+      current = this.hierarchyManagementSystem.getParent(current)
+    } while (current != null)
+
+    return result
   }
 }

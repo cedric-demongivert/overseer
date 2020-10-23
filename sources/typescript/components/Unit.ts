@@ -38,6 +38,10 @@ export class Unit {
     this.applyToMatrix(sourceUnit, sourceMatrix)
   }
 
+  public to (destinationUnit : Unit) : number {
+    return this.length.in(destinationUnit.length.unit) / destinationUnit.length.value
+  }
+
   /**
   * Apply this unit to the given matrix.
   *
@@ -67,8 +71,12 @@ export class Unit {
     sourceVector.set(
       sourceVector.x * si,
       sourceVector.y * si,
-      sourceVector.z,
+      sourceVector.z * si,
       sourceVector.w
     )
   }
+}
+
+export namespace Unit {
+  export const WORLD_UNIT : Unit = new Unit()
 }

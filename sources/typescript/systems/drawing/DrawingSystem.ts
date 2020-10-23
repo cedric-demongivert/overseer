@@ -43,7 +43,7 @@ export class DrawingSystem extends OverseerSystem {
 
     const worldShader : ShaderIdentifier = shaders.create(ShaderType.VERTEX)
 
-    shaders.setSource(worldShader, DrawingShader.WORLD_VERTEX)
+    //shaders.setSource(worldShader, DrawingShader.WORLD_VERTEX)
 
     this._geometries = geometries
     this._shaders = shaders

@@ -58,8 +58,9 @@ function createGrid (ecs : EntityComponentSystem) : MetaEntity {
   grid.getComponent(UnitType).data.length.set('3m')
 
   grid.getComponent(SquareGridType).data.setUnit(1, 1)
-  grid.getComponent(SquareGridType).data.setColor(0.80, 0.80, 0.80, 1)
+  grid.getComponent(SquareGridType).data.setColor(0, 0, 0, 0.25)
   grid.getComponent(SquareGridType).data.thickness = 1
+  grid.getComponent(SquareGridType).data.base = 10
   grid.getComponent(LayerType).data = 1
 
   return grid
@@ -164,6 +165,8 @@ function createMesh (ecs : EntityComponentSystem) : MetaEntity {
   mesh.getComponent(UnitType).data.length.set('3m')
   mesh.getComponent(LayerType).data = 2
 
+  console.log('mesh ' + mesh.identifier)
+
   return mesh
 }
 
@@ -171,5 +174,5 @@ export function initializeSampleScene (ecs : EntityComponentSystem) : void {
   createTypes(ecs)
   createMesh(ecs)
   createGrid(ecs)
-  createSubGrid(ecs)
+  //createSubGrid(ecs)
 }

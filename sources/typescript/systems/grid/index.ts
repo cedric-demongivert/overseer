@@ -1,1 +1,1 @@
-//export { WebGLGridRenderingSystem } from './WebGLGridRenderingSystem'
+export { WebGLGridRenderingSystem } from './WebGLGridRenderingSystem'

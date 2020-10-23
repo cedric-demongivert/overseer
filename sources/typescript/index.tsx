@@ -5,12 +5,7 @@ import { render } from 'react-dom'
 
 import { EntityComponentSystem } from '@cedric-demongivert/gl-tool-ecs'
 import { EntityComponentSystemBuilder } from '@cedric-demongivert/gl-tool-ecs'
-import { Entity } from '@cedric-demongivert/gl-tool-ecs'
 import { MetaEntity } from '@cedric-demongivert/gl-tool-ecs'
-import { Component } from '@cedric-demongivert/gl-tool-ecs'
-import { Sequence } from '@cedric-demongivert/gl-tool-collection'
-
-import * as Redux from './redux'
 
 import { TransformationManagementSystem } from './systems/TransformationManagementSystem'
 import { CameraManagementSystem } from './systems/CameraManagementSystem'
@@ -18,14 +13,16 @@ import { HierarchyManagementSystem } from './systems/HierarchyManagementSystem'
 import { OverseerRenderingSystem } from './systems/OverseerRenderingSystem'
 import { UnitManagementSystem } from './systems/UnitManagementSystem'
 import { LayerManagementSystem } from './systems/LayerManagementSystem'
+import { MouseManagementSystem } from './systems/input/MouseManagementSystem'
 import { ShapeManagementSystem } from './systems/shapes/ShapeManagementSystem'
 import { DrawingSystem } from './systems/drawing/DrawingSystem'
+import { CameraDraggingSystem } from './systems/CameraDraggingSystem'
 
-//import { WebGLGridRenderingSystem } from './systems/grid/WebGLGridRenderingSystem'
+import { WebGLGridRenderingSystem } from './systems/grid/WebGLGridRenderingSystem'
 import { WebGLMeshRenderingSystem } from './systems/WebGLMeshRenderingSystem'
 import { WebGLEntityRenderingSystem } from './systems/WebGLEntityRenderingSystem'
 
-import { OrthographicCamera2D } from './components/OrthographicCamera2D'
+import { CameraType } from './types/CameraType'
 import { OrthographicCamera2DType } from './types/OrthographicCamera2DType'
 
 import { EntityComponentSystemRenderer } from './editor/ui/EntityComponentSystemRenderer'
@@ -44,11 +41,13 @@ const transformationManagementSystem : TransformationManagementSystem = new Tran
 const layerManagementSystem : LayerManagementSystem = new LayerManagementSystem()
 const cameraManagementSystem : CameraManagementSystem = new CameraManagementSystem()
 const shapeManagementSystem : ShapeManagementSystem = new ShapeManagementSystem()
+const mouseManagementSystem : MouseManagementSystem = new MouseManagementSystem()
 const drawingSystem : DrawingSystem = new DrawingSystem()
+const cameraDraggingSystem : CameraDraggingSystem = new CameraDraggingSystem()
 
 const webGLMeshRenderingSystem : WebGLMeshRenderingSystem = new WebGLMeshRenderingSystem()
 const webGLEntityRenderingSystem : WebGLEntityRenderingSystem = new WebGLEntityRenderingSystem()
-//const grid : WebGLGridRenderingSystem = new WebGLGridRenderingSystem()
+const webGLGridRenderingSystem : WebGLGridRenderingSystem = new WebGLGridRenderingSystem()
 
 webGLEntityRenderingSystem.layerManagementSystem = layerManagementSystem
 
@@ -63,16 +62,19 @@ entityComponentSystem.addSystem(layerManagementSystem)
 entityComponentSystem.addSystem(transformationManagementSystem)
 entityComponentSystem.addSystem(cameraManagementSystem)
 entityComponentSystem.addSystem(shapeManagementSystem)
+entityComponentSystem.addSystem(mouseManagementSystem)
+entityComponentSystem.addSystem(cameraDraggingSystem)
 
 entityComponentSystem.addSystem(webGLEntityRenderingSystem)
 entityComponentSystem.addSystem(webGLMeshRenderingSystem)
+entityComponentSystem.addSystem(webGLGridRenderingSystem)
 
 const camera : MetaEntity = createCamera(entityComponentSystem)
 
 function onSizeChange ({ width, height }) : void {
   camera.getComponent(OrthographicCamera2DType).data.width = width / 40
   camera.getComponent(OrthographicCamera2DType).data.height = height / 40
-  camera.getComponent(OrthographicCamera2DType).data.setCenter(0, 0)
+  camera.getComponent(OrthographicCamera2DType).data.setCenter(3, 3)
 
   transformationManagementSystem.commit(camera.identifier)
   cameraManagementSystem.commit(camera.identifier)

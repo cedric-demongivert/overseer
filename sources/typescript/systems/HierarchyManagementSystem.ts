@@ -7,6 +7,9 @@ import { OverseerSystem } from './OverseerSystem'
 
 const EMPTY_CHILDREN : Set<Entity> = new Set<Entity>()
 
+/**
+* A system that allows to manipulate entities hierarchies.
+*/
 export class HierarchyManagementSystem extends OverseerSystem {
   /**
   * Return the parent entity of a given entity, if any.
@@ -83,9 +86,9 @@ export class HierarchyManagementSystem extends OverseerSystem {
   * @param parent - An entity to mutate.
   */
   public detachAllChildren (parent : Entity) : void {
-  for (const child of this.children(parent)) {
-    this.setParent(child, null)
-  }
+    for (const child of this.children(parent)) {
+      this.setParent(child, null)
+    }
   }
 
   /**

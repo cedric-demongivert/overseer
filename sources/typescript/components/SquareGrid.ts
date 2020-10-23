@@ -1,10 +1,25 @@
 import { Vector2f, Vector4f } from '@cedric-demongivert/gl-tool-math'
 
 export class SquareGrid {
+  /**
+  * Unit of the gird, eg. the width and height of a cell of the grid in world unit.
+  */
   public readonly unit  : Vector2f
+
+  /**
+  * RGBA color of the grid.
+  */
   public readonly color : Vector4f
-  public thickness      : number
-  public layer          : number
+
+  /**
+  * Thickness of the grid in pixels.
+  */
+  public thickness : number
+
+  /**
+  * Base of the grid, eg. the number of cells required in order to make one cell of a grid of higher order.
+  */
+  public base : number
 
   /**
   * Create a new unitary grid.
@@ -13,9 +28,9 @@ export class SquareGrid {
     this.unit = new Vector2f()
     this.unit.set(1, 1)
     this.thickness = 1
+    this.base = 10
     this.color = new Vector4f()
     this.color.set(0, 0, 0, 1)
-    this.layer = 0
   }
 
   /**
@@ -24,8 +39,8 @@ export class SquareGrid {
   public clear () {
     this.unit.set(1, 1)
     this.thickness = 1
+    this.base = 10
     this.color.set(0, 0, 0, 1)
-    this.layer = 0
   }
 
   /**
@@ -36,8 +51,16 @@ export class SquareGrid {
   public copy (other : SquareGrid) : void {
     this.unit.copy(other.unit)
     this.thickness = other.thickness
+    this.base = other.base
     this.color.copy(other.color)
-    this.layer = other.layer
+  }
+
+  public setBase (base : number) : void {
+    this.base = base
+  }
+
+  public setThickness (thickness : number) : void {
+    this.thickness = thickness
   }
 
   public setUnit (x : number, y : number) : void {

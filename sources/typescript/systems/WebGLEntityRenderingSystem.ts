@@ -5,6 +5,9 @@ import { WebGLRenderingPass } from './WebGLRenderingPass'
 import { OverseerSystem } from './OverseerSystem'
 import { LayerManagementSystem } from './LayerManagementSystem'
 
+import { WebGLRenderingSystem } from './WebGLRenderingSystem'
+import { Viewport } from './Viewport'
+
 export class WebGLEntityRenderingSystem extends OverseerSystem {
   public layerManagementSystem : LayerManagementSystem
 
@@ -63,17 +66,26 @@ export class WebGLEntityRenderingSystem extends OverseerSystem {
   * @param pass - The rendering pass to initialize.
   */
   public initializeWebGLRenderingPass (pass : WebGLRenderingPass) : void {
-    const webgl : WebGLRenderingContext = pass.context.context
+    const viewport : Viewport = pass.viewport
+    const context : WebGLRenderingSystem = pass.context
+    const webgl : WebGLRenderingContext = context.context
 
     webgl.viewport(
-      pass.viewport.left,
-      pass.viewport.bottom,
-      pass.viewport.width,
-      pass.viewport.height
+      0,
+      0,
+      context.width,
+      context.height
     )
 
     webgl.enable(webgl.SCISSOR_TEST)
     webgl.enable(webgl.BLEND)
+
+    webgl.scissor(
+      viewport.left,
+      viewport.bottom,
+      viewport.width,
+      viewport.height
+    )
 
     webgl.blendEquationSeparate(webgl.FUNC_ADD, webgl.FUNC_ADD)
     webgl.blendFuncSeparate(

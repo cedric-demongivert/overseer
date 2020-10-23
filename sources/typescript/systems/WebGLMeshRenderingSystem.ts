@@ -25,7 +25,9 @@ export class WebGLMeshRenderingSystem extends OverseerSystem {
   public unit : UnitManagementSystem
 
   private readonly _worldToView : Matrix4f
+  private readonly _worldToViewUnit : Matrix4f
   private readonly _viewToWorld : Matrix4f
+  private readonly _viewToWorldUnit : Matrix4f
   private readonly _worldtoLocal : Matrix4f
   private readonly _localToWorld : Matrix4f
 
@@ -41,7 +43,9 @@ export class WebGLMeshRenderingSystem extends OverseerSystem {
     this.unit = null
 
     this._worldToView = new Matrix4f()
+    this._worldToViewUnit = new Matrix4f()
     this._viewToWorld = new Matrix4f()
+    this._viewToWorldUnit = new Matrix4f()
     this._worldtoLocal = new Matrix4f()
     this._localToWorld = new Matrix4f()
 
@@ -125,22 +129,28 @@ export class WebGLMeshRenderingSystem extends OverseerSystem {
   private commitTransformationMatrices () : void {
     const uniforms : WebGLUniforms = this._uniforms
 
-    uniforms.setIfExists('localToWorld', false, this._localToWorld.buffer)
-    uniforms.setIfExists('worldToLocal', false, this._worldtoLocal.buffer)
-    uniforms.setIfExists('worldToView', false, this._worldToView.buffer)
-    uniforms.setIfExists('viewToWorld', false, this._viewToWorld.buffer)
+    uniforms.setIfExists('localToWorld', true, this._localToWorld.buffer)
+    uniforms.setIfExists('worldToLocal', true, this._worldtoLocal.buffer)
+    uniforms.setIfExists('worldToView', true, this._worldToView.buffer)
+    uniforms.setIfExists('viewToWorld', true, this._viewToWorld.buffer)
+    uniforms.setIfExists('worldToViewUnit', true, this._worldToViewUnit.buffer)
+    uniforms.setIfExists('viewToWorldUnit', true, this._viewToWorldUnit.buffer)
   }
 
   private computeTransformationMatrices (camera : Component<Camera>, entity : Entity) : void {
     const transform : Transformation = this.transformation.getTransformation(entity)
 
-    const meshUnit : Unit = this.unit.getUnit(entity)
+    const meshUnit : Unit = this.unit.getRootUnit(entity)
     const viewUnit : Unit = this.unit.getUnit(camera.entity)
 
     this._worldToView.copy(camera.data.worldToView)
-    viewUnit.applyToMatrix(meshUnit, this._worldToView)
     this._viewToWorld.copy(camera.data.viewToWorld)
-    meshUnit.applyToMatrix(viewUnit, this._viewToWorld)
+
+    this._viewToWorldUnit.toIdentity()
+    this._worldToViewUnit.toIdentity()
+
+    viewUnit.applyToMatrix(meshUnit, this._worldToViewUnit)
+    meshUnit.applyToMatrix(viewUnit, this._viewToWorldUnit)
 
     this._worldtoLocal.copy(transform.worldToLocal)
     this._localToWorld.copy(transform.localToWorld)

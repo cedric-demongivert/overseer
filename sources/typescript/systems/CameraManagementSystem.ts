@@ -12,30 +12,33 @@ import { OverseerSystem } from './OverseerSystem'
 import { TransformationManagementSystem } from './TransformationManagementSystem'
 import { UnitManagementSystem } from './UnitManagementSystem'
 
+/**
+* A system that manage different camera types.
+*/
 export class CameraManagementSystem extends OverseerSystem {
-  public transformation : TransformationManagementSystem
-  public unit : UnitManagementSystem
+  public transformationManagementSystem : TransformationManagementSystem
+  public unitManagementSystem : UnitManagementSystem
 
   public constructor () {
     super()
-    this.transformation = null
-    this.unit = null
+    this.transformationManagementSystem = null
+    this.unitManagementSystem = null
   }
 
   /**
   * @see gltool-ecs/System#initialize
   */
   public initialize () : void {
-    this.transformation = this.manager.requireSystem(TransformationManagementSystem)
-    this.unit = this.manager.requireSystem(UnitManagementSystem)
+    this.transformationManagementSystem = this.manager.requireSystem(TransformationManagementSystem)
+    this.unitManagementSystem = this.manager.requireSystem(UnitManagementSystem)
   }
 
   /**
   * @see gltool-ecs/System#destroy
   */
   public destroy () : void {
-    this.transformation = null
-    this.unit = null
+    this.transformationManagementSystem = null
+    this.unitManagementSystem = null
   }
 
   /**
@@ -68,13 +71,10 @@ export class CameraManagementSystem extends OverseerSystem {
   public commitOrthographicCamera2D (entity : Entity) : void {
     const orthographicCamera : OrthographicCamera2D = this.manager.getComponentOfEntity(entity, OrthographicCamera2DType).data
     const camera : Camera = this.manager.getComponentOfEntity(entity, CameraType).data
-    const transformation : Transformation = this.transformation.getTransformation(entity)
+    const transformation : Transformation = this.transformationManagementSystem.getTransformation(entity)
 
     orthographicCamera.extractWorldToView(camera.worldToView)
-    transformation.worldToLocal.multiplyWithMatrix(
-      camera.worldToView,
-      camera.worldToView
-    )
+    camera.worldToView.multiplyWithMatrix(transformation.worldToLocal, camera.worldToView)
     camera.worldToView.invert(camera.viewToWorld)
   }
 }

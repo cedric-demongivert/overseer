@@ -41,7 +41,7 @@
     "@cedric-demongivert/gl-tool-core": "^0.4.3",
     "@cedric-demongivert/gl-tool-ecs": "^0.5.1",
     "@cedric-demongivert/gl-tool-math": "^0.6.2",
-    "@cedric-demongivert/gl-tool-shader": "^0.4.12",
+    "@cedric-demongivert/gl-tool-shader": "^0.5.0",
     "@cedric-demongivert/gl-tool-texture": "^0.1.0",
     "@fortawesome/fontawesome-free": "^5.6.3",
     "@types/classnames": "^2.2.10",

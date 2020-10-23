@@ -866,10 +866,10 @@
   resolved "https://registry.yarnpkg.com/@cedric-demongivert/gl-tool-math/-/gl-tool-math-0.6.2.tgz#344f816825ca750e59708f1cb1772f95e2561c2d"
   integrity sha512-QbvFApuMsDrQMtwNNz2I9TUAyzeBSMkRKlPYGvl36af5wEwkLqEaCXGyKzycAY+oEXBHngto6XWbtUjoLUrG6Q==
 
-"@cedric-demongivert/gl-tool-shader@^0.4.12":
-  version "0.4.12"
-  resolved "https://registry.yarnpkg.com/@cedric-demongivert/gl-tool-shader/-/gl-tool-shader-0.4.12.tgz#9fd6886600144944c3c5c5fdbc4cd40285448e0a"
-  integrity sha512-HTNdDDVMq9c0Z2YzUNxSAuLmn3cEvDMKDfdYk9zcoooLmE5+EMLDwC+mH6aVOsW8XR3sZeWwgcZqwIaXUzJ7mQ==
+"@cedric-demongivert/gl-tool-shader@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@cedric-demongivert/gl-tool-shader/-/gl-tool-shader-0.5.0.tgz#1504978b15099b1f2e81abbdb5d2cbfcdedc9ee1"
+  integrity sha512-xOcy0ZYiS/li0Fp6LqzOXJOe/0OebEY6HyERy8VKlBgigVhXV5IdCbkVsJ3NY7sIrGK2gPrkzx3zVepI2+op7w==
   dependencies:
     "@cedric-demongivert/gl-tool-collection" "^0.23.0"
     "@cedric-demongivert/gl-tool-ecs" "^0.5.1"

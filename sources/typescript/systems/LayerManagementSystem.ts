@@ -9,7 +9,7 @@ import { OverseerSystem } from './OverseerSystem'
 import { HierarchyManagementSystem } from './HierarchyManagementSystem'
 
 export class LayerManagementSystem extends OverseerSystem {
-  public hierarchy : HierarchyManagementSystem
+  public hierarchyManagementSystem : HierarchyManagementSystem
   public entities : Pack<Entity>
   public priorities : Pack<number>
 
@@ -20,7 +20,7 @@ export class LayerManagementSystem extends OverseerSystem {
     super()
     this.entities = null
     this.priorities = null
-    this.hierarchy = null
+    this.hierarchyManagementSystem = null
 
     this.comparePriority = this.comparePriority.bind(this)
   }
@@ -31,7 +31,7 @@ export class LayerManagementSystem extends OverseerSystem {
   public initialize () : void {
     this.entities = Pack.unsignedUpTo(this.manager.capacity.entities, this.manager.capacity.entities)
     this.priorities = Pack.unsignedUpTo(this.manager.capacity.entities, this.manager.capacity.entities)
-    this.hierarchy = this.manager.requireSystem(HierarchyManagementSystem)
+    this.hierarchyManagementSystem = this.manager.requireSystem(HierarchyManagementSystem)
 
     const entities : Sequence<number> = this.manager.entities
 
@@ -48,7 +48,7 @@ export class LayerManagementSystem extends OverseerSystem {
   public destroy () : void {
     this.entities = null
     this.priorities = null
-    this.hierarchy = null
+    this.hierarchyManagementSystem = null
   }
 
   public managerDidAddEntity (entity : Entity) : void {
@@ -113,7 +113,7 @@ export class LayerManagementSystem extends OverseerSystem {
   * @return 1 if left is greather than right, -1 if left is less than right or 0 if left is equal to right.
   */
   public compareDepth (left : Entity, right : Entity) : number {
-    return this.hierarchy.getDepth(left) - this.hierarchy.getDepth(right)
+    return this.hierarchyManagementSystem.getDepth(left) - this.hierarchyManagementSystem.getDepth(right)
   }
 
   /**
@@ -143,7 +143,7 @@ export class LayerManagementSystem extends OverseerSystem {
         return this.manager.getComponentOfEntity(current, LayerType).data
       }
 
-      current = this.hierarchy.getParent(current)
+      current = this.hierarchyManagementSystem.getParent(current)
     }
 
     return 0

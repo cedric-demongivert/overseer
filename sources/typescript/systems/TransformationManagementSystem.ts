@@ -16,32 +16,32 @@ import { UnitManagementSystem } from './UnitManagementSystem'
 const IDENTITY : Transformation = new Transformation()
 
 export class TransformationManagementSystem extends OverseerSystem {
-  public hierarchy : HierarchyManagementSystem
-  public unit : UnitManagementSystem
+  public hierarchyManagementSystem : HierarchyManagementSystem
+  public unitManagementSystem : UnitManagementSystem
 
   /**
   * Instantiate a new transformation management system.
   */
   public constructor () {
     super()
-    this.hierarchy = null
-    this.unit = null
+    this.hierarchyManagementSystem = null
+    this.unitManagementSystem = null
   }
 
   /**
   * @see gltool-ecs/System#initialize
   */
   public initialize () {
-    this.hierarchy = this.manager.requireSystem(HierarchyManagementSystem)
-    this.unit = this.manager.requireSystem(UnitManagementSystem)
+    this.hierarchyManagementSystem = this.manager.requireSystem(HierarchyManagementSystem)
+    this.unitManagementSystem = this.manager.requireSystem(UnitManagementSystem)
   }
 
   /**
   * @see gltool-ecs/System#destroy
   */
   public destroy () {
-    this.hierarchy = null
-    this.unit = null
+    this.hierarchyManagementSystem = null
+    this.unitManagementSystem = null
   }
 
   /**
@@ -58,7 +58,7 @@ export class TransformationManagementSystem extends OverseerSystem {
       }
     }
 
-    for (const child of this.hierarchy.children(entity)) {
+    for (const child of this.hierarchyManagementSystem.children(entity)) {
       this.commit(child)
     }
   }
@@ -72,18 +72,17 @@ export class TransformationManagementSystem extends OverseerSystem {
     const transform2D : Transformation2D = this.manager.getComponentOfEntity(entity, Transformation2DType).data
     const transform : Transformation = this.manager.getComponentOfEntity(entity, TransformationType).data
     const parentTransform : Transformation = this.getParentTransformation(entity)
-    const unit : Unit = this.unit.getUnit(entity)
-    const parentUnit : Unit = this.unit.getParentUnit(entity)
+    const unit : Unit = this.unitManagementSystem.getUnit(entity)
+    const parentUnit : Unit = this.unitManagementSystem.getParentUnit(entity)
 
     transform.localToWorld.toIdentity()
+    transform2D.transform(transform.localToWorld)
 
     if (parentUnit != null) {
       parentUnit.apply(unit, transform.localToWorld)
-      transform2D.transform(transform.localToWorld)
     }
 
     parentTransform.localToWorld.multiplyWithMatrix(transform.localToWorld, transform.localToWorld)
-    transform.localToWorld.transpose()
     transform.localToWorld.invert(transform.worldToLocal)
   }
 
@@ -95,16 +94,16 @@ export class TransformationManagementSystem extends OverseerSystem {
   public commitUnit (entity : Entity) : void {
     const transform : Transformation = this.manager.getComponentOfEntity(entity, TransformationType).data
     const parentTransform : Transformation = this.getParentTransformation(entity)
-    const unit : Unit = this.unit.getUnit(entity)
-    const parentUnit : Unit = this.unit.getParentUnit(entity)
+    const unit : Unit = this.unitManagementSystem.getUnit(entity)
+    const parentUnit : Unit = this.unitManagementSystem.getParentUnit(entity)
 
     transform.localToWorld.toIdentity()
-    parentTransform.localToWorld.multiplyWithMatrix(transform.localToWorld, transform.localToWorld)
 
     if (parentUnit != null) {
       parentUnit.apply(unit, transform.localToWorld)
     }
 
+    parentTransform.localToWorld.multiplyWithMatrix(transform.localToWorld, transform.localToWorld)
     transform.localToWorld.invert(transform.worldToLocal)
   }
 
@@ -117,7 +116,7 @@ export class TransformationManagementSystem extends OverseerSystem {
     for (let index = 0, size = entities.size; index < size; ++index) {
       const entity = entities.get(index)
 
-      if (!this.isRootTransformation(entity)) {
+      if (this.isRootTransformation(entity)) {
         this.commit(entity)
       }
     }
@@ -131,14 +130,14 @@ export class TransformationManagementSystem extends OverseerSystem {
   * @return True if the given entity does not have a parent with a transformation component.
   */
   public isRootTransformation (entity : Entity) : boolean {
-    let parent : Entity = this.hierarchy.getParent(entity)
+    let parent : Entity = this.hierarchyManagementSystem.getParent(entity)
 
     while (parent != null) {
       if (this.manager.hasComponent(parent, TransformationType)) {
         return false
       }
 
-      parent = this.hierarchy.getParent(entity)
+      parent = this.hierarchyManagementSystem.getParent(entity)
     }
 
     return true
@@ -152,14 +151,14 @@ export class TransformationManagementSystem extends OverseerSystem {
   * @return The parent transformation of the given entity.
   */
   public getParentTransformation (entity : Entity) : Transformation {
-    let parent : Entity = this.hierarchy.getParent(entity)
+    let parent : Entity = this.hierarchyManagementSystem.getParent(entity)
 
     while (parent != null) {
       if (this.manager.hasComponent(parent, TransformationType)) {
         return this.manager.getComponentOfEntity(parent, TransformationType).data
       }
 
-      parent = this.hierarchy.getParent(entity)
+      parent = this.hierarchyManagementSystem.getParent(entity)
     }
 
     return IDENTITY
@@ -180,7 +179,7 @@ export class TransformationManagementSystem extends OverseerSystem {
         return this.manager.getComponentOfEntity(current, TransformationType).data
       }
 
-      current = this.hierarchy.getParent(current)
+      current = this.hierarchyManagementSystem.getParent(current)
     }
 
     return IDENTITY

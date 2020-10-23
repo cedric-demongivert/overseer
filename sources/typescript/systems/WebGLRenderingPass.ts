@@ -1,4 +1,3 @@
-import { Entity } from '@cedric-demongivert/gl-tool-ecs'
 import { Component } from '@cedric-demongivert/gl-tool-ecs'
 
 import { Camera } from '../components/Camera'
@@ -29,5 +28,17 @@ export class WebGLRenderingPass {
     this.context = null
     this.camera = null
     this.viewport = null
+  }
+
+  public clear () : void {
+    this.context = null
+    this.camera = null
+    this.viewport = null
+  }
+
+  public copy (toCopy : WebGLRenderingPass) : void {
+    this.context = toCopy.context
+    this.camera = toCopy.camera
+    this.viewport = toCopy.viewport
   }
 }

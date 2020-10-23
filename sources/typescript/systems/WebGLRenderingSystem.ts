@@ -127,9 +127,9 @@ export class WebGLRenderingSystem extends OverseerSystem {
   */
   public render (camera : Entity) : void {
     this._viewport.left = 0
-    this._viewport.right = 0
-    this._viewport.width = this.canvas.width
-    this._viewport.height = this.canvas.height
+    this._viewport.bottom = 0
+    this._viewport.right = this.canvas.width
+    this._viewport.top = this.canvas.height
 
     this.renderAt(camera, this._viewport)
   }
