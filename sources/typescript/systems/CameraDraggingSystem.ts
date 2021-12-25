@@ -107,6 +107,10 @@ export class CameraDraggingSystem extends OverseerSystem {
     //if (this._hoveredShapes.size > 0) return
     //if (this._mouseManagementSystem.x() == null) return
 
+    if (this._mouseManagementSystem.x() == null) {
+      return
+    }
+
     if (this.manager.hasComponent(source.camera.entity, OrthographicCamera2DType)) {
       this.updateStaticOrthographicCamera2D(source)
     }

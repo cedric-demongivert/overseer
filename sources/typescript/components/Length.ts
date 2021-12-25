@@ -1,11 +1,18 @@
-const lengthValueSymbol : symbol = Symbol()
+const lengthValueSymbol: symbol = Symbol()
 
 /**
 * A length.
 */
 export class Length {
-  private _value : number
-  private _unit : Length.Unit
+  /**
+   * 
+   */
+  private _value: number
+
+  /**
+   * 
+   */
+  private _unit: Length.Unit
 
   /**
   * Create a new length.
@@ -16,7 +23,7 @@ export class Length {
   *
   * @param {...any} params - Parameters for construction. See static factories for more information.
   */
-  public constructor (...params) {
+  public constructor(...params) {
     this._value = 0
     this._unit = Length.m
     this.set(...params)
@@ -30,7 +37,7 @@ export class Length {
   *
   * @return {Length} A length.
   */
-  static fromString (str, instance = new Length()) {
+  static fromString(str, instance = new Length()) {
     const matchs = parser.exec(str)
 
     if (matchs) {
@@ -54,7 +61,7 @@ export class Length {
   * @param {Length} [instance = new Length()] - An instance to use, if you want to use an existing object.
   * @return {Length} A length.
   */
-  static fromInstance (from, instance = new Length()) {
+  static fromInstance(from, instance = new Length()) {
     if (typeof from[Length.lengthValue] === 'function') {
       const params = from[Length.lengthValue]()
 
@@ -79,7 +86,7 @@ export class Length {
   * @param {Length} [instance = new Length()] - An instance to use, if you want to use an existing object.
   * @return {Length} A length.
   */
-  static from (value = 0, unit = Length.m, instance = new Length()) {
+  static from(value = 0, unit = Length.m, instance = new Length()) {
     instance._value = value
     instance._unit = unit
     return instance
@@ -94,7 +101,7 @@ export class Length {
   *
   * @param {...any} params - Parameters. See static factories for more information.
   */
-  set (...params) {
+  public set(...params) {
     if (params.length === 1) {
       if (typeof params[0] === 'string') {
         Length.fromString(params[0], this)
@@ -114,19 +121,18 @@ export class Length {
   *
   * @return {number} The length value in the specified unit.
   */
-  in (unit) {
+  public in(unit) {
     if ($values.has(unit)) {
       return (this._value * $values.get(this._unit)) / $values.get(unit)
     } else {
       throw new TypeError(
-        `The unit "${unit}" is not a valid length unit. Valid units are : [${
-          [...$values.keys()].join(', ')
+        `The unit "${unit}" is not a valid length unit. Valid units are : [${[...$values.keys()].join(', ')
         }]`
       )
     }
   }
 
-  decimals (value) {
+  public decimals(value) {
     let index = 0
     while (value >= 1.0) {
       index += 1
@@ -135,7 +141,7 @@ export class Length {
     return index
   }
 
-  order (n) {
+  public order(n) {
     if (this.decimals(this._value) > n) {
       while (this.decimals(this._value) > n && $upper.has(this._unit)) {
         this._value = this.in($upper.get(this._unit))
@@ -152,21 +158,21 @@ export class Length {
   /**
   * @return {number} The length value.
   */
-  get value () {
+  get value() {
     return this._value
   }
 
   /**
   * @param {value} newValue - The new length value.
   */
-  set value (newValue) {
+  set value(newValue) {
     this._value = newValue
   }
 
   /**
   * @return {string} The length unit.
   */
-  get unit () {
+  get unit() {
     return this._unit
   }
 
@@ -175,14 +181,13 @@ export class Length {
   *
   * @param {string} newUnit - The new length unit.
   */
-  set unit (unit) {
+  set unit(unit) {
     if ($values.has(unit)) {
       this._value = this.in(unit)
       this._unit = unit
     } else {
       throw new TypeError(
-        `The unit "${unit}" is not a valid length unit. Valid units are : [${
-          [...$values.keys()].join(', ')
+        `The unit "${unit}" is not a valid length unit. Valid units are : [${[...$values.keys()].join(', ')
         }]`
       )
     }
@@ -194,7 +199,7 @@ export class Length {
   * @param {any} other - Any value convertible into a length.
   * @return {boolean} True if this length is greater than the other.
   */
-  gt (other) {
+  public gt(other) {
     if (other instanceof Length) {
       return this.value > other.in(this.unit)
     } else {
@@ -208,7 +213,7 @@ export class Length {
   * @param {any} other - Any value convertible into a length.
   * @return {boolean} True if this length is greater than or equal to the other.
   */
-  gte (other) {
+  public gte(other) {
     if (other instanceof Length) {
       return this.value >= other.in(this.unit)
     } else {
@@ -222,7 +227,7 @@ export class Length {
   * @param {any} other - Any value convertible into a length.
   * @return {boolean} True if this length is less than the other.
   */
-  lt (other) {
+  public lt(other) {
     if (other instanceof Length) {
       return this.value < other.in(this.unit)
     } else {
@@ -236,7 +241,7 @@ export class Length {
   * @param {any} other - Any value convertible into a length.
   * @return {boolean} True if this length is less than or equal to the other.
   */
-  lte (other) {
+  public lte(other) {
     if (other instanceof Length) {
       return this.value <= other.in(this.unit)
     } else {
@@ -250,7 +255,7 @@ export class Length {
   * @param {any} other - Any value convertible into a length.
   * @return {boolean} True if this length is equal to the other.
   */
-  equal (other) {
+  equal(other) {
     if (other instanceof Length) {
       return this.value === other.in(this.unit)
     } else {
@@ -264,7 +269,7 @@ export class Length {
   * @param {any} other - Any value convertible into a length.
   * @return {Length} This instance of length.
   */
-  add (other) {
+  add(other) {
     if (other instanceof Length) {
       this.value += other.in(this.unit)
     } else {
@@ -280,7 +285,7 @@ export class Length {
   * @param {any} other - Any value convertible into a length.
   * @return {Length} This instance of length.
   */
-  subtract (other) {
+  subtract(other) {
     if (other instanceof Length) {
       this.value -= other.in(this.unit)
     } else {
@@ -296,7 +301,7 @@ export class Length {
   * @param {any} scalar
   * @return {Length} This instance of length.
   */
-  multiply (scalar) {
+  multiply(scalar) {
     this.value *= scalar
     return this
   }
@@ -307,7 +312,7 @@ export class Length {
   * @param {any} scalar
   * @return {Length} This instance of length.
   */
-  divide (scalar) {
+  divide(scalar) {
     this.value /= scalar
     return this
   }
@@ -317,25 +322,42 @@ export class Length {
   *
   * @return {Length} A clone of this length.
   */
-  clone () {
+  clone() {
     return new Length(this)
   }
 
   /**
   * @see https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Object/valueOf
   */
-  valueOf () {
+  valueOf() {
     return `${this.value}${this.unit}`
   }
 
   /**
   * @see https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Object/toString
   */
-  toString () {
+  toString() {
     return `${this.value}${this.unit}`
   }
 
-  [lengthValueSymbol] () {
+  /**
+   * 
+   */
+  public equals(other: any): boolean {
+    if (other == null) return false
+    if (other === this) return true
+
+    if (other instanceof Length) {
+      return this.equal(other)
+    }
+
+    return false
+  }
+
+  /**
+   * 
+   */
+  [lengthValueSymbol]() {
     return this
   }
 }
@@ -343,26 +365,26 @@ export class Length {
 export namespace Length {
   export type Unit = string
 
-  export const am  : Unit = 'am'
-  export const fm  : Unit = 'fm'
-  export const pm  : Unit = 'pm'
-  export const nm  : Unit = 'nm'
-  export const μm  : Unit = 'μm'
-  export const mm  : Unit = 'mm'
-  export const cm  : Unit = 'cm'
-  export const dm  : Unit = 'dm'
-  export const m   : Unit = 'm'
-  export const dam : Unit = 'dam'
-  export const hm  : Unit = 'hm'
-  export const km  : Unit = 'km'
-  export const Mm  : Unit = 'Mm'
-  export const Gm  : Unit = 'Gm'
-  export const Tm  : Unit = 'Tm'
-  export const Pm  : Unit = 'Pm'
-  export const Em  : Unit = 'Em'
-  export const ua  : Unit = 'ua'
+  export const am: Unit = 'am'
+  export const fm: Unit = 'fm'
+  export const pm: Unit = 'pm'
+  export const nm: Unit = 'nm'
+  export const μm: Unit = 'μm'
+  export const mm: Unit = 'mm'
+  export const cm: Unit = 'cm'
+  export const dm: Unit = 'dm'
+  export const m: Unit = 'm'
+  export const dam: Unit = 'dam'
+  export const hm: Unit = 'hm'
+  export const km: Unit = 'km'
+  export const Mm: Unit = 'Mm'
+  export const Gm: Unit = 'Gm'
+  export const Tm: Unit = 'Tm'
+  export const Pm: Unit = 'Pm'
+  export const Em: Unit = 'Em'
+  export const ua: Unit = 'ua'
 
-  export const lengthValue : symbol = lengthValueSymbol
+  export const lengthValue: symbol = lengthValueSymbol
 }
 
 const $values = new Map([

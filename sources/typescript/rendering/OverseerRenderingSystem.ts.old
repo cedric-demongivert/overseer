@@ -10,20 +10,20 @@ import { BufferComponentSystem } from '@cedric-demongivert/gl-tool-buffer'
 import { OverseerSystem } from './OverseerSystem'
 
 export class OverseerRenderingSystem extends OverseerSystem {
-  public readonly shaders  : ShaderCollection
-  public readonly programs : ProgramCollection
-  public readonly buffers  : BufferCollection
-  public readonly geometries : GeometryCollection
+  public readonly shaders: ShaderCollection
+  public readonly programs: ProgramCollection
+  public readonly buffers: BufferCollection
+  public readonly geometries: GeometryCollection
 
-  public readonly bufferComponents : BufferComponentSystem
-  public readonly geometryComponents : GeometryComponentSystem
-  public readonly shaderComponents : ShaderComponentSystem
-  public readonly programComponents : ProgramComponentSystem
+  public readonly bufferComponents: BufferComponentSystem
+  public readonly geometryComponents: GeometryComponentSystem
+  public readonly shaderComponents: ShaderComponentSystem
+  public readonly programComponents: ProgramComponentSystem
 
   /*
   * Create a new WebGLRenderingSystem.
   */
-  public constructor () {
+  public constructor() {
     super()
 
     this.shaders = new ShaderCollection()
@@ -41,7 +41,7 @@ export class OverseerRenderingSystem extends OverseerSystem {
   /**
   * @see OverseerSystem.initialize
   */
-  public initialize () : void {
+  public initialize(): void {
     this.manager.addSystem(this.shaders)
     this.manager.addSystem(this.shaderComponents)
     this.manager.addSystem(this.programs)
@@ -56,7 +56,7 @@ export class OverseerRenderingSystem extends OverseerSystem {
   /**
   * @see OverseerSystem.destroy
   */
-  public destroy () : void {
+  public destroy(): void {
     this.manager.deleteSystem(this.shaders)
     this.manager.deleteSystem(this.shaderComponents)
     this.manager.deleteSystem(this.programs)

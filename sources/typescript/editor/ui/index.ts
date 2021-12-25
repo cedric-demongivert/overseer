@@ -1,6 +1,0 @@
-export { Anchor } from './Anchor'
-export { nothing } from './nothing'
-//export { EntityComponentSystemEditor } from './EntityComponentSystemEditor'
-export { EntityComponentSystemRenderer } from './EntityComponentSystemRenderer'
-export { Panel } from './Panel'
-export { ToolBar } from './ToolBar'

@@ -31,35 +31,35 @@ import { SquareGridType } from '../../types/SquareGridType'
 import { GridGeometry } from './GridGeometry'
 import { GridShader } from './GridShader'
 
-const SHADER_CAPACITY : number = 2
-const PROGRAM_CAPACITY : number = 1
+const SHADER_CAPACITY: number = 2
+const PROGRAM_CAPACITY: number = 1
 
-const VERTEX_SHADER : number = 0
-const SQUARE_SHADER : number = 1
+const VERTEX_SHADER: number = 0
+const SQUARE_SHADER: number = 1
 
-const SQUARE_PROGRAM : number = 0
+const SQUARE_PROGRAM: number = 0
 
 export class WebGLGridRenderingSystem extends OverseerSystem {
-  private _unitManagementSystem : UnitManagementSystem
+  private _unitManagementSystem: UnitManagementSystem
 
-  private _geometryCollection : GeometryCollection
-  private _shaderCollection : ShaderCollection
-  private _programCollection : ProgramCollection
+  private _geometryCollection: GeometryCollection
+  private _shaderCollection: ShaderCollection
+  private _programCollection: ProgramCollection
 
-  private _geometry : GeometryIdentifier
-  private readonly _shaders : Pack<ShaderIdentifier>
-  private readonly _programs : Pack<ProgramIdentifier>
+  private _geometry: GeometryIdentifier
+  private readonly _shaders: Pack<ShaderIdentifier>
+  private readonly _programs: Pack<ProgramIdentifier>
 
-  private readonly _attributes : WebGLAttributes
-  private readonly _uniforms : WebGLUniforms
+  private readonly _attributes: WebGLAttributes
+  private readonly _uniforms: WebGLUniforms
 
-  private readonly _viewToWorld : Matrix4f
-  private readonly _pixelSize : Vector4f
+  private readonly _viewToWorld: Matrix4f
+  private readonly _pixelSize: Vector4f
 
   /**
   * Create a new system that render meshes.
   */
-  public constructor () {
+  public constructor() {
     super()
     this._unitManagementSystem = null
     this._geometryCollection = null
@@ -80,7 +80,7 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * @see gltool-ecs/System.initialize
   */
-  public initialize () : void {
+  public initialize(): void {
     this.initializeSystems()
     this.initializeGeometry()
     this.initializeShaders()
@@ -90,7 +90,7 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * Load all system required by this grid rendering system.
   */
-  private initializeSystems () : void {
+  private initializeSystems(): void {
     this._unitManagementSystem = this.manager.requireSystem(UnitManagementSystem)
     this._geometryCollection = this.manager.requireSystem(GeometryCollection)
     this._shaderCollection = this.manager.requireSystem(ShaderCollection)
@@ -100,10 +100,10 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * Load the grid geometry to use for rendering.
   */
-  private initializeGeometry () : void {
-    const geometryCollection : GeometryCollection = this._geometryCollection
+  private initializeGeometry(): void {
+    const geometryCollection: GeometryCollection = this._geometryCollection
 
-    const geometry : GeometryIdentifier = geometryCollection.create()
+    const geometry: GeometryIdentifier = geometryCollection.create()
 
     geometryCollection.setFaces(geometry, GridGeometry.FACES)
     geometryCollection.setVertices(geometry, GridGeometry.VERTICES)
@@ -115,11 +115,11 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * Load all shaders required in order to render grids.
   */
-  private initializeShaders () : void {
-    const shaderCollection : ShaderCollection = this._shaderCollection
+  private initializeShaders(): void {
+    const shaderCollection: ShaderCollection = this._shaderCollection
 
-    const vertex : ShaderIdentifier = shaderCollection.create(ShaderType.VERTEX)
-    const square : ShaderIdentifier = shaderCollection.create(ShaderType.FRAGMENT)
+    const vertex: ShaderIdentifier = shaderCollection.create(ShaderType.VERTEX)
+    const square: ShaderIdentifier = shaderCollection.create(ShaderType.FRAGMENT)
 
     shaderCollection.setSource(vertex, GridShader.VERTEX)
     shaderCollection.setSource(square, GridShader.SQUARE)
@@ -131,10 +131,10 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * Load all programs required in order to render grids.
   */
-  private initializePrograms () : void {
-    const programCollection : ProgramCollection = this._programCollection
+  private initializePrograms(): void {
+    const programCollection: ProgramCollection = this._programCollection
 
-    const square : ProgramIdentifier = programCollection.create()
+    const square: ProgramIdentifier = programCollection.create()
 
     programCollection.setVertexShader(square, this._shaders.get(VERTEX_SHADER))
     programCollection.setFragmentShader(square, this._shaders.get(SQUARE_SHADER))
@@ -145,7 +145,7 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * @see gltool-ecs/System.destroy
   */
-  public destroy () : void {
+  public destroy(): void {
     this.destroyPrograms()
     this.destroyShaders()
     this.destroyGeometry()
@@ -155,9 +155,9 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * Free all allocated programs.
   */
-  private destroyPrograms () : void {
-    const programCollection : ProgramCollection = this._programCollection
-    const programs : Pack<ProgramIdentifier> = this._programs
+  private destroyPrograms(): void {
+    const programCollection: ProgramCollection = this._programCollection
+    const programs: Pack<ProgramIdentifier> = this._programs
 
     for (let index = 0, size = programs.size; index < size; ++index) {
       programCollection.delete(programs.get(index))
@@ -168,9 +168,9 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * Free all allocated shaders.
   */
-  private destroyShaders () : void {
-    const shaderCollection : ShaderCollection = this._shaderCollection
-    const shaders : Pack<ShaderIdentifier> = this._shaders
+  private destroyShaders(): void {
+    const shaderCollection: ShaderCollection = this._shaderCollection
+    const shaders: Pack<ShaderIdentifier> = this._shaders
 
     for (let index = 0, size = shaders.size; index < size; ++index) {
       shaderCollection.delete(shaders.get(index))
@@ -181,8 +181,8 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * Free all allocated geometries.
   */
-  private destroyGeometry () : void {
-    const geometryCollection : GeometryCollection = this._geometryCollection
+  private destroyGeometry(): void {
+    const geometryCollection: GeometryCollection = this._geometryCollection
 
     geometryCollection.delete(this._geometry)
     this._geometry = 0
@@ -191,22 +191,22 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   /**
   * Remove all required systems.
   */
-  private destroySystems () : void {
+  private destroySystems(): void {
     this._unitManagementSystem = null
     this._geometryCollection = null
     this._shaderCollection = null
     this._programCollection = null
   }
 
-  public computeViewToWorldMatrix (pass : WebGLRenderingPass, unit : Unit) {
-    const viewUnit : Unit = this._unitManagementSystem.getUnit(pass.camera.entity)
-    const gridUnit : Unit = unit
+  public computeViewToWorldMatrix(pass: WebGLRenderingPass, unit: Unit) {
+    const viewUnit: Unit = this._unitManagementSystem.getUnit(pass.camera.entity)
+    const gridUnit: Unit = unit
 
     this._viewToWorld.copy(pass.camera.data.viewToWorld)
     gridUnit.applyToMatrix(viewUnit, this._viewToWorld)
   }
 
-  public computePixelDimension (pass : WebGLRenderingPass) {
+  public computePixelDimension(pass: WebGLRenderingPass) {
     this._pixelSize.set(
       2.0 / pass.viewport.width,
       2.0 / pass.viewport.height,
@@ -217,15 +217,15 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
     this._viewToWorld.multiplyWithVector(this._pixelSize)
   }
 
-  public useSquareGridProgram (pass : WebGLRenderingPass, grid : SquareGrid) : void {
-    const programs : WebGLProgramCollection = pass.context.programs
-    const program : ProgramIdentifier = this._programs.get(SQUARE_PROGRAM)
+  public useSquareGridProgram(pass: WebGLRenderingPass, grid: SquareGrid): void {
+    const programs: WebGLProgramCollection = pass.context.programs
+    const program: ProgramIdentifier = this._programs.get(SQUARE_PROGRAM)
 
     programs.bootstrap(program)
     programs.use(program)
 
-    const uniforms : WebGLUniforms = this._uniforms
-    const attributes : WebGLAttributes = this._attributes
+    const uniforms: WebGLUniforms = this._uniforms
+    const attributes: WebGLAttributes = this._attributes
 
     uniforms.handle(pass.context.context, programs.getProgram(program))
     attributes.handle(pass.context.context, programs.getProgram(program))
@@ -240,23 +240,23 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
     uniforms.setIfExists('pixelSize', this._pixelSize.x, this._pixelSize.y)
   }
 
-  public useGridGeometry (pass : WebGLRenderingPass) : void {
-    const geometries : WebGLGeometryCollection = pass.context.geometries
+  public useGridGeometry(pass: WebGLRenderingPass): void {
+    const geometries: WebGLGeometryCollection = pass.context.geometries
 
     geometries.bootstrap(this._geometry, WebGLBufferUsage.STATIC_DRAW)
     geometries.bind(this._geometry)
 
-    const attributes : WebGLAttributes = this._attributes
+    const attributes: WebGLAttributes = this._attributes
 
     for (const field of GridGeometry.FORMAT.fields) {
-      if (attributes.attributes.has(field.name)){
+      if (attributes.attributes.has(field.name)) {
         geometries.upload(field, attributes.attributes.get(field.name).location)
       }
     }
   }
 
-  public renderSquareGridWithWebGL (pass : WebGLRenderingPass, grid : SquareGrid, unit : Unit) : void {
-    const gl : WebGLRenderingContext = pass.context.context
+  public renderSquareGridWithWebGL(pass: WebGLRenderingPass, grid: SquareGrid, unit: Unit): void {
+    const gl: WebGLRenderingContext = pass.context.context
 
     this.computeViewToWorldMatrix(pass, unit)
     this.computePixelDimension(pass)
@@ -272,7 +272,7 @@ export class WebGLGridRenderingSystem extends OverseerSystem {
   * @param pass - The rendering pass information.
   * @param entity - An entity to render as a mesh.
   */
-  public renderEntityWithWebGL (pass : WebGLRenderingPass, entity : Entity) : void {
+  public renderEntityWithWebGL(pass: WebGLRenderingPass, entity: Entity): void {
     if (this.manager.hasComponent(entity, SquareGridType)) {
       this.renderSquareGridWithWebGL(
         pass,

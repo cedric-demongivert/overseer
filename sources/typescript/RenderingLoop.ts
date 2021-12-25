@@ -1,15 +1,33 @@
+/**
+ * 
+ */
 export class RenderingLoop {
-  private _loop : (timestamp : number) => void
-  private _running : boolean
-  private _previousTime : number
-  private _executionIdentifier : number
+  /**
+   * 
+   */
+  private _loop: (timestamp: number) => void
+
+  /**
+   * 
+   */
+  private _running: boolean
+
+  /**
+   * 
+   */
+  private _previousTime: number
+
+  /**
+   * 
+   */
+  private _executionIdentifier: number
 
   /**
   * Create a new rendering loop.
   *
   * @param loop - The loop function.
   */
-  public constructor (loop : (timestamp : number) => void) {
+  public constructor(loop: (timestamp: number) => void) {
     this._loop = loop
     this._running = false
     this._previousTime = null
@@ -18,11 +36,14 @@ export class RenderingLoop {
     this._executionIdentifier = null
   }
 
-  public _delta (time : number) : number {
-    const seconds : number = time / 1000
-    const result : number = (
+  /**
+   * 
+   */
+  public _delta(time: number): number {
+    const seconds: number = time / 1000
+    const result: number = (
       this._previousTime == null ? seconds
-                                 : seconds - this._previousTime
+        : seconds - this._previousTime
     )
 
     this._previousTime = seconds
@@ -30,7 +51,10 @@ export class RenderingLoop {
     return result
   }
 
-  public _firstRenderingCallback (time : number) : void {
+  /**
+   * 
+   */
+  public _firstRenderingCallback(time: number): void {
     this._loop(this._delta(time))
 
     if (this._running) {
@@ -38,7 +62,10 @@ export class RenderingLoop {
     }
   }
 
-  public _secondRenderingCallback (time : number) : void {
+  /**
+   * 
+   */
+  public _secondRenderingCallback(time: number): void {
     this._loop(this._delta(time))
 
     if (this._running) {
@@ -49,7 +76,7 @@ export class RenderingLoop {
   /**
   * Execute this loop only once.
   */
-  public once () : void {
+  public once(): void {
     this.start()
     this.stop()
   }
@@ -57,7 +84,7 @@ export class RenderingLoop {
   /**
   * Start this rendering loop.
   */
-  public start () : void {
+  public start(): void {
     if (this._running) {
       throw new Error('Unable to start the rendering loop because it is already running.')
     } else {
@@ -69,7 +96,7 @@ export class RenderingLoop {
   /**
   * Abort the current execution.
   */
-  public cancel () : void {
+  public cancel(): void {
     if (this._running) {
       window.cancelAnimationFrame(this._executionIdentifier)
       this._running = false
@@ -82,7 +109,7 @@ export class RenderingLoop {
   /**
   * Gracefully stop this rendering loop.
   */
-  public stop () : void {
+  public stop(): void {
     if (this._running) {
       this._running = false
       this._executionIdentifier = null

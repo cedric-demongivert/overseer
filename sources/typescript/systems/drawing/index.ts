@@ -1,1 +1,0 @@
-export { DrawingSystem } from './DrawingSystem'

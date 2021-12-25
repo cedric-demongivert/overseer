@@ -8,11 +8,11 @@ import { EntityComponentSystem } from '@cedric-demongivert/gl-tool-ecs'
 import { Entity } from '@cedric-demongivert/gl-tool-ecs'
 import { Vector3f } from '@cedric-demongivert/gl-tool-math'
 
-import { WebGLRenderingSystem } from '../../systems/WebGLRenderingSystem'
-import { RenderingLoop } from '../../RenderingLoop'
+import { Empty } from '../Empty'
+
+import { RenderingLoop } from '../RenderingLoop'
 
 import { EntityComponentSystemMouseInput } from './EntityComponentSystemMouseInput'
-import { nothing } from './nothing'
 
 const CLEAR_COLOR : Vector3f = Vector3f.create(66/255, 114/255, 245/255)
 
@@ -20,7 +20,7 @@ export class EntityComponentSystemRenderer extends Component<EntityComponentSyst
   public static defaultProps : EntityComponentSystemRenderer.Properties = {
     entityComponentSystem: null,
     camera: 0,
-    onSizeChange: nothing
+    onSizeChange: Empty.callback
   }
 
   private readonly _loop : RenderingLoop
@@ -28,7 +28,9 @@ export class EntityComponentSystemRenderer extends Component<EntityComponentSyst
   private readonly _container : RefObject<HTMLDivElement>
   private _oldRendererSize : EntityComponentSystemRenderer.Size
   private _newRendererSize : EntityComponentSystemRenderer.Size
-  private _renderer : WebGLRenderingSystem
+
+  //
+  //private _renderer : WebGLRenderingSystem
 
   /**
   * @see React/Component#constructor
@@ -39,7 +41,7 @@ export class EntityComponentSystemRenderer extends Component<EntityComponentSyst
     this.handleSizeChange = this.handleSizeChange.bind(this)
     this.ECSWillRender = this.ECSWillRender.bind(this)
 
-    this._renderer = null
+    //this._renderer = null
     this._loop = new RenderingLoop(this.ECSWillRender)
     this._canvas = createRef()
     this._container = createRef()
@@ -49,8 +51,8 @@ export class EntityComponentSystemRenderer extends Component<EntityComponentSyst
   }
 
   private ECSWillRender () : void {
-    this._renderer.clear(CLEAR_COLOR)
-    this._renderer.render(this.props.camera)
+    //this._renderer.clear(CLEAR_COLOR)
+    //this._renderer.render(this.props.camera)
     this.setState(x => ({ frame: x.frame + 1 }))
   }
 
@@ -58,8 +60,8 @@ export class EntityComponentSystemRenderer extends Component<EntityComponentSyst
   * @see React/Component#componentDidMount
   */
   public componentDidMount () : void {
-    this._renderer = WebGLRenderingSystem.wrap(this._canvas.current)
-    this.props.entityComponentSystem.addSystem(this._renderer)
+    //this._renderer = WebGLRenderingSystem.wrap(this._canvas.current)
+    //this.props.entityComponentSystem.addSystem(this._renderer)
 
     this.handleSizeChange()
     window.addEventListener('resize', this.handleSizeChange)
@@ -71,10 +73,7 @@ export class EntityComponentSystemRenderer extends Component<EntityComponentSyst
   * @see React/Component#componentDidUpdate
   */
   public componentDidUpdate (oldProps : EntityComponentSystemRenderer.Properties) : void {
-    if (oldProps.entityComponentSystem !== this.props.entityComponentSystem) {
-      oldProps.entityComponentSystem.deleteSystem(this._renderer)
-      this.props.entityComponentSystem.addSystem(this._renderer)
-    }
+
   }
 
   /**
@@ -84,8 +83,8 @@ export class EntityComponentSystemRenderer extends Component<EntityComponentSyst
     window.removeEventListener('resize', this.handleSizeChange)
 
     this._loop.cancel()
-    this._renderer.destroy()
-    this._renderer = null
+    //this._renderer.destroy()
+    //this._renderer = null
   }
 
   /**

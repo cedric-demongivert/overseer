@@ -2,27 +2,30 @@ import { SquareGrid } from '../components/SquareGrid'
 
 import { OverseerComponentType } from './OverseerComponentType'
 
-export const SquareGridType : OverseerComponentType<SquareGrid> = {
+export const SquareGridType: OverseerComponentType<SquareGrid> = {
+  /**
+   * @see OverseerComponentType.name
+   */
   name: 'Square Grid',
 
   /**
   * @see OverseerComponentType.instantiate
   */
-  instantiate () : SquareGrid {
+  instantiate(): SquareGrid {
     return new SquareGrid()
   },
 
   /**
   * @see OverseerComponentType.copy
   */
-  copy (origin : SquareGrid, target : SquareGrid) : void {
+  copy(origin: SquareGrid, target: SquareGrid): void {
     target.copy(origin)
   },
 
   /**
   * @see OverseerComponentType.clear
   */
-  clear (instance : SquareGrid) : void {
+  clear(instance: SquareGrid): void {
     instance.clear()
   }
 }

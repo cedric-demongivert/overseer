@@ -1,0 +1,67 @@
+import { Vector2f } from '@cedric-demongivert/gl-tool-math'
+
+export type DrawingAnchor = number
+
+export namespace DrawingAnchor {
+  export const CENTER : DrawingAnchor = 0
+  export const TOP : DrawingAnchor = 1
+  export const BOTTOM : DrawingAnchor = 2
+  export const LEFT : DrawingAnchor = 3
+  export const RIGHT : DrawingAnchor = 4
+  export const BOTTOM_LEFT : DrawingAnchor = 5
+  export const BOTTOM_RIGHT : DrawingAnchor = 6
+  export const TOP_LEFT : DrawingAnchor = 7
+  export const TOP_RIGHT : DrawingAnchor = 8
+
+  export const CENTER_VECTOR : Vector2f = Vector2f.create(-0.5, -0.5)
+  export const TOP_VECTOR : Vector2f = Vector2f.create(-0.5, -1.0)
+  export const BOTTOM_VECTOR : Vector2f = Vector2f.create(-0.5, 0.0)
+  export const LEFT_VECTOR : Vector2f = Vector2f.create(0, -0.5)
+  export const RIGHT_VECTOR : Vector2f = Vector2f.create(-1.0, -0.5)
+  export const BOTTOM_LEFT_VECTOR : Vector2f = Vector2f.create(0.0, 0.0)
+  export const BOTTOM_RIGHT_VECTOR : Vector2f = Vector2f.create(-1.0, 0.0)
+  export const TOP_LEFT_VECTOR : Vector2f = Vector2f.create(0.0, -1.0)
+  export const TOP_RIGHT_VECTOR : Vector2f = Vector2f.create(-1.0, -1.0)
+
+  export const ALL : DrawingAnchor[] = [
+    CENTER,
+    TOP,
+    BOTTOM,
+    LEFT,
+    RIGHT,
+    BOTTOM_LEFT,
+    BOTTOM_RIGHT,
+    TOP_LEFT,
+    TOP_RIGHT
+  ]
+
+  export function toString (anchor : DrawingAnchor) : string | undefined {
+    switch (anchor) {
+      case CENTER       : return 'CENTER'
+      case TOP          : return 'TOP'
+      case BOTTOM       : return 'BOTTOM'
+      case LEFT         : return 'LEFT'
+      case RIGHT        : return 'RIGHT'
+      case BOTTOM_LEFT  : return 'BOTTOM_LEFT'
+      case BOTTOM_RIGHT : return 'BOTTOM_RIGHT'
+      case TOP_LEFT     : return 'TOP_LEFT'
+      case TOP_RIGHT    : return 'TOP_RIGHT'
+      default           : return undefined
+    }
+  }
+
+  export function toVector (anchor : DrawingAnchor) : Vector2f | undefined {
+    switch (anchor) {
+      case CENTER       : return CENTER_VECTOR
+      case TOP          : return TOP_VECTOR
+      case BOTTOM       : return BOTTOM_VECTOR
+      case LEFT         : return LEFT_VECTOR
+      case RIGHT        : return RIGHT_VECTOR
+      case BOTTOM_LEFT  : return BOTTOM_LEFT_VECTOR
+      case BOTTOM_RIGHT : return BOTTOM_RIGHT_VECTOR
+      case TOP_LEFT     : return TOP_LEFT_VECTOR
+      case TOP_RIGHT    : return TOP_RIGHT_VECTOR
+      default           : return undefined
+    }
+  }
+}

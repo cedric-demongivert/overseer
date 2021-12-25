@@ -7,11 +7,18 @@ import * as React from 'react'
 import { EntityComponentSystem } from '@cedric-demongivert/gl-tool-ecs'
 import { Entity } from '@cedric-demongivert/gl-tool-ecs'
 
-import { CameraType } from '../../types/CameraType'
-import { DOMMouseSourceSystem } from '../../systems/input/DOMMouseSourceSystem'
+import { CameraType } from '../types/CameraType'
+import { DOMMouseSourceSystem } from '../systems/input/DOMMouseSourceSystem'
 
 export class EntityComponentSystemMouseInput extends PureComponent<EntityComponentSystemMouseInput.Properties> {
+  /**
+   * 
+   */
   private readonly _container : RefObject<HTMLDivElement>
+
+  /**
+   * 
+   */
   private _source : DOMMouseSourceSystem
 
   /**
@@ -90,7 +97,13 @@ export class EntityComponentSystemMouseInput extends PureComponent<EntityCompone
   }
 }
 
+/**
+ * 
+ */
 export namespace EntityComponentSystemMouseInput {
+  /**
+   * 
+   */
   export type Properties = {
     entityComponentSystem: EntityComponentSystem,
     camera: Entity,

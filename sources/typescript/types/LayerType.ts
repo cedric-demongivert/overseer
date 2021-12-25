@@ -1,26 +1,29 @@
 import { OverseerComponentType } from './OverseerComponentType'
 
-export const LayerType : OverseerComponentType<number> = {
+export const LayerType: OverseerComponentType<number> = {
+  /**
+   * @see OverseerComponentType.name
+   */
   name: 'Layer',
 
   /**
-  * @see OverseerComponentType.instantiate
-  */
-  instantiate () : number {
+   * @see OverseerComponentType.instantiate
+   */
+  instantiate(): number {
     return 0
   },
 
   /**
-  * @see OverseerComponentType.copy
-  */
-  copy (origin : number, target : number) : number {
+   * @see OverseerComponentType.copy
+   */
+  copy(origin: number, target: number): number {
     return target
   },
 
   /**
-  * @see OverseerComponentType.clear
-  */
-  clear (instance : number) : number {
+   * @see OverseerComponentType.clear
+   */
+  clear(instance: number): number {
     return 0
   }
 }

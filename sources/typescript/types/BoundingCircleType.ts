@@ -2,27 +2,30 @@ import { BoundingCircle } from '../components/BoundingCircle'
 
 import { OverseerComponentType } from './OverseerComponentType'
 
-export const BoundingCircleType : OverseerComponentType<BoundingCircle> = {
+export const BoundingCircleType: OverseerComponentType<BoundingCircle> = {
+  /**
+   * @see OverseerComponentType.name
+   */
   name: 'Bounding Circle',
 
   /**
   * @see OverseerComponentType.instantiate
   */
-  instantiate () : BoundingCircle {
+  instantiate(): BoundingCircle {
     return new BoundingCircle()
   },
 
   /**
   * @see OverseerComponentType.copy
   */
-  copy (origin : BoundingCircle, target : BoundingCircle) : void {
+  copy(origin: BoundingCircle, target: BoundingCircle): void {
     target.copy(origin)
   },
 
   /**
   * @see OverseerComponentType.clear
   */
-  clear (instance : BoundingCircle) : void {
+  clear(instance: BoundingCircle): void {
     instance.clear()
   }
 }

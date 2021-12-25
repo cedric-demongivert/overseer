@@ -1,19 +1,17 @@
-import { EntityComponentSystem } from '@cedric-demongivert/gl-tool-ecs'
-import { Component } from '@cedric-demongivert/gl-tool-ecs'
-import { Matrix4f } from '@cedric-demongivert/gl-tool-math'
-
 import { Transformation } from '../components/Transformation'
-import { GSEditor } from '../editor/GSEditor'
 
 import { OverseerComponentType } from './OverseerComponentType'
 
-export const TransformationType : OverseerComponentType<Transformation> = GSEditor({
+export const TransformationType: OverseerComponentType<Transformation> = {
+  /**
+   * @see OverseerComponentType.name
+   */
   name: 'Transformation',
 
   /**
   * Editor fields.
   */
-  properties: {
+  /*properties: {
     worldToLocal: {
       label: 'World to local matrix',
       editor: GSEditor.matrix4f(),
@@ -34,26 +32,26 @@ export const TransformationType : OverseerComponentType<Transformation> = GSEdit
         component.data.localToWorld.copy(value)
       }
     }
-  },
+  },*/
 
   /**
   * @see OverseerComponentType.instantiate
   */
-  instantiate () : Transformation {
+  instantiate(): Transformation {
     return new Transformation()
   },
 
   /**
   * @see OverseerComponentType.copy
   */
-  copy (origin : Transformation, target : Transformation) : void {
+  copy(origin: Transformation, target: Transformation): void {
     target.copy(origin)
   },
 
   /**
   * @see OverseerComponentType.clear
   */
-  clear (instance : Transformation) : void {
+  clear(instance: Transformation): void {
     instance.clear()
   }
-})
+}

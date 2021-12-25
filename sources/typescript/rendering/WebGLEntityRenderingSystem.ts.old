@@ -9,12 +9,12 @@ import { WebGLRenderingSystem } from './WebGLRenderingSystem'
 import { Viewport } from './Viewport'
 
 export class WebGLEntityRenderingSystem extends OverseerSystem {
-  public layerManagementSystem : LayerManagementSystem
+  public layerManagementSystem: LayerManagementSystem
 
   /**
   * Create a new GLKitRenderingSystem.
   */
-  public constructor () {
+  public constructor() {
     super()
 
     this.layerManagementSystem = null
@@ -23,14 +23,14 @@ export class WebGLEntityRenderingSystem extends OverseerSystem {
   /**
   * @see OverseerSystem.initialize
   */
-  public initialize () : void {
+  public initialize(): void {
 
   }
 
   /**
   * @see OverseerSystem.destroy
   */
-  public destroy () : void {
+  public destroy(): void {
     this.layerManagementSystem = null
   }
 
@@ -39,12 +39,12 @@ export class WebGLEntityRenderingSystem extends OverseerSystem {
   *
   * @param pass - The rendering pass information.
   */
-  public renderWithWebGL (pass : WebGLRenderingPass) : void {
+  public renderWithWebGL(pass: WebGLRenderingPass): void {
     this.initializeWebGLRenderingPass(pass)
 
     if (pass.viewport.width > 0 && pass.viewport.height > 0) {
-      const entities : number = this.manager.entities.size
-      let entity : Entity = 0
+      const entities: number = this.manager.entities.size
+      let entity: Entity = 0
 
       for (let index = 0; index < entities; ++index) {
         if (this.layerManagementSystem) {
@@ -65,10 +65,10 @@ export class WebGLEntityRenderingSystem extends OverseerSystem {
   *
   * @param pass - The rendering pass to initialize.
   */
-  public initializeWebGLRenderingPass (pass : WebGLRenderingPass) : void {
-    const viewport : Viewport = pass.viewport
-    const context : WebGLRenderingSystem = pass.context
-    const webgl : WebGLRenderingContext = context.context
+  public initializeWebGLRenderingPass(pass: WebGLRenderingPass): void {
+    const viewport: Viewport = pass.viewport
+    const context: WebGLRenderingSystem = pass.context
+    const webgl: WebGLRenderingContext = context.context
 
     webgl.viewport(
       0,
@@ -103,11 +103,11 @@ export class WebGLEntityRenderingSystem extends OverseerSystem {
   * @param pass - The rendering pass information.
   * @param entity - The entity to render.
   */
-  public renderEntityWithWebGL (pass : WebGLRenderingPass, entity : Entity) : void {
-    const systems : Sequence<any> = this.manager.systems
+  public renderEntityWithWebGL(pass: WebGLRenderingPass, entity: Entity): void {
+    const systems: Sequence<any> = this.manager.systems
 
     for (let index = 0, size = systems.size; index < size; ++index) {
-      const system : any = systems.get(index)
+      const system: any = systems.get(index)
 
       if (system !== this && system.renderEntityWithWebGL) {
         system.renderEntityWithWebGL(pass, entity)
@@ -120,8 +120,8 @@ export class WebGLEntityRenderingSystem extends OverseerSystem {
   *
   * @param pass - The rendering pass to rollback.
   */
-  public terminateWebGLRenderingPass (pass : WebGLRenderingPass) : void {
-    const webgl : WebGLRenderingContext = pass.context.context
+  public terminateWebGLRenderingPass(pass: WebGLRenderingPass): void {
+    const webgl: WebGLRenderingContext = pass.context.context
 
     webgl.disable(webgl.SCISSOR_TEST)
     webgl.disable(webgl.BLEND)

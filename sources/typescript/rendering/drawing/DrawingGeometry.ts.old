@@ -9,12 +9,12 @@ export namespace DrawingGeometry {
     [VertexFieldType.FLOAT_VEC2]
   )
 
-  export const WORLD : VertexStructureBuffer = VertexStructureBuffer.grouped(FORMAT, 4)
-  WORLD.size = 4
-  WORLD.setPosition(0, -1.0, -1.0)
-  WORLD.setPosition(1, 1.0, -1.0)
-  WORLD.setPosition(2, 1.0, 1.0)
-  WORLD.setPosition(3, -1.0, 1.0)
+  export const VERTICES : VertexStructureBuffer = VertexStructureBuffer.grouped(FORMAT, 4)
+  VERTICES.size = 4
+  VERTICES.setPosition(0, 0.0, 0.0)
+  VERTICES.setPosition(1, 0.0, 1.0)
+  VERTICES.setPosition(2, 1.0, 1.0)
+  VERTICES.setPosition(3, 1.0, 0.0)
 
   export const FACES : FaceBuffer = FaceBuffer.empty(6)
   FACES.push(0, 1, 2)

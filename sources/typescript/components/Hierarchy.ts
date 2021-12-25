@@ -1,21 +1,31 @@
 import { Entity } from '@cedric-demongivert/gl-tool-ecs'
 
+/**
+ * 
+ */
 export class Hierarchy {
-  public parent : Entity
-  public readonly children : Set<Entity>
+  /**
+   * 
+   */
+  public parent: Entity
+
+  /**
+   * 
+   */
+  public readonly children: Set<Entity>
 
   /**
   * Create a new hierarchy.
   */
-  public constructor () {
-    this.parent   = undefined
+  public constructor() {
+    this.parent = undefined
     this.children = new Set<Entity>()
   }
 
   /**
   * Reset this component to its initial state.
   */
-  public clear () : void {
+  public clear(): void {
     this.parent = undefined
     this.children.clear()
   }
@@ -23,7 +33,7 @@ export class Hierarchy {
   /**
   * @see Object.equals
   */
-  public equals (other : any) : boolean {
+  public equals(other: any): boolean {
     if (other == null) return false
     if (other === this) return true
 
